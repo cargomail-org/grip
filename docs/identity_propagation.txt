@@ -5,7 +5,7 @@ participant "RP" as RP
 bottomparticipants
 
 note over IdP-STS:IdP + STS:\n• both act as the same authority
-note over Propagator:Identity Propagator:\n• runs as a client service on its own URI with ability to issue tokens\n• generates its own public and private key pair to sign assertions and authenticate to IdPs and RPs\n• public keys are published at the propagator's well-known URI\n• client_id is the propagator URI\n• uses a private_key_jwt client authentication method to authenticate to IdPs and RPs\n• acts as a Relying Party in respect of the IdP in order to obtain an access_token_with_user_claims
+note over Propagator:Identity Propagator:\n• runs as a client service on its own URI with the ability to issue tokens\n• generates its own public and private key pair to sign assertions and authenticate to IdPs and RPs\n• public keys are published at the propagator's well-known URI\n• client_id is the propagator URI\n• uses a private_key_jwt client authentication method to authenticate to IdPs and RPs\n• acts as a Relying Party in respect of the IdP in order to obtain an access_token_with_user_claims
 note over RP:RP:\n• is a resource server using the local ABAC engine to automate authorization assessment
 Propagator->Propagator:1. Generate the actor_token with these claims:\n    {iss, aud, sub, exp, nbf}\n    iss is the client_id\n    aud is the URI that identifies the RP\n    sub is the client_id\n    exp, nbf are the standard JWT claims
 Propagator->Propagator:2. Generate the authentication_token with these claims:\n    {iss, sub, aud, jti, exp}\n    iss is the client_id\n    aud is the URI that identifies the IdP\n    sub is the client_id\n    jti, exp are the standard JWT claims
