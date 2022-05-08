@@ -6,6 +6,17 @@
 
 &emsp;We introduce a multi-authority, NIST SP 800-63C conformant, trust framework that propagates identity information from an IdP to an RP when the RP and the IdP are not a single entity or are not under common administration.
 
+## Federation
+
+&emsp;The Identity Propagation Trust Framework uses a multiparty federation protocol, as illustrated in Figure&nbsp;1.
+
+![Multiparty Federation](./images/multiparty_federation.svg)
+
+<p class="figure">
+Fig.&nbsp;1.&emsp;Multiparty federation protocol
+</p>
+
 ## Sequence Diagram
 
 <img src=./images/identity_propagation.svg alt="Sequence Diagram – Identity Propagation">
+
