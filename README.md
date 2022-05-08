@@ -1,5 +1,5 @@
-# Identity Propagator
+# Identity Propagation Trust Framework
 
 ## Sequence Diagram
 
-<img src=./images/identity_propagator.svg alt="Sequence Diagram – Identity Propagator">
+<img src=./images/identity_propagation.svg alt="Sequence Diagram – Identity Propagation">
