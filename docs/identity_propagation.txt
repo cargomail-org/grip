@@ -1,22 +1,22 @@
 participant "IdP + STS" as IdP-STS
-participant "Client" as Client
+participant "Identity Propagator" as Propagator
 participant "RP" as RP
 
 bottomparticipants
 
 note over IdP-STS:IdP + STS:\n• both act as the same authority
-note over Client:Client:\n• runs as a service with its own URI\n• client generates its own public and private key pair to sign assertions and authenticate to IdPs and RPs\n• public keys are published at the client's well-known URI\n• client_id is the client URI\n• uses a private_key_jwt client authentication method to authenticate to IdPs and RPs\n• acts as a Relying Party in respect of the IdP in order to obtain an access_token_with_user_claims\n• acts as an Identity Propagator of identity information provided by IdPs in respect of RPs
+note over Propagator:Identity Propagator:\n• runs as a client service on its own URI with ability to issue tokens\n• generates its own public and private key pair to sign assertions and authenticate to IdPs and RPs\n• public keys are published at the propagator's well-known URI\n• client_id is the propagator URI\n• uses a private_key_jwt client authentication method to authenticate to IdPs and RPs\n• acts as a Relying Party in respect of the IdP in order to obtain an access_token_with_user_claims
 note over RP:RP:\n• is a resource server using the local ABAC engine to automate authorization assessment
-Client->Client:1. Client generates the actor_token with these claims:\n    {iss, aud, sub, exp, nbf}\n    iss is the client_id\n    aud is the URI that identifies the RP\n    sub is the client_id\n    exp, nbf are the standard JWT claims
-Client->Client:2. Client generates the authentication_token with these claims:\n    {iss, sub, aud, jti, exp}\n    iss is the client_id\n    aud is the URI that identifies the IdP\n    sub is the client_id\n    jti, exp are the standard JWT claims
-IdP-STS<-Client:3. Send an HTTP request to get an identity_token with the actor_token in the header\n    using the private_key_jwt client authentication method\n    {grant_type = token-exchange,\n     requested_token_type = urn:ietf:params:oauth:token-type:jwt,\n     subject_token = access_token_with_user_claims,\n     subject_token_type = urn:ietf:params:oauth:token-type:access_token,\n     actor_token = actor_token,\n     actor_token_type = urn:ietf:params:oauth:token-type:jwt}
-IdP-STS->IdP-STS:4. Authorization assessment\n    1. verify the authentication_token signature using the client's public keys\n        published at the client's well known URI, and evaluate claims\n    2. verify the actor_token signature using the client's public keys\n        published at the client's well known URI, and evaluate claims\n    3. verify the access_token_with_user_claims signature and evaluate claims 
+Propagator->Propagator:1. Generate the actor_token with these claims:\n    {iss, aud, sub, exp, nbf}\n    iss is the client_id\n    aud is the URI that identifies the RP\n    sub is the client_id\n    exp, nbf are the standard JWT claims
+Propagator->Propagator:2. Generate the authentication_token with these claims:\n    {iss, sub, aud, jti, exp}\n    iss is the client_id\n    aud is the URI that identifies the IdP\n    sub is the client_id\n    jti, exp are the standard JWT claims
+IdP-STS<-Propagator:3. Send an HTTP request to get an identity_token with the actor_token in the header\n    using the private_key_jwt client authentication method\n    {grant_type = token-exchange,\n     requested_token_type = urn:ietf:params:oauth:token-type:jwt,\n     subject_token = access_token_with_user_claims,\n     subject_token_type = urn:ietf:params:oauth:token-type:access_token,\n     actor_token = actor_token,\n     actor_token_type = urn:ietf:params:oauth:token-type:jwt}
+IdP-STS->IdP-STS:4. Authorization assessment\n    1. verify the authentication_token signature using the propagator's public keys\n        published at the propagator's well known URI, and evaluate claims\n    2. verify the actor_token signature using the propagator's public keys\n        published at the propagator's well known URI, and evaluate claims\n    3. verify the access_token_with_user_claims signature and evaluate claims 
 
 IdP-STS->IdP-STS:5. STS generates the identity_token with these claims:\n    {iss, aud, sub, exp, nbf, act{sub}}\n    iss is the URI that identifies who issues the identity_token\n    aud identifies the target service and it is the aud claim value extracted from the actor_token\n    sub identifies the principal by an email address that is extracted from the access_token_with_user_claims\n    exp, nbf are the standard JWT claims\n    act{sub} is the sub value extracted from the actor_token
-Client<-IdP-STS:6. Return the identity_token
+Propagator<-IdP-STS:6. Return the identity_token
 
-Client->Client:7. Client generates the authentication_token with these claims:\n    {iss, sub, aud, jti, exp}\n    iss is the client_id\n    aud is the URI that identifies the RP\n    sub is the client_id\n    jti, exp are the standard JWT claims
-Client->RP:8. Send an HTTP request to the RP with the identity_token in the header\n    using the private_key_jwt client authentication method
+Propagator->Propagator:7. Generate the authentication_token with these claims:\n    {iss, sub, aud, jti, exp}\n    iss is the client_id\n    aud is the URI that identifies the RP\n    sub is the client_id\n    jti, exp are the standard JWT claims
+Propagator->RP:8. Send an HTTP request to the RP with the identity_token in the header\n    using the private_key_jwt client authentication method
 iss is the URI that identifies who issues the authentication_token
-RP->RP:9. Authorization assessment\n    1. verify the authentication_token signature using the client's public keys\n        published at the client's well known URI, and evaluate claims\n    2. verify the identity_token signature and evaluate claims
-RP->Client:10. Return the HTTP response, typically with 200, 201 status code
+RP->RP:9. Authorization assessment\n    1. verify the authentication_token signature using the propagator's public keys\n        published at the propagator's well known URI, and evaluate claims\n    2. verify the identity_token signature and evaluate claims
+RP->Propagator:10. Return the HTTP response, typically with 200, 201 status code
