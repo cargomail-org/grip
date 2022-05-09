@@ -21,9 +21,14 @@ Fig.&nbsp;1.&emsp;Proxied Federation
 
 ## Sequence Diagram
 
+&emsp;The sequence diagram illustrated in Figure&nbsp;2 shows an identity propagation flow for the user authenticated to the IdP to be able to access the resources stored on the RP. The following are prerequisites for the given scenario:
+
+TBD
 
 ![Sequence Diagram](./images/identity_propagation_flow.svg)
 
 <p class="figure">
 Fig.&nbsp;2.&emsp;Sequence Diagram – Identity Propagation Flow
 </p>
+
+
