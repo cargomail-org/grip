@@ -8,7 +8,7 @@
 
 ## Federation
 
-&emsp;The Identity Propagation Trust Framework uses a proxied federation protocol, as illustrated in Figure&nbsp;1. Communication between the IdP and the RP is intermediated through the Identity Propagator Proxy (IdPP) authorized by a Subscriber. Where proxies are used, they function as an RP on one side and an Identity Propagator on the other. The RP and Identity Propagator pair acts as a transparent federation proxy.
+&emsp;The Identity Propagation Trust Framework uses a proxied federation protocol, as illustrated in Figure&nbsp;1. Communication between the IdP and the RP is intermediated through the Identity Propagation Proxy (IdPP) authorized by a Subscriber. Where proxies are used, they function as an RP on one side and an Identity Propagator on the other. The RP and Identity Propagator pair acts as a transparent federation proxy.
 
 
 ![Proxied Federation](./images/proxied_federation.svg)
