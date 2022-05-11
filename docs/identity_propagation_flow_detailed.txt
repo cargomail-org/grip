@@ -5,12 +5,12 @@ participant "Resource Server (RS)" as RS
 bottomparticipants
 
 note over IPS:IPS:\n• acts as an IdP client\n• is part of the STS that supports the Token Exchange extension of OAuth 2.0\n
-note over Client:Client:\n• is registered at the IdP as a confidential client\n• is registered at the IPS as a confidential client\n• acts as a Relying Party in respect of the IdP in order to obtain an access_token_with_user_claims\n• should support DPOP
+note over Client:Client:\n• is registered at the IdP as a confidential client\n• is registered at the IPS as a confidential client\n• acts as a Relying Party in respect of the IdP in order to obtain\n  an access_token_with_user_claims\n• should support DPOP
 note over RS:RS:\n• uses the local ABAC engine to automate authorization assessment
-IPS<-Client:1. Send an HTTP request to exchange the access_token_with_user_claims\n    for an access token with changed aud claim\n    {grant_type = token-exchange,\n     resource = a target RS URI\n     requested_token_type = urn:ietf:params:oauth:token-type:access_token,\n     subject_token = access_token_with_user_claims,\n     subject_token_type = urn:ietf:params:oauth:token-type:access_token}
+IPS<-Client:1. Send an HTTP request to exchange the access_token_with_user_claims\n    for an access token with changed aud claim\n    • grant_type = token-exchange\n    • resource = a target RS URI\n    • requested_token_type = urn:ietf:params:oauth:token-type:access_token\n    • subject_token = access_token_with_user_claims\n    • subject_token_type = urn:ietf:params:oauth:token-type:access_token
 IPS->IPS:2. Authorization assessment:\n   1. evaluate the resource parameter\n   2. verify the subject_token signature\n   3. evaluate the subject_token claims
 
-IPS->IPS:3. IPS generates an access_token with these claims:\n    {iss, aud, sub, exp, nbf}\n    iss is the URI that identifies who issues the access_token\n    aud identifies the target service and it is the aud value from the resource parameter\n    sub identifies the principal by an email address that is extracted from the access_token_with_user_claims\n    exp, nbf are the standard JWT claims
+IPS->IPS:3. IPS generates an access_token with these claims:\n    {iss, aud, sub, exp, nbf}\n    • iss is the URI that identifies who issues the access_token\n    • aud identifies the target service and it is the aud value from\n      the resource parameter\n    • sub identifies the principal by an email address that is extracted from\n      the access_token_with_user_claims\n    • exp, nbf are the standard JWT claims
 Client<-IPS:6. Return the access_token
 
 Client->RS:4. Send an HTTP request to the RS with the access_token in the header
