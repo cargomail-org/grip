@@ -100,7 +100,7 @@
        <g id="id3">
         <rect class="BoundingBox" stroke="none" fill="none" x="5936" y="2242" width="8400" height="2289"/>
         <path fill="none" stroke="rgb(0,0,0)" d="M 10136,4529 L 5937,4529 5937,2243 14334,2243 14334,4529 10136,4529 Z"/>
-        <text class="SVGTextShape"><tspan class="TextParagraph" font-family="Liberation Sans, sans-serif" font-size="423px" font-weight="400"><tspan class="TextPosition" x="9084" y="3534"><tspan fill="rgb(0,0,0)" stroke="none" style="white-space: pre">Propagator</tspan></tspan></tspan></text>
+        <text class="SVGTextShape"><tspan class="TextParagraph" font-family="Liberation Sans, sans-serif" font-size="423px" font-weight="400"><tspan class="TextPosition" x="9450" y="3297"><tspan fill="rgb(0,0,0)" stroke="none" style="white-space: pre">Identity</tspan></tspan></tspan><tspan class="TextParagraph" font-family="Liberation Sans, sans-serif" font-size="423px" font-weight="400"><tspan class="TextPosition" x="9084" y="3771"><tspan fill="rgb(0,0,0)" stroke="none" style="white-space: pre">Propagator</tspan></tspan></tspan></text>
        </g>
       </g>
       <g class="TextShape">
@@ -124,8 +124,8 @@
       </g>
       <g class="TextShape">
        <g id="id7">
-        <rect class="BoundingBox" stroke="none" fill="none" x="8915" y="1291" width="2565" height="726"/>
-        <text class="SVGTextShape"><tspan class="TextParagraph" font-family="Liberation Sans, sans-serif" font-size="423px" font-weight="400"><tspan class="TextPosition" x="9165" y="1801"><tspan fill="rgb(0,0,0)" stroke="none" style="white-space: pre">Subscriber</tspan></tspan></tspan></text>
+        <rect class="BoundingBox" stroke="none" fill="none" x="8854" y="1291" width="2565" height="726"/>
+        <text class="SVGTextShape"><tspan class="TextParagraph" font-family="Liberation Sans, sans-serif" font-size="423px" font-weight="400"><tspan class="TextPosition" x="9104" y="1801"><tspan fill="rgb(0,0,0)" stroke="none" style="white-space: pre">Subscriber</tspan></tspan></tspan></text>
        </g>
       </g>
       <g class="TextShape">
@@ -142,8 +142,8 @@
       </g>
       <g class="TextShape">
        <g id="id10">
-        <rect class="BoundingBox" stroke="none" fill="none" x="9561" y="290" width="1242" height="726"/>
-        <text class="SVGTextShape"><tspan class="TextParagraph" font-family="Liberation Sans, sans-serif" font-size="423px" font-weight="400"><tspan class="TextPosition" x="9811" y="800"><tspan fill="rgb(0,0,0)" stroke="none" style="white-space: pre">Bar</tspan></tspan></tspan></text>
+        <rect class="BoundingBox" stroke="none" fill="none" x="9548" y="290" width="1242" height="726"/>
+        <text class="SVGTextShape"><tspan class="TextParagraph" font-family="Liberation Sans, sans-serif" font-size="423px" font-weight="400"><tspan class="TextPosition" x="9798" y="800"><tspan fill="rgb(0,0,0)" stroke="none" style="white-space: pre">Bar</tspan></tspan></tspan></text>
        </g>
       </g>
       <g class="com.sun.star.drawing.CustomShape">

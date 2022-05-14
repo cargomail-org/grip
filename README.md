@@ -1,6 +1,6 @@
 <!-- @import "style.less" -->
 
-# Identity Propagation
+# Identity Propagator
 
 ## Introduction
 
