@@ -1,11 +1,11 @@
 participant "IdP + STS" as STS
-participant "Propagator" as Propagator
+participant "Identity Propagator" as Propagator
 participant "RP" as RP
 
 bottomparticipants
 
 note over STS:STS:\n• supports RFC 8705\n• supports the Token Exchange extension of OAuth 2.0
-note over Propagator:Propagator:\n• supports RFC 8705\n• acts as a relying party in respect of the IdP in order to obtain\n  an access_token_with_user_claims\n• is registered at the IdP as a confidential client
+note over Propagator:Identity Propagator:\n• supports RFC 8705\n• acts as a relying party in respect of the IdP in order to obtain\n  an access_token_with_user_claims\n• is registered at the IdP as a confidential client
 note over RP:RP:\n• supports RFC 8705\n• uses the information in the assertion to identify the subscriber\n  and makes authorization decisions using a local ABAC engine.
 STS<-Propagator:1. Send an HTTP request to the STS endpoint\n    • grant_type = token-exchange\n    • resource = a target RP URI\n    • requested_token_type = urn:ietf:params:oauth:token-type:access_token\n    • subject_token = access_token_with_user_claims\n    • subject_token_type = urn:ietf:params:oauth:token-type:access_token
 STS->STS:2. Authorization decision:\n   1. evaluate the resource parameter\n   2. verify the subject_token signature\n   3. evaluate the subject_token claims
