@@ -1,4 +1,6 @@
-# Identity Propagation Flow
+<!-- @import "style.less" -->
+
+# Identity Propagation
 
 ## Introduction
 
@@ -6,18 +8,24 @@
 
 ## Motivation
 
-&emsp;To allow an IdP to provide authentication attributes to a number of separately-administered RPs. 
+&emsp;To allow an IdP to provide authentication attributes to a number of separately-administered RPs as illustrated in Figure&nbsp;1
+
+![Model](./images/identity_propagation_model.svg)
+
+<p class="figure">
+Fig.&nbsp;1.&emsp;Identity Propagation Model
+</p>
 
 ## Sequence Diagram
 
-&emsp;The sequence diagram illustrated in Figure&nbsp;1 shows an identity propagation flow for the user authenticated to the IdP to be able to access the resources stored on the RP. The following are prerequisites for the given scenario:
+&emsp;The sequence diagram illustrated in Figure&nbsp;2 shows an identity propagation flow for the user authenticated to the IdP to be able to access the resources stored on the RP. The following are prerequisites for the given scenario:
 
 TBD
 
-![Sequence Diagram](./images/identity-propagation-flow.svg)
+![Sequence Diagram](./images/identity_propagation_flow.svg)
 
 <p class="figure">
-Fig.&nbsp;1.&emsp;Sequence Diagram – Identity Propagation Flow
+Fig.&nbsp;2.&emsp;Identity Propagation Flow
 </p>
 
 
