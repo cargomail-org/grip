@@ -22,7 +22,9 @@ Fig.&nbsp;1.&emsp;Identity Propagation Model
 
 TBD
 
-![Sequence Diagram](./images/identity_propagation_flow.svg)
+<div class="diagram">
+    <img src=./images/identity_propagation_flow.svg alt="Sequence Diagram">
+</div>
 
 <p class="figure">
 Fig.&nbsp;2.&emsp;Identity Propagation Flow
