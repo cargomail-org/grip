@@ -10,9 +10,9 @@ note over RP:RP:\n• supports RFC 8705\n• uses the information in the asserti
 IdP<-Propagator:1. Send an HTTP request to the STS endpoint\n    • grant_type = token-exchange\n    • resource = a target RP URI\n    • requested_token_type = urn:ietf:params:oauth:token-type:jwt\n    • subject_token = access_token_with_user_claims\n    • subject_token_type = urn:ietf:params:oauth:token-type:access_token
 IdP->IdP:2. Authorization decision:\n   1. evaluate the resource parameter\n   2. verify the subject_token signature\n   3. evaluate the subject_token claims
 
-IdP->IdP:3. STS generates a certificate-bound jwt_token with these claims:\n    {iss, aud, sub, exp, nbf}\n    • iss is the URI that identifies who issues the jwt_token\n    • aud identifies the target service and it is the value from\n      the resource parameter\n    • sub identifies the subscriber by an email address that is extracted from\n      the access_token_with_user_claims\n    • exp, nbf are the standard JWT claims
-Propagator<-IdP:4. Return the jwt_token
+IdP->IdP:3. STS generates a token — a signed certificate-bound assertion\n    in JWT format with these claims:\n    {iss, aud, sub, exp, nbf, cnf}\n    • iss is the URI that identifies who issues the token\n    • aud identifies the target service and it is the value from\n      the resource parameter\n    • sub identifies the subscriber by an email address that is extracted from\n      the access_token_with_user_claims\n    • exp, nbf are the standard JWT claims\n    • cnf is the confirmation method with the hash of the client certificate\n      to which the token is bound
+Propagator<-IdP:4. Return the token\n{"access_token":token,\n "issued_token_type":"urn:ietf:params:oauth:token-type:jwt",\n "token_type":"N_A",\n "expires_in":3600}
 
-Propagator->RP:5. Send an HTTP request to the RP with the jwt_token using mTLS
-RP->RP:6. Authorization decision\n    1. verify the jwt_token signature\n    2. validate proof-of-possession\n    3. validate the client service specific identity\n    4. evaluate claims
+Propagator->RP:5. Send an HTTP request to the RP with the token using mTLS
+RP->RP:6. Authorization decision\n    1. verify the token signature\n    2. validate proof-of-possession\n    3. validate the client service specific identity\n    4. evaluate claims
 RP->Propagator:7. Return the HTTP response, typically with 200, 201 status code
