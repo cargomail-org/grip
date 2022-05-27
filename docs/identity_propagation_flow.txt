@@ -14,5 +14,5 @@ IdP->IdP:3. STS generates a token — a signed certificate-bound assertion\n    
 Propagator<-IdP:4. Return the token\n{"access_token":token,\n "issued_token_type":"urn:ietf:params:oauth:token-type:jwt",\n "token_type":"N_A",\n "expires_in":3600}
 
 Propagator->RP:5. Send an HTTP request to the RP with the token using mTLS
-RP->RP:6. Authorization decision\n    1. verify the token signature\n    2. validate proof-of-possession\n    3. validate the client service specific identity\n    4. evaluate claims
+RP->RP:6. Authorization decision\n    1. verify the token signature\n    2. validate proof-of-possession\n    3. validate the client service specific identity\n    4. verify the issuer using WebFinger to locate\n       the OpenID Provider for the subscriber 
 RP->Propagator:7. Return the HTTP response, typically with 200, 201 status code
