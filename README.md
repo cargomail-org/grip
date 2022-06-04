@@ -32,7 +32,7 @@ Fig.&nbsp;2.&emsp;Identity Propagation Flow
 
 ## Usability Considerations
 
-Using OAuth 2.0 and OpenID Connect technologies is an effective option to secure web APIs. From an API ecosystem perspective, the resource server is the API provider, and the client is the API consumer.
+Using OAuth 2.0 and OpenID Connect technologies is an effective option to secure web APIs. From an API ecosystem perspective, the resource server is the API provider, and the client is the API consumer. The identity propagation system is helpful in B2B scenarios.
 
 #### Trust First
 
