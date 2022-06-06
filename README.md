@@ -18,7 +18,7 @@ Fig.&nbsp;1.&emsp;Identity Propagation Model
 
 ## Sequence Diagram
 
-The sequence diagram illustrated in Figure&nbsp;2 shows an identity propagation flow for the subscriber authenticated to the IdP to be able to access the resources stored on the RS. The following are prerequisites for the given scenario:
+The sequence diagram illustrated in Figure&nbsp;2 shows an identity propagation flow for the user authenticated to the IdP to be able to access the resources stored on the RS. The following are prerequisites for the given scenario:
 
 TBD
 
