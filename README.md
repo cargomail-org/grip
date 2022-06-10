@@ -48,4 +48,4 @@ Use a composite API token identifying the user and the client itself generated b
 
 ## Acknowledgment
 
-[NIST Special Publication 800-63C](https://pages.nist.gov/800-63-3/sp800-63c.html), Digital Identity Guidelines: Federation and Assertions, has proven to be an abstract framework for identity propagation concept.
+[NIST Special Publication 800-63C](https://pages.nist.gov/800-63-3/sp800-63c.html), Digital Identity Guidelines: Federation and Assertions, has proven to be an abstract framework for the Identity Propagation and Assertions architecture.
