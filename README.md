@@ -23,7 +23,7 @@ The sequence diagram illustrated in Figure&nbsp;2 shows an identity propagation 
 TBD
 
 <div class="diagram">
-    <img src=./images/identity_propagation_flow.svg alt="Sequence Diagram">
+    <img src=./images/identity_propagation_flow_webfinger.svg alt="Sequence Diagram">
 </div>
 
 <p class="figure">
