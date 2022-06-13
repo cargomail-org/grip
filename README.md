@@ -25,8 +25,6 @@ The sequence diagram illustrated in Figure&nbsp;2 shows an identity propagation 
 3. The subject of the public client certificate (OU and CN attributes) is used as a global client identifier e.g., OU=_fhir-client, CN=sandbox.example.com
 4. The hash of the client's public key is published on the client domain (usually identical to the IdP host domain) as a public-key/hash attribute of JSON object which is discoverable via WebFinger using the client global identifier, e.g., https<nolink>://example.com/.well-known/webfinger?resource=acct:_fhir-client.sandbox.example.com&rel=public-key
 
-There are other means of proving ownership of the client identifier, [DANE—(DANCE WG)](https://github.com/umalabs/identity-propagation-and-assertions/blob/main/images/identity_propagation_flow_dane.svg), and [DNS TXT record](https://github.com/umalabs/identity-propagation-and-assertions/blob/main/images/identity_propagation_flow_dns_txt.svg).
-
 <div class="diagram">
     <img src=./images/identity_propagation_flow_webfinger.svg alt="Sequence Diagram">
 </div>
@@ -34,6 +32,8 @@ There are other means of proving ownership of the client identifier, [DANE—(DA
 <p class="figure">
 Fig.&nbsp;2.&emsp;Identity Propagation Flow
 </p>
+
+There are other means of proving ownership of the client identifier, [DANE—(DANCE WG)](https://github.com/umalabs/identity-propagation-and-assertions/blob/main/images/identity_propagation_flow_dane.svg), and [DNS TXT record](https://github.com/umalabs/identity-propagation-and-assertions/blob/main/images/identity_propagation_flow_dns_txt.svg).
 
 ## Usability Considerations
 
