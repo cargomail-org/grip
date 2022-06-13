@@ -4,9 +4,9 @@ participant "RS" as RP
 
 bottomparticipants
 
-note over STS:IdP/STS\n• supports RFC 8705\n• supports the Token Exchange extension of OAuth 2.0
-note over PP:Propagation Proxy:\n• supports RFC 8705 — the subject of the public client certificate (OU and CN attributes) is used as a global client identifier\n  e.g., OU=_fhir-client, CN=sandbox.example.com\n• is registered at the IdP/STS as a confidential client\n• acts as a client in respect of the RS\n• the hash of the client's public key is published on the client domain (usually identical to the IdP host domain) as a publicKey\n  attribute of JSON object which is discoverable via Webfinger using the client global identifier,\n  e.g., https://example.com/.well-known/webfinger?resource=acct:_fhir-client.sandbox.example.com
-note over RP:RS:\n• supports RFC 8705\n• uses the information in the assertion to identify the user\n  and makes authorization decisions using a local ABAC engine\n• should support the service discovery mechanism
+note over STS:IdP/STS\n• supports Mutual-TLS Client Certificate-Bound Access Tokens\n• supports the Token Exchange extension of OAuth 2.0
+note over PP:Propagation Proxy:\n• supports Mutual-TLS Client Certificate-Bound Access Tokens,\n  the subject of the public client certificate (OU and CN attributes) is used as a global client identifier\n  e.g., OU=_fhir-client, CN=sandbox.example.com\n• is registered at the IdP/STS as a confidential client\n• acts as a client in respect of the RS\n• the hash of the client's public key is published on the client domain (usually identical to the IdP host domain) as a public-key/hash\n  attribute of JSON object which is discoverable via WebFinger using the client global identifier,\n  e.g., https://example.com/.well-known/webfinger?resource=acct:_fhir-client.sandbox.example.com&rel=public-key
+note over RP:RS:\n• supports Mutual-TLS Client Certificate-Bound Access Tokens\n• uses the information in the assertion to identify the user\n  and makes authorization decisions using a local ABAC engine\n• should support the service discovery mechanism
 STS<-PP:1. Send an HTTP request to the IdP/STS endpoint\n    • grant_type = urn:ietf:params:oauth:grant-type:token-exchange\n    • resource = a target RS URI\n    • requested_token_type = urn:ietf:params:oauth:token-type:jwt\n    • subject_token = access_token\n    • subject_token_type = urn:ietf:params:oauth:token-type:access_token
 STS->STS:2. Authorization decision:\n   1. evaluate the resource parameter\n   2. verify the subject_token signature\n   3. evaluate the subject_token claims
 
@@ -14,5 +14,5 @@ STS->STS:3. IdP/STS generates a token — a signed certificate-bound assertion\n
 PP<-STS:4. Return the token\n{"access_token":token,\n "issued_token_type":"urn:ietf:params:oauth:token-type:jwt",\n "token_type":"N_A",\n "expires_in":3600}
 
 PP->RP:5. Send an HTTP request to the RS with the token using mTLS
-RP->RP:6. Authorization decision\n    1. verify the token signature\n    2. validate proof-of-possession\n    3. verify the act{sub} claim — the client is authenticated using\n       the WebFinger protocol when the publicKeyHash attribute value\n       matches the hash of the client's public key\n    4. use WebFinger to locate the IdP for the user using\n       its identifier and verify that the IdP matches the token issuer
+RP->RP:6. Authorization decision\n    1. verify the token signature\n    2. validate proof-of-possession\n    3. verify the act{sub} claim — the client is authenticated using\n       the WebFinger protocol when the public-key/hash attribute value\n       matches the hash of the client's public key\n    4. use WebFinger to locate the IdP for the user using\n       its identifier and verify that the IdP matches the token issuer
 RP->PP:7. Return the HTTP response, typically with 200, 201 status code
