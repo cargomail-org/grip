@@ -31,8 +31,11 @@ Assertions are statements from an IdP to an RS that contain information about a 
 The sequence diagram illustrated in Figure&nbsp;2 shows an identity propagation flow for the user authenticated to the IdP to be able to access the resources stored on the RS using a client with a public identifier. The "/.well-known" mechanism and WebFinger queries are used as a means of proving ownership of the client identifier. The following are prerequisites for the given scenario:
 
 1. The IdP, client and RS SHALL support the OAuth 2.0 Mutual-TLS Client Certificate-Bound Access Tokens specification.
+
 2. The IdP SHALL support the Token Exchange extension of OAuth 2.0.
+
 3. The subject of the public client certificate (OU and CN attributes) is used as a global client identifier e.g., OU=_fhir-client, CN=sandbox.example.com
+
 4. The hash of the client's public key is published on the client domain (usually identical to the IdP host domain) as a public-key/hash attribute of JSON object which is discoverable via WebFinger using the client global identifier, e.g., https<nolink>://example.com/.well-known/webfinger?resource=acct:_fhir-client.sandbox.example.com&rel=public-key
 
 The sequence diagram is self-explanatory; the OIDC authentication flow is omitted for clarity.
