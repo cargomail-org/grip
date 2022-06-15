@@ -8,13 +8,23 @@ With the growing popularity of protocols based on the OAuth 2.0 specification, t
 
 ## Motivation
 
-To allow an IdP to provide authentication attributes to a number of separately-administered RSs as illustrated in Figure&nbsp;1
+To allow an IdP to provide authentication attributes to a number of separately-administered RSs through the use of assertions.
+
+## Identity Propagation
+
+In most architectures, the user's security context propagation stops at the IdP's authority boundaries. In an end-to-end identity propagation, the user's security context is extended to the RS, as illustrated in Figure&nbsp;1
 
 ![Model](./images/identity_propagation_model.svg)
 
 <p class="figure">
-Fig.&nbsp;1.&emsp;Identity Propagation Model
+Fig.&nbsp;1.&emsp;End-to-End Identity Propagation Model
 </p>
+
+The access token is exchanged at the IdP/STS for assertion in a JWT format that carries information about the client and user. This information can be used at the RS to decide which operations the client is allowed to invoke.
+
+## Assertions
+
+Assertions are statements from an IdP to an RS that contain information about a user and client. The RS uses the information in the assertion to identify the user and client and make authorization decisions about their access to resources controlled by the RS.
 
 ## Sequence Diagram
 
