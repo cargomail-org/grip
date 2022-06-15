@@ -35,6 +35,8 @@ The sequence diagram illustrated in Figure&nbsp;2 shows an identity propagation 
 3. The subject of the public client certificate (OU and CN attributes) is used as a global client identifier e.g., OU=_fhir-client, CN=sandbox.example.com
 4. The hash of the client's public key is published on the client domain (usually identical to the IdP host domain) as a public-key/hash attribute of JSON object which is discoverable via WebFinger using the client global identifier, e.g., https<nolink>://example.com/.well-known/webfinger?resource=acct:_fhir-client.sandbox.example.com&rel=public-key
 
+The OIDC authentication flow is omitted for clarity.
+
 <div class="diagram">
     <img src=./images/identity_propagation_flow_webfinger.svg alt="Sequence Diagram">
 </div>
