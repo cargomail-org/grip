@@ -12,7 +12,7 @@ To allow an IdP to provide authentication attributes to a number of separately-a
 
 ## Identity Propagation
 
-In most architectures, the user's security context propagation stops at the IdP's authority boundaries. In an end-to-end identity propagation, the user's security context is extended to the RS, as illustrated in Figure&nbsp;1
+In most architectures, the user's security context propagation stops at the IdP's authority boundaries. In an end-to-end identity propagation, the user's security context is extended to the RS, as illustrated in Figure&nbsp;1.
 
 ![Model](./images/identity_propagation_model.svg)
 
@@ -20,7 +20,7 @@ In most architectures, the user's security context propagation stops at the IdP'
 Fig.&nbsp;1.&emsp;End-to-End Identity Propagation Model
 </p>
 
-The access token is exchanged at the IdP/STS for assertion in a JWT format that carries information about the client and user. This information can be used at the RS to decide which operations the client is allowed to invoke.
+The user authenticates at the IdP using an authorization code flow. After successful authentication, the RP/Client obtains an access token, which exchanges at the STS for assertion in a JWT format that carries information about the client and user.
 
 ## Assertions
 
@@ -28,15 +28,15 @@ Assertions are statements from an IdP to an RS that contain information about a 
 
 ## Sequence Diagram
 
-The sequence diagram illustrated in Figure&nbsp;2 shows an identity propagation flow for the user authenticated to the IdP to be able to access the resources stored on the RS using a client with a public identifier. The "/.well-known" mechanism and WebFinger queries are used as a means of proving ownership of the client identifier. The following are prerequisites for the given scenario:
+The sequence diagram illustrated in Figure&nbsp;2 shows an identity propagation flow for the user authenticated at the IdP requesting access to resources stored on the RS using a client with a public identifier. The "/.well-known" mechanism and WebFinger queries are used as a means of proving ownership of the client identifier. The following are prerequisites for the given scenario:
 
-1. The IdP, client and RS SHALL support the OAuth 2.0 Mutual-TLS Client Certificate-Bound Access Tokens specification.
+1. The IdP, client, and RS SHALL support the specification of OAuth 2.0 Mutual-TLS Client Certificate-Bound Access Tokens.
 
 2. The IdP SHALL support the Token Exchange extension of OAuth 2.0.
 
-3. The subject of the public client certificate (OU and CN attributes) is used as a global client identifier e.g., OU=_fhir-client, CN=sandbox.example.com
+3. The subject of the public client certificate (OU and CN attributes) is used as a global client identifier, e.g., OU=_fhir-client, CN=sandbox.example.com.
 
-4. The hash of the client's public key is published on the client domain (usually identical to the IdP host domain) as a public-key/hash attribute of JSON object which is discoverable via WebFinger using the client global identifier, e.g., https<nolink>://example.com/.well-known/webfinger?resource=acct:_fhir-client.sandbox.example.com&rel=public-key
+4. The client's public key hash is published on the client domain (usually identical to the IdP host domain) as a public-key/hash attribute of a JSON document, which is discoverable via WebFinger using the global client identifier, e.g., https<nolink>://example.com/.well-known/webfinger?resource=acct:_fhir-client.sandbox.example.com&rel=public-key.
 
 The sequence diagram is self-explanatory; the OIDC authentication flow is omitted for clarity.
 
@@ -48,7 +48,7 @@ The sequence diagram is self-explanatory; the OIDC authentication flow is omitte
 Fig.&nbsp;2.&emsp;Identity Propagation Flow
 </p>
 
-There are other means of proving ownership of the client identifier, [DANE—(DANCE WG)](https://github.com/umalabs/identity-propagation-and-assertions/blob/main/images/identity_propagation_flow_dane.svg), and [DNS TXT record](https://github.com/umalabs/identity-propagation-and-assertions/blob/main/images/identity_propagation_flow_dns_txt.svg).
+[DANE—(DANCE WG)](https://github.com/umalabs/identity-propagation-and-assertions/blob/main/images/identity_propagation_flow_dane.svg) and [DNS TXT](https://github.com/umalabs/identity-propagation-and-assertions/blob/main/images/identity_propagation_flow_dns_txt.svg) records are other means of proving ownership of the client identifier.
 
 ## Usability Considerations
 
@@ -56,7 +56,7 @@ Using OAuth 2.0 and OpenID Connect technologies is an effective option to secure
 
 #### Trust First
 
-The primary benefit of the identity propagation system is to address the problem of trust between the identity provider, the API provider, and the API consumer.
+The primary benefit of the identity propagation and assertions concept is that it addresses the trust problem between the identity provider, the API provider, and the API consumer.
 
 #### Third-Party Users to API
 
@@ -64,7 +64,7 @@ To identify the third-party users and clients, use composite API tokens generate
 
 #### User to Third-Party APIs
 
-Use a composite API token identifying the user and the client itself generated by the identity propagation system to access third-party APIs. Do not use an API key, user ID, and password.
+To access third-party APIs, use a composite API token generated by the identity propagation and assertions system that identifies the user and the client. Do not use an API key, user ID, and password.
 
 ## Conclusion
 
