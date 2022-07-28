@@ -40,7 +40,7 @@ The sequence diagram is self-explanatory; the OIDC authentication flow is omitte
 Fig.&nbsp;2.&emsp;Identity Propagation Flow
 </p>
 
-If the client domain is not identical to the IdP host domain, one of the following means of proving ownership of the client identifier must be used:
+If the client service domain (typically a third-party client) is not identical to the IdP host domain, one of the following means of proving ownership of the client identifier must be used:
 
 1. [WebFinger](https://github.com/umalabs/identity-propagation-and-assertions/blob/main/images/identity_propagation_flow_webfinger.svg)
 2. [DANE—(DANCE WG)](https://github.com/umalabs/identity-propagation-and-assertions/blob/main/images/identity_propagation_flow_dane.svg)
