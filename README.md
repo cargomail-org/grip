@@ -8,7 +8,7 @@ With the growing popularity of protocols based on the OAuth 2.0 specification, t
 
 ## Motivation
 
-Use OAuth 2.0 mechanism in MTA-to-MTA communication.
+Use OAuth 2.0 mechanism in MTA-to-MTA communication in the email system.
 
 ## Identity Propagation
 
