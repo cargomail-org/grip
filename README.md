@@ -42,9 +42,9 @@ Fig.&nbsp;2.&emsp;Identity Propagation Flow
 
 If the client service domain (typically a third-party client) is not identical to the IdP host domain, one of the following means of proving ownership of the client identifier must be used:
 
-1. [WebFinger](https://github.com/umalabs/identity-propagation-and-assertions/blob/main/images/identity_propagation_flow_webfinger.svg)
-2. [DANE—(DANCE WG)](https://github.com/umalabs/identity-propagation-and-assertions/blob/main/images/identity_propagation_flow_dane.svg)
-3. [DNS TXT](https://github.com/umalabs/identity-propagation-and-assertions/blob/main/images/identity_propagation_flow_dns_txt.svg)
+1. [WebFinger](https://github.com/federizer/identity-propagation-and-assertions/blob/main/images/identity_propagation_flow_webfinger.svg)
+2. [DANE—(DANCE WG)](https://github.com/federizer/identity-propagation-and-assertions/blob/main/images/identity_propagation_flow_dane.svg)
+3. [DNS TXT](https://github.com/federizer/identity-propagation-and-assertions/blob/main/images/identity_propagation_flow_dns_txt.svg)
 
 ## Usability Considerations
 
@@ -52,7 +52,7 @@ The primary benefit of the identity propagation and assertions concept is that i
 
 ## Conclusion
 
-[Federizer](https://github.com/umalabs/federizer), a message transfer agent (MTA), stands as a proof of concept of the Identity Propagation and Assertions architecture.
+[Fedemail](https://github.com/federizer/fedemail), a revised email system, stands as a proof of concept of the Identity Propagation and Assertions architecture.
 
 ## Acknowledgment
 
