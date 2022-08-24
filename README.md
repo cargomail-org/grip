@@ -12,7 +12,7 @@ Use OAuth 2.0 mechanism in MTA-to-MTA communication in the email system.
 
 ## Identity Propagation
 
-In most architectures, the user's security context propagation stops at the IdP/Client security domain boundaries. In an end-to-end identity propagation, the user's security context is extended to the RS, as illustrated in Figure&nbsp;1.
+In most security concepts and mechanisms, the user's security context propagation stops at the IdP/Client security domain boundaries. In an end-to-end identity propagation, the user's security context is extended to the RS, as illustrated in Figure&nbsp;1.
 
 ![Model](./images/identity_propagation_model.svg)
 
@@ -52,8 +52,8 @@ The primary benefit of the identity propagation and assertions concept is that i
 
 ## Conclusion
 
-[Fedemail](https://github.com/federizer/fedemail), a revised email system, stands as a proof of concept of the Identity Propagation and Assertions architecture.
+[Fedemail](https://github.com/federizer/fedemail), a revised email system, stands as a proof of concept of the Identity Propagation and Assertions security mechanism.
 
 ## Acknowledgment
 
-[NIST Special Publication 800-63C](https://pages.nist.gov/800-63-3/sp800-63c.html), Digital Identity Guidelines: Federation and Assertions, has proven to be an abstract framework for the Identity Propagation and Assertions architecture.
+[NIST Special Publication 800-63C](https://pages.nist.gov/800-63-3/sp800-63c.html), Digital Identity Guidelines: Federation and Assertions, has proven to be an abstract framework for the Identity Propagation and Assertions security mechanism.
