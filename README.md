@@ -52,7 +52,7 @@ The primary benefit of the identity propagation and assertions concept is that i
 
 ## Conclusion
 
-[Fedemail](https://github.com/federizer/fedemail), a revised email system, stands as a proof of concept of the Identity Propagation and Assertions security mechanism.
+[Cargomail](https://github.com/federizer/cargomail), a revised email system, stands as a proof of concept of the Identity Propagation and Assertions security mechanism.
 
 ## Acknowledgment
 
