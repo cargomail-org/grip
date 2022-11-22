@@ -12,7 +12,7 @@ Use OAuth 2.0 mechanism in MTA-to-MTA communication in the email system.
 
 ## Identity Propagation
 
-In most security concepts and mechanisms, the user's security context propagation stops at the IdP/Client security domain boundaries. In an end-to-end identity propagation, the user's security context is extended to the RS, as illustrated in Figure&nbsp;1.
+In most security concepts and mechanisms, the user's security context propagation stops at the IdP/Client security domain boundaries. In end-to-end identity propagation, the user's security context is extended to the RS, as illustrated in Figure&nbsp;1.
 
 ![Model](./images/identity_propagation_model.svg)
 
