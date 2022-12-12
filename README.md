@@ -40,11 +40,23 @@ The sequence diagram is self-explanatory; the OIDC authentication flow is omitte
 Fig.&nbsp;2.&emsp;Identity Propagation Flow
 </p>
 
-If the client service domain (typically a third-party client) is not identical to the IdP host domain, one of the following means of proving ownership of the client identifier must be used:
+## Client to Resource Server Authentication
 
-1. [WebFinger](https://github.com/cargomail-org/identity-propagation-and-assertions/blob/main/images/identity_propagation_flow_webfinger.svg)
-2. [DANE—(DANCE WG)](https://github.com/cargomail-org/identity-propagation-and-assertions/blob/main/images/identity_propagation_flow_dane.svg)
-3. [DNS TXT](https://github.com/cargomail-org/identity-propagation-and-assertions/blob/main/images/identity_propagation_flow_dns_txt.svg)
+I addition to using mTLS Certificate-Bound Access Tokens, it is recommended to use one of the following means of proving ownership of the client identifier:
+
+1. [DNS TXT](https://github.com/cargomail-org/identity-propagation-and-assertions/blob/main/images/identity_propagation_flow_dns_txt.svg)
+2. [WebFinger](https://github.com/cargomail-org/identity-propagation-and-assertions/blob/main/images/identity_propagation_flow_webfinger.svg)
+3. [DANE—(DANCE WG)](https://github.com/cargomail-org/identity-propagation-and-assertions/blob/main/images/identity_propagation_flow_dane.svg)
+
+## Resource Server Discovery
+
+The resource server is usually accessed using a service-specific protocol such as email, instant messaging, etc. These protocols need to connect to a specific port in addition to connecting with a specific server.
+
+DNS SRV records defines a symbolic name, the transport protocol, and the port and hostname to connect to for accessing the service. Therefore, DNS SRV records are the recommended way to enable the discovery of service-specific resource servers.
+
+## OpenID Connect Discovery
+
+In order to avoid running an HTTP service that responds to the Webfinger requests as specified in the [OpenID Connect Dynamic Client Registration](https://openid.net/specs/openid-connect-registration-1_0.html) document, it is worth considering whether to use [OpenID Connect DNS-based Discovery](https://datatracker.ietf.org/doc/html/draft-sanz-openid-dns-discovery-01) mechanism.
 
 ## Usability Considerations
 
