@@ -24,7 +24,7 @@ The user authenticates at the IdP using an authorization code flow. After succes
 
 ## Impersonation and Delegation
 
-As a specific form of identity propagation, the [OAuth 2.0 Token Exchange RFC](https://datatracker.ietf.org/doc/html/rfc8693) describes impersonation and delegation, where the client obtains a security token that allows it to act as a user in the case of impersonation or, in the case of delegation, allows it act on behalf of the user. The security token may carry the logical name of the target service for which it is constrained in the aud (audience) claim.
+As a specific form of identity propagation, the [OAuth 2.0 Token Exchange RFC](https://datatracker.ietf.org/doc/html/rfc8693) describes impersonation and delegation, where the client obtains a security token that allows it to act as a user in the case of impersonation or, in the case of delegation, allows it to act on behalf of the user. The security token may carry the logical name of the target service for which it is constrained in the aud (audience) claim.
 
 ## Assertions
 
