@@ -12,7 +12,7 @@ Use OAuth 2.0 mechanism in MTA-to-MTA communication in the email system.
 
 ## Identity Propagation
 
-In most security concepts and mechanisms, the user's security context propagation stops at the IdP/Client security domain boundaries. In end-to-end identity propagation, the user's security context is extended to the RS, as illustrated in Figure&nbsp;1.
+In most security concepts and mechanisms, the user's security context propagation stops at the IdP/Client security domain boundaries. In end-to-end identity propagation, the user's security context is extended to the RS across security domain boundaries, as illustrated in Figure&nbsp;1.
 
 ![Model](./images/identity_propagation_model.svg)
 
@@ -20,7 +20,11 @@ In most security concepts and mechanisms, the user's security context propagatio
 Fig.&nbsp;1.&emsp;End-to-End Identity Propagation Model
 </p>
 
-The user authenticates at the IdP using an authorization code flow. After successful authentication, the RP/Client obtains an access token, which exchanges at the STS for assertion in a JWT format that carries information about the client and user.
+The user authenticates at the IdP using an authorization code flow. After successful authentication, the Relying Party (RP)/Client obtains an access token, which exchanges at the JSON-based Security Token Service (STS) for assertion in a JSON Web Token (JWT) format that carries information about the client and user.
+
+## Impersonation and Delegation
+
+As a specific form of identity propagation, the [OAuth 2.0 Token Exchange RFC](https://datatracker.ietf.org/doc/html/rfc8693) describes impersonation and delegation, where the client obtains a security token that allows it to act as a user in the case of impersonation or, in the case of delegation, allows it act on behalf of the user. The security token may carry the logical name of the target service for which it is constrained in the aud (audience) claim.
 
 ## Assertions
 
@@ -42,7 +46,7 @@ Fig.&nbsp;2.&emsp;Identity Propagation Flow
 
 ## Client to Resource Server Authentication
 
-I addition to using mTLS Certificate-Bound Access Tokens, it is recommended to use one of the following means of proving ownership of the client identifier:
+I addition to using [mTLS Certificate-Bound Access Tokens](https://www.rfc-editor.org/rfc/rfc8705#name-mutual-tls-client-certifica), it is recommended to use one of the following means of proving ownership of the client identifier:
 
 1. [DNS TXT](https://github.com/cargomail-org/identity-propagation-and-assertions/blob/main/images/identity_propagation_flow_dns_txt.svg)
 2. [WebFinger](https://github.com/cargomail-org/identity-propagation-and-assertions/blob/main/images/identity_propagation_flow_webfinger.svg)
@@ -56,11 +60,11 @@ DNS SRV records defines a symbolic name, the transport protocol, and the port an
 
 ## OpenID Connect Discovery
 
-In order to avoid running an HTTP service that responds to the Webfinger requests as specified in the [OpenID Connect Dynamic Client Registration](https://openid.net/specs/openid-connect-registration-1_0.html) document, it is worth considering whether to use [OpenID Connect DNS-based Discovery](https://datatracker.ietf.org/doc/html/draft-sanz-openid-dns-discovery-01) mechanism.
+In order to avoid running an HTTP service that responds to the Webfinger requests as specified in the [OpenID Connect Dynamic Client Registration](https://openid.net/specs/openid-connect-registration-1_0.html) document, it is worth considering whether an [OpenID Connect DNS-based Discovery](https://datatracker.ietf.org/doc/html/draft-sanz-openid-dns-discovery-01) mechanism is more appropriate.
 
 ## Usability Considerations
 
-The primary benefit of the identity propagation and assertions concept is that it addresses the trust problem between the MTAs. Using OAuth 2.0 and OpenID Connect technologies is an effective option to secure MTA-to-MTA communication. From the OAuth 2.0 point of view to the email system, the outbound MTA is an OAuth 2.0 client, and the inbound MTA is an OAuth 2.0 resource server.
+The primary benefit of the identity propagation and assertions in the form of the constrained delegation concept is that it addresses the trust problem between the MTAs. Using OAuth 2.0 and OpenID Connect technologies is an effective option to secure MTA-to-MTA communication. From an OAuth 2.0 perspective, the outbound MTA is an OAuth 2.0 client, and the inbound MTA is an OAuth 2.0 resource server.
 
 ## Conclusion
 
