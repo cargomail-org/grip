@@ -1,0 +1,19 @@
+participant "STS" as STS
+participant "Client" as Client
+participant "RS" as RP
+
+bottomparticipants
+
+note over STS:STS\n• supports Mutual-TLS Client Certificate-Bound Access Tokens\n• supports the Token Exchange extension of OAuth 2.0
+note over Client:Client:\n• supports Mutual-TLS Client Certificate-Bound Access Tokens,\n  the subject of the public client certificate (OU and CN attributes) is used as a global client identifier,\n  e.g., OU=_fhir-client, CN=sandbox.example.com\n• is registered at the STS as a confidential client\n• acts as a client in respect of the RS
+note over RP:RS:\n• supports Mutual-TLS Client Certificate-Bound Access Tokens\n• uses the information in the assertion to identify the user\n  and makes authorization decisions using a local ABAC engine\n• should support the service discovery mechanism
+Client->Client:1. Client generates a token — a signed certificate-bound assertion\n    in JWT format with these claims:\n    {iss, aud, sub, exp, nbf, cnf, act{sub}}\n    • iss is the URI that identifies who issues the token, e.g. urn:domain:mta:clientid\n    • aud identifies the target STS\n    • sub identifies the user by the email address\n      (Client impersonates the user by using their email address)\n    • exp, nbf are the standard JWT claims\n    • cnf is the confirmation method with the hash of the client certificate\n      to which the token is bound
+STS<-Client:2. Send an HTTP request to the STS endpoint using mTLS\n    • grant_type = urn:ietf:params:oauth:grant-type:token-exchange\n    • resource = a target RS URI\n    • requested_token_type = urn:ietf:params:oauth:token-type:jwt\n    • subject_token = token\n    • subject_token_type = urn:ietf:params:oauth:token-type:jwt
+STS->STS:3. Authorization decision:\n   1. evaluate the resource parameter\n   2. verify the subject_token signature\n   3. evaluate the subject_token claims
+
+STS->STS:4. STS generates a token — a signed certificate-bound assertion\n    in JWT format with these claims:\n    {iss, aud, sub, exp, nbf, cnf, act{sub}}\n    • iss is the URI that identifies who issues the token\n    • aud identifies the target service and it is the value from\n      the resource parameter\n    • sub identifies the user by the email address\n      retrieved through subject_token introspection\n    • exp, nbf are the standard JWT claims\n    • cnf is the confirmation method with the hash of the client certificate\n      to which the token is bound\n    • act{sub} is the global client identifier derived from the subject of the client's\n      public certificate in the OU.CN format, e.g., _fhir-client.sandbox.example.com\n      (act identifies the acting party to whom authority has been delegated)
+Client<-STS:5. Return the token\n{"access_token":token,\n "issued_token_type":"urn:ietf:params:oauth:token-type:jwt",\n "token_type":"N_A",\n "expires_in":3600}
+
+Client->RP:6. Send an HTTP request to the RS with the token using mTLS
+RP->RP:7. Authorization decision\n    1. verify the token signature\n    2. validate proof-of-possession\n    3. use WebFinger to locate the STS for the user using\n        its identifier and verify that the STS matches the token issuer\n    or\n        the domain part of the users's email address\n        and the STS host domain must match
+RP->Client:8. Return the HTTP response, typically with 200, 201 status code

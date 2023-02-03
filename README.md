@@ -14,34 +14,48 @@ Use OAuth 2.0 mechanism in MTA-to-MTA communication in the email system.
 
 In most security concepts and mechanisms, the user's security context propagation stops at the IdP/Client security domain boundaries. In end-to-end identity propagation, the user's security context is extended to the RS across security domain boundaries, as illustrated in Figure&nbsp;1.
 
-![Model](./images/identity_propagation_model.svg)
+![Model](./images/3-legged_identity_propagation_model.svg)
 
 <p class="figure">
-Fig.&nbsp;1.&emsp;End-to-End Identity Propagation Model
+Fig.&nbsp;1.&emsp;3-Legged End-to-End Identity Propagation Model
 </p>
 
 The user authenticates at the IdP using an authorization code flow. After successful authentication, the Relying Party (RP)/Client obtains an access token, which exchanges at the JSON-based Security Token Service (STS) for assertion in a JSON Web Token (JWT) format that carries information about the client and user.
 
 ## Impersonation and Delegation
 
-As a specific form of identity propagation, the [OAuth 2.0 Token Exchange RFC](https://datatracker.ietf.org/doc/html/rfc8693) describes impersonation and delegation, where the client obtains a security token that allows it to act as a user in the case of impersonation or, in the case of delegation, allows it to act on behalf of the user. The security token may carry the logical name of the target service for which it is constrained in the aud (audience) claim.
+The OAuth 2.0 intrinsic delegation mechanism allows clients with the appropriate security token impersonate the user or being delegated by that user. As a specific form of identity propagation, the [OAuth 2.0 Token Exchange](https://datatracker.ietf.org/doc/html/rfc8693) specification describes impersonation and delegation, where the client obtains a security token that allows it to act as a user in the case of impersonation or, in the case of delegation, allows it to act on behalf of the user. The output security token may carry the logical name of the target service for which it is constrained.
 
 ## Assertions
 
-Assertions are statements from an IdP to an RS that contain information about a client and user. The RS uses the information in the assertion to identify the client and user and make authorization decisions about their access to resources controlled by the RS.
+Assertions are statements from a token producer to a token consumer that contain information about the principal. In the Identity Propagation scenario, the resource server uses the information in the assertion to identify the client and user and make authorization decisions about their access to resources controlled by that resource server.
 
-## Sequence Diagram
+## 2-Legged OAuth 2.0 Flow
 
-The sequence diagram illustrated in Figure&nbsp;2 shows an identity propagation flow for the user authenticated at the IdP requesting access to resources stored on the RS using a client with a public identifier.
+The sequence diagram illustrated in Figure&nbsp;2 shows the 2-legged identity propagation flow without end-user involvement, where the client requests access to resources stored on the RS on-behalf-of the impersonated user.
+
+The sequence diagram is self-explanatory.
+
+<div class="diagram">
+    <img src=./images/2-legged_identity_propagation_flow.svg alt="Sequence Diagram">
+</div>
+
+<p class="figure">
+Fig.&nbsp;2.&emsp;2-Legged Identity Propagation Flow
+</p>
+
+## 3-Legged OAuth 2.0 Flow
+
+The sequence diagram illustrated in Figure&nbsp;3 shows the 3-legged identity propagation flow for the user authenticated at the IdP, where the client requests access to resources stored on the RS on-behalf-of the authenticated user.
 
 The sequence diagram is self-explanatory; the OIDC authentication flow is omitted for clarity.
 
 <div class="diagram">
-    <img src=./images/identity_propagation_flow.svg alt="Sequence Diagram">
+    <img src=./images/3-legged_identity_propagation_flow.svg alt="Sequence Diagram">
 </div>
 
 <p class="figure">
-Fig.&nbsp;2.&emsp;Identity Propagation Flow
+Fig.&nbsp;3.&emsp;3-Legged Identity Propagation Flow
 </p>
 
 ## Client to Resource Server Authentication
