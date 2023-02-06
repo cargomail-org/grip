@@ -28,7 +28,11 @@ The OAuth 2.0 intrinsic delegation mechanism allows clients with the appropriate
 
 ## Assertions
 
-Assertions are statements from a token producer to a token consumer that contain information about the principal. In the Identity Propagation scenario, the resource server uses the information in the assertion to identify the client and user and make authorization decisions about their access to resources controlled by that resource server.
+Assertions are statements from a token producer to a token consumer that contain information about the principal. In the Identity Propagation scenario, the resource server uses the information in the assertion to identify the client and user, and make authorization decisions about their access to resources controlled by that resource server.
+
+## Public Clients and Certificate-Bound Tokens
+
+Certificate-bound access tokens can be used to identify public clients (those without authentication credentials) as stated in  [section 4](https://www.rfc-editor.org/rfc/rfc8705#section-4) of the [RFC8705](https://www.rfc-editor.org/rfc/rfc8705) specification.
 
 ## 2-Legged OAuth 2.0 Flow
 
@@ -78,11 +82,11 @@ In order to avoid running an HTTP service that responds to the Webfinger request
 
 ## Usability Considerations
 
-The primary benefit of the identity propagation and assertions in the form of the constrained delegation concept is that it addresses the trust problem between the MTAs. Using OAuth 2.0 and OpenID Connect technologies is an effective option to secure MTA-to-MTA communication. From an OAuth 2.0 perspective, the outbound MTA is an OAuth 2.0 client, and the inbound MTA is an OAuth 2.0 resource server.
+The primary benefit of the identity propagation and assertions in the form of the constrained delegation concept is that it addresses the trust problem between the MTAs. Using an OAuth 2.0 technology is an effective option to secure MTA-to-MTA communication. From an OAuth 2.0 perspective, the outbound MTA is an OAuth 2.0 client, and the inbound MTA is an OAuth 2.0 resource server.
 
 ## Conclusion
 
-[Cargomail](https://github.com/cargomail-org/cargomail), a revised email system, stands as a proof of concept of the Identity Propagation and Assertions security mechanism.
+[Intermodal Message Transfer Agent (iMTA)](https://github.com/cargomail-org/imta), stands as a proof of concept of the Identity Propagation and Assertions security mechanism.
 
 ## Acknowledgment
 
