@@ -76,10 +76,6 @@ The resource server is usually accessed using a service-specific protocol such a
 
 DNS SRV records defines a symbolic name, the transport protocol, and the port and hostname to connect to for accessing the service. Therefore, DNS SRV records are the recommended way to enable the discovery of service-specific resource servers.
 
-## OpenID Connect Discovery
-
-In order to avoid running an HTTP service that responds to the Webfinger requests as specified in the [OpenID Connect Dynamic Client Registration](https://openid.net/specs/openid-connect-registration-1_0.html) document, it is worth considering whether an [OpenID Connect DNS-based Discovery](https://datatracker.ietf.org/doc/html/draft-sanz-openid-dns-discovery-01) mechanism is more appropriate.
-
 ## Usability Considerations
 
 The primary benefit of the identity propagation and assertions in the form of the constrained delegation concept is that it addresses the trust problem between the MTAs. Using an OAuth 2.0 technology is an effective option to secure MTA-to-MTA communication. From an OAuth 2.0 perspective, the outbound MTA is an OAuth 2.0 client, and the inbound MTA is an OAuth 2.0 resource server.
