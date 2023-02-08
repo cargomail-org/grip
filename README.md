@@ -34,7 +34,7 @@ Assertions are statements from a token producer to a token consumer that contain
 
 Certificate-bound access tokens can be used to identify public clients (those without authentication credentials) as stated in  [section 4](https://www.rfc-editor.org/rfc/rfc8705#section-4) of the [RFC8705](https://www.rfc-editor.org/rfc/rfc8705) specification.
 
-## 2-Legged OAuth 2.0 Identity Propagation Flow
+## 2-Legged OAuth 2.0 Identity Propagation
 
 The sequence diagram illustrated in Figure&nbsp;2 shows the 2-legged identity propagation flow without end-user involvement, where the client requests access to resources stored on the RS on-behalf-of the impersonated user.
 
@@ -45,10 +45,10 @@ The sequence diagram is self-explanatory.
 </div>
 
 <p class="figure">
-Fig.&nbsp;2.&emsp;2-Legged Identity Propagation Flow
+Fig.&nbsp;2.&emsp;2-Legged Identity Propagation flow
 </p>
 
-## 3-Legged OAuth 2.0 Identity Propagation Flow
+## 3-Legged OAuth 2.0 Identity Propagation
 
 The sequence diagram illustrated in Figure&nbsp;3 shows the 3-legged identity propagation flow for the user authenticated at the IdP, where the client requests access to resources stored on the RS on-behalf-of the authenticated user.
 
@@ -59,7 +59,7 @@ The sequence diagram is self-explanatory; the OIDC authentication flow is omitte
 </div>
 
 <p class="figure">
-Fig.&nbsp;3.&emsp;3-Legged Identity Propagation Flow
+Fig.&nbsp;3.&emsp;3-Legged Identity Propagation flow
 </p>
 
 ## Client to Resource Server Authentication
