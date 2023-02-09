@@ -1,6 +1,10 @@
 <!-- @import "style.less" -->
 
-# Identity Propagation and Assertions
+# Identity Propagation and Assertions Protocol
+
+## Abstract
+
+Identity Propagation and Assertions Protocol is an OAuth 2.0-based security protocol that authenticates service requests between untrusted hosts across the internet.
 
 ## Introduction
 
@@ -66,9 +70,9 @@ Fig.&nbsp;3.&emsp;3-Legged Identity Propagation flow
 
 I addition to using [mTLS Certificate-Bound Access Tokens](https://www.rfc-editor.org/rfc/rfc8705#name-mutual-tls-client-certifica), it is recommended to use one of the following means of proving ownership of the client identifier:
 
-1. [DNS TXT](https://github.com/cargomail-org/identity-propagation-and-assertions/blob/main/images/identity_propagation_flow_dns_txt.svg)
-2. [WebFinger](https://github.com/cargomail-org/identity-propagation-and-assertions/blob/main/images/identity_propagation_flow_webfinger.svg)
-3. [DANE—(DANCE WG)](https://github.com/cargomail-org/identity-propagation-and-assertions/blob/main/images/identity_propagation_flow_dane.svg)
+1. [DNS TXT](https://github.com/cargomail-org/identity-propagation-and-assertions-protocol/blob/main/images/identity_propagation_flow_dns_txt.svg)
+2. [WebFinger](https://github.com/cargomail-org/identity-propagation-and-assertions-protocol/blob/main/images/identity_propagation_flow_webfinger.svg)
+3. [DANE—(DANCE WG)](https://github.com/cargomail-org/identity-propagation-and-assertions-protocol/blob/main/images/identity_propagation_flow_dane.svg)
 
 ## Resource Server Discovery
 
@@ -82,8 +86,8 @@ The primary benefit of the identity propagation and assertions in the form of th
 
 ## Conclusion
 
-[Intermodal Message Transfer Agent (iMTA)](https://github.com/cargomail-org/imta), stands as a proof of concept of the Identity Propagation and Assertions security mechanism.
+[Intermodal Message Transfer Agent (iMTA)](https://github.com/cargomail-org/imta), stands as a proof of concept of the Identity Propagation and Assertions Protocol security mechanism.
 
 ## Acknowledgment
 
-[NIST Special Publication 800-63C](https://pages.nist.gov/800-63-3/sp800-63c.html), Digital Identity Guidelines: Federation and Assertions, has proven to be an abstract framework for the Identity Propagation and Assertions security mechanism.
+[NIST Special Publication 800-63C](https://pages.nist.gov/800-63-3/sp800-63c.html), Digital Identity Guidelines: Federation and Assertions, has proven to be an abstract framework for the Identity Propagation and Assertions Protocol concept.
