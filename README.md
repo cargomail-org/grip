@@ -4,7 +4,7 @@
 
 ## Abstract
 
-Identity Propagation and Assertions Protocol (IPAsP) is an OAuth 2.0-based security protocol that authenticates service requests between untrusted hosts across the internet.
+Identity Propagation and Assertions Protocol (IPAsP, pronounced “IP-as-P”) is an OAuth 2.0-based security protocol that authenticates service requests between untrusted hosts across the internet.
 
 ## Introduction
 
