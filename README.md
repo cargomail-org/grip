@@ -36,7 +36,7 @@ Assertions are statements from a token producer to a token consumer that contain
 
 ## Public Clients and Certificate-Bound Tokens
 
-Certificate-bound access tokens can be used to identify public clients (those without authentication credentials) as stated in  [section 4](https://www.rfc-editor.org/rfc/rfc8705#section-4) of the [RFC8705](https://www.rfc-editor.org/rfc/rfc8705) specification.
+Certificate-bound access tokens can be used to identify public clients (those without authentication credentials) as stated in [section 4](https://www.rfc-editor.org/rfc/rfc8705#section-4) of the [RFC8705](https://www.rfc-editor.org/rfc/rfc8705) specification.
 
 ## 2-Legged OAuth 2.0 Identity Propagation
 
@@ -86,7 +86,7 @@ The primary benefit of the identity propagation and assertions in the form of th
 
 ## Conclusion
 
-[Intermodal Message Transfer Agent (iMTA)](https://github.com/cargomail-org/imta), stands as a proof of concept of the Identity Propagation and Assertions Protocol security mechanism.
+A newly designed [Message Transfer Agent (MTA)](https://github.com/cargomail-org/mta), stands as a proof of concept of the Identity Propagation and Assertions Protocol security mechanism.
 
 ## Acknowledgment
 
