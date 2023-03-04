@@ -1,10 +1,10 @@
 <!-- @import "style.less" -->
 
-# Identity Propagation and Assertions Protocol
+# Global Reference Identity Protocol
 
 ## Abstract
 
-Identity Propagation and Assertions Protocol (IPAP) is an OAuth 2.0-based security protocol that authenticates service requests between untrusted hosts across the internet.
+Global Reference Identity Protocol (GRIP) is an OAuth 2.0-based security protocol that authenticates service requests between untrusted hosts across the internet.
 
 ## Introduction
 
@@ -12,7 +12,7 @@ With the growing popularity of protocols based on the OAuth 2.0 specification, t
 
 ## Motivation
 
-Use OAuth 2.0 mechanism in MTA-to-MTA communication in the email system.
+Upgrade the Message Transfer Agent (MTA) to use Hypertext Transfer Protocol (HTTP) instead of Simple Mail Transfer Protocol (SMTP) in MTA-to-MTA communication. Use a strong authentication mechanism.
 
 ## Identity Propagation
 
