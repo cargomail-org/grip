@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	certificate string = "../cert/smtpd.crt"
-	key         string = "../cert/smtpd.key"
+	certFile string = "../cert/smtpd.crt"
+	keyFile  string = "../cert/smtpd.key"
 )
 
 func mailHandler(origin net.Addr, from string, to []string, data []byte) error {
@@ -21,7 +21,20 @@ func mailHandler(origin net.Addr, from string, to []string, data []byte) error {
 	return nil
 }
 
+func ListenAndServeTLS(addr string, handler smtpd.Handler) error {
+	srv := &smtpd.Server{
+		Addr: addr,
+		TLSListener:  false,
+		TLSRequired:  true,
+		Handler:      handler,
+		Appname:      "SMTP-GRIP",
+		Hostname:     "",
+		AuthRequired: false,
+	}
+	srv.ConfigureTLS(certFile, keyFile)
+	return srv.ListenAndServe()
+}
+
 func main() {
-	// smtpd.ListenAndServe("bar.127.0.0.2.nip.io:2525", mailHandler, "SMTP-GRIP", "")
-	smtpd.ListenAndServeTLS("bar.127.0.0.2.nip.io:2525", certificate, key, mailHandler, "SMTP-GRIP", "")
+	ListenAndServeTLS("bar.127.0.0.2.nip.io:2525", mailHandler)
 }
