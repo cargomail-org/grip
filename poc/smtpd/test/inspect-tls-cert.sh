@@ -1,0 +1,1 @@
+printf 'quit\n' | openssl s_client -connect bar.127.0.0.2.nip.io:2525 -starttls smtp | openssl x509 -dates -noout

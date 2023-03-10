@@ -1,0 +1,7 @@
+From: John Smith <john@example.com>
+To: Joe Smith <smith@example.com>
+Subject: An example email
+Date: Sa, 4 Mar 2023 14:05:01
+
+Dear Joe,
+Welcome to this example email. What a lovely day.

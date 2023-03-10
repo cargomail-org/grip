@@ -5,11 +5,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "stsd",
+            "name": "as",
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "poc/stsd/main.go"
+            "program": "poc/as/main.go"
         },
         {
             "name": "smtpd",
