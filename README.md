@@ -8,15 +8,15 @@ Global Reference Identity Protocol (GRIP) is an OAuth 2.0-based security protoco
 
 ## Introduction
 
-With the growing popularity of protocols based on the OAuth 2.0 specification, there is a need for an interoperable standard that specifies how to convey information about the user from an identity provider (IdP) to a resource server (RS) across security domain boundaries.
+With the growing popularity of protocols based on the OAuth 2.0 specification, there is a need for an interoperable standard that specifies how to convey information about the user from an Identity Provider (IdP) to a resource server (RS) across security domain boundaries.
 
 ## Motivation
 
-Upgrade the Message Transfer Agent (MTA) to use Hypertext Transfer Protocol (HTTP) instead of Simple Mail Transfer Protocol (SMTP) in MTA-to-MTA communication. Use a strong authentication mechanism.
+Enhance the Simple Mail Transfer Protocol (SMTP) in MTA-to-MTA communication by using a strong authentication mechanism. Consider alternative HTTPS-based means of communication, e.g., RESTful, WSS, and WebTransport.
 
 ## Identity Propagation
 
-In most security concepts and mechanisms, the user's security context propagation stops at the IdP/Client security domain boundaries. In end-to-end identity propagation, the user's security context is extended to the RS across security domain boundaries, as illustrated in Figure&nbsp;1.
+In most security concepts and mechanisms, the user's security context propagation stops at the IdP/Relying Party (RP) security domain boundaries. In end-to-end identity propagation, the user's security context is extended to the RS across security domain boundaries, as illustrated in Figure&nbsp;1.
 
 ![Model](./images/3-legged_identity_propagation_model.svg)
 
@@ -24,15 +24,15 @@ In most security concepts and mechanisms, the user's security context propagatio
 Fig.&nbsp;1.&emsp;3-Legged End-to-End Identity Propagation Model
 </p>
 
-The user authenticates at the IdP using an authorization code flow. After successful authentication, the Relying Party (RP)/Client obtains an access token, which exchanges at the JSON-based Security Token Service (STS) for assertion in a JSON Web Token (JWT) format that carries information about the client and user.
+The user authenticates at the IdP using an authorization code flow. After successful authentication, the RP obtains an access token, which exchanges at the Authorization Server (AS), acting in the role of the JSON-based Security Token Service (STS), for assertion in a JSON Web Token (JWT) format that carries information about the client and user.
 
 ## Impersonation and Delegation
 
-The OAuth 2.0 intrinsic delegation mechanism allows clients with the appropriate security token impersonate the user or being delegated by that user. As a specific form of identity propagation, the [OAuth 2.0 Token Exchange](https://datatracker.ietf.org/doc/html/rfc8693) specification describes impersonation and delegation, where the client obtains a security token that allows it to act as a user in the case of impersonation or, in the case of delegation, allows it to act on behalf of the user. The output security token may carry the logical name of the target service for which it is constrained.
+The OAuth 2.0 intrinsic delegation mechanism allows clients with the appropriate security token to impersonate the user or being delegated by that user. As a specific form of identity propagation, the [OAuth 2.0 Token Exchange](https://datatracker.ietf.org/doc/html/rfc8693) specification describes impersonation and delegation, where the client obtains a security token that allows it to act as a user in the case of impersonation or, in the case of delegation, allows it to act on behalf of the user. The output security token may carry the logical name of the target service for which it is constrained.
 
 ## Assertions
 
-Assertions are statements from a token producer to a token consumer that contain information about the principal. In the Identity Propagation scenario, the resource server uses the information in the assertion to identify the client and user, and make authorization decisions about their access to resources controlled by that resource server.
+Assertions are statements from a token producer to a token consumer that contain information about the principal. In the Identity Propagation scenario, the resource server uses the information in the assertion to identify the client and user to make authorization decisions about their access to resources controlled by that resource server.
 
 ## Public Clients and Certificate-Bound Tokens
 
@@ -40,7 +40,7 @@ Certificate-bound access tokens can be used to identify public clients (those wi
 
 ## 2-Legged OAuth 2.0 Identity Propagation
 
-The sequence diagram illustrated in Figure&nbsp;2 shows the 2-legged identity propagation flow without end-user involvement, where the client requests access to resources stored on the RS on-behalf-of the impersonated user.
+The sequence diagram illustrated in Figure&nbsp;2 shows the 2-legged identity propagation flow without end-user involvement, where the client requests access to resources stored on the RS on behalf of the impersonated user.
 
 The sequence diagram is self-explanatory.
 
@@ -54,7 +54,7 @@ Fig.&nbsp;2.&emsp;2-Legged Identity Propagation flow
 
 ## 3-Legged OAuth 2.0 Identity Propagation
 
-The sequence diagram illustrated in Figure&nbsp;3 shows the 3-legged identity propagation flow for the user authenticated at the IdP, where the client requests access to resources stored on the RS on-behalf-of the authenticated user.
+The sequence diagram illustrated in Figure&nbsp;3 shows the 3-legged identity propagation flow for the user authenticated at the IdP, where the client requests access to resources stored on the RS on behalf of the authenticated user.
 
 The sequence diagram is self-explanatory; the OIDC authentication flow is omitted for clarity.
 
@@ -68,7 +68,7 @@ Fig.&nbsp;3.&emsp;3-Legged Identity Propagation flow
 
 ## Client to Resource Server Authentication
 
-I addition to using [mTLS Certificate-Bound Access Tokens](https://www.rfc-editor.org/rfc/rfc8705#name-mutual-tls-client-certifica), it is recommended to use one of the following means of proving ownership of the client identifier:
+In addition to using [mTLS Certificate-Bound Access Tokens](https://www.rfc-editor.org/rfc/rfc8705#name-mutual-tls-client-certifica), it is recommended to use one of the following means of proving ownership of the client identifier:
 
 1. [DNS TXT](https://github.com/cargomail-org/identity-propagation-and-assertions-protocol/blob/main/images/identity_propagation_flow_dns_txt.svg)
 2. [WebFinger](https://github.com/cargomail-org/identity-propagation-and-assertions-protocol/blob/main/images/identity_propagation_flow_webfinger.svg)
@@ -82,11 +82,11 @@ DNS SRV records defines a symbolic name, the transport protocol, and the port an
 
 ## Usability Considerations
 
-The primary benefit of the identity propagation and assertions in the form of the constrained delegation concept is that it addresses the trust problem between the MTAs. Using an OAuth 2.0 technology is an effective option to secure MTA-to-MTA communication. From an OAuth 2.0 perspective, the outbound MTA is an OAuth 2.0 client, and the inbound MTA is an OAuth 2.0 resource server.
+The primary benefit of identity propagation and assertions in the form of the constrained delegation concept is that it addresses the trust problem between the MTAs. Using an OAuth 2.0 technology is an effective option to secure MTA-to-MTA communication. From an OAuth 2.0 perspective, the outbound MTA is an OAuth 2.0 client, and the inbound MTA is an OAuth 2.0 resource server.
 
 ## Conclusion
 
-A newly designed [Message Transfer Agent (MTA)](https://github.com/cargomail-org/mta), stands as a proof of concept of the Identity Propagation and Assertions Protocol security mechanism.
+A newly designed [Message Transfer Agent (MTA)](https://github.com/cargomail-org/mta) stands as a proof of concept of the Identity Propagation and Assertions Protocol security mechanism.
 
 ## Acknowledgment
 
