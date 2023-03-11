@@ -70,9 +70,9 @@ Fig.&nbsp;3.&emsp;3-Legged Identity Propagation flow
 
 In addition to using [mTLS Certificate-Bound Access Tokens](https://www.rfc-editor.org/rfc/rfc8705#name-mutual-tls-client-certifica), it is recommended to use one of the following means of proving ownership of the client identifier:
 
-1. [DNS TXT](https://github.com/cargomail-org/identity-propagation-and-assertions-protocol/blob/main/images/identity_propagation_flow_dns_txt.svg)
-2. [WebFinger](https://github.com/cargomail-org/identity-propagation-and-assertions-protocol/blob/main/images/identity_propagation_flow_webfinger.svg)
-3. [DANE—(DANCE WG)](https://github.com/cargomail-org/identity-propagation-and-assertions-protocol/blob/main/images/identity_propagation_flow_dane.svg)
+1. [DNS TXT](https://github.com/cargomail-org/grip/blob/main/images/3-legged_identity_propagation_flow_dns_txt.svg)
+2. [WebFinger](https://github.com/cargomail-org/grip/blob/main/images/3-legged_identity_propagation_flow_webfinger.svg)
+3. [DANE—(DANCE WG)](https://github.com/cargomail-org/grip/blob/main/images/3-legged_identity_propagation_flow_dane.svg)
 
 ## Resource Server Discovery
 
