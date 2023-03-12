@@ -16,7 +16,7 @@ openssl x509 -req -extfile <(printf "subjectAltName=DNS:foo.127.0.0.1.nip.io") -
 # client.key
 openssl genrsa -out client.key 2048
 # client.crt
-openssl req -x509 -days 365 -nodes -key client.key -out client.crt -subj /O="Foo Email Provider"/CN="SMTP Client" -addext "subjectAltName=DNS:_smtp-client.foo.127.0.0.1.nip.io"
+openssl req -x509 -days 365 -nodes -key client.key -out client.crt -subj /O="Foo Email Provider"/CN="_smtp-client.foo.127.0.0.1.nip.io" -addext "subjectAltName=DNS:_smtp-client.foo.127.0.0.1.nip.io"
 
 ###################### CA2 127.0.0.2.nip.io #####################
 # ca2.key
