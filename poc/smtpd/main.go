@@ -7,7 +7,7 @@ import (
 	"net"
 	"net/mail"
 
-	"github.com/mhale/smtpd"
+	smtpdgrip "github.com/cargomail-org/smtpd-grip"
 )
 
 const (
@@ -22,8 +22,8 @@ func mailHandler(origin net.Addr, from string, to []string, data []byte) error {
 	return nil
 }
 
-func ListenAndServeTLS(addr string, handler smtpd.Handler) error {
-	srv := &smtpd.Server{
+func listenAndServeTLS(addr string, handler smtpdgrip.Handler) error {
+	srv := &smtpdgrip.Server{
 		Addr:         addr,
 		TLSListener:  false,
 		TLSRequired:  true,
@@ -39,5 +39,5 @@ func ListenAndServeTLS(addr string, handler smtpd.Handler) error {
 }
 
 func main() {
-	ListenAndServeTLS("bar.127.0.0.2.nip.io:2525", mailHandler)
+	listenAndServeTLS("bar.127.0.0.2.nip.io:2525", mailHandler)
 }
