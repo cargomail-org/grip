@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"crypto/tls"
 	"log"
 	"net"
 	"net/mail"
@@ -23,7 +24,7 @@ func mailHandler(origin net.Addr, from string, to []string, data []byte) error {
 
 func ListenAndServeTLS(addr string, handler smtpd.Handler) error {
 	srv := &smtpd.Server{
-		Addr: addr,
+		Addr:         addr,
 		TLSListener:  false,
 		TLSRequired:  true,
 		Handler:      handler,
@@ -32,6 +33,8 @@ func ListenAndServeTLS(addr string, handler smtpd.Handler) error {
 		AuthRequired: false,
 	}
 	srv.ConfigureTLS(certFile, keyFile)
+	// accept any certificate
+	srv.TLSConfig.ClientAuth = tls.RequireAnyClientCert
 	return srv.ListenAndServe()
 }
 
