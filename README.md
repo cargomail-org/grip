@@ -12,7 +12,7 @@ With the growing popularity of protocols based on the OAuth 2.0 specification, t
 
 ## Motivation
 
-Enhance the Simple Mail Transfer Protocol (SMTP) in MTA-to-MTA communication by using a strong authentication mechanism. Consider alternative HTTPS-based means of communication, e.g., RESTful, WSS, and WebTransport.
+To enhance SMTP, FTP, and AS2 protocols with a cross-domain authentication mechanism. Also, consider other methods of communication, e.g., RESTful, WSS, and WebTransport.
 
 ## Identity Propagation
 
