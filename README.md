@@ -34,9 +34,9 @@ The OAuth 2.0 intrinsic delegation mechanism allows clients with the appropriate
 
 Assertions are statements from a token producer to a token consumer that contain information about the principal. In the Identity Propagation scenario, the resource server uses the information in the assertion to identify the Client and user to make authorization decisions about their access to resources controlled by that resource server.
 
-## Public Clients and Certificate-Bound Tokens
+## Identities and Certificate-Bound Tokens
 
-Certificate-bound access tokens can be used to identify public clients (those without authentication credentials) as stated in [section 4](https://www.rfc-editor.org/rfc/rfc8705#section-4) of the [RFC8705](https://www.rfc-editor.org/rfc/rfc8705) specification.
+In most client-service-to-server-service communication scenarios, three identities are employed: user-identity, client-identity, and server-identity. Mutual TLS/TLS certificates resolve client-identity and server-identity, while tokens resolve user-identity. Mutual TLS during protected resource access also serves as a proof-of-possession of the token mechanism, as stated in [section 4](https://www.rfc-editor.org/rfc/rfc8705#section-4) of the [RFC8705](https://www.rfc-editor.org/rfc/rfc8705) OAuth 2.0 Mutual-TLS Client Authentication and Certificate-Bound Access Tokens specification.
 
 ## 2-Legged OAuth 2.0 Identity Propagation
 
