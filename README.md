@@ -12,7 +12,7 @@ With the growing popularity of protocols based on the OAuth 2.0 specification, t
 
 ## Motivation
 
-To enhance SMTP, FTP, and AS2 protocols with a cross-domain authentication mechanism. Also, consider using this mechanism for other communication technologies, e.g., RESTful, WSS, and WebTransport.
+To enhance SMTP, FTPS, and AS2 protocols with a cross-domain authentication mechanism. Also, consider using this mechanism for other communication technologies, e.g., RESTful, WSS, and WebTransport.
 
 ## Identity Propagation
 
@@ -86,7 +86,7 @@ The primary benefit of Identity Propagation and Assertions in the form of the co
 
 ## Conclusion
 
-The [GRIP-enhanced SMTP and FTP services](https://github.com/cargomail-org/grip/tree/main/poc) stand as proof of concept of the Global Reference Identity Protocol security mechanism.
+The [GRIP-enhanced SMTP and FTPS services](https://github.com/cargomail-org/grip/tree/main/poc) stand as proof of concept of the Global Reference Identity Protocol security mechanism.
 
 ## Acknowledgment
 
