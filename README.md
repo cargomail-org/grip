@@ -4,7 +4,7 @@
 
 ## Abstract
 
-Global Reference Identity Protocol (GRIP) is an OAuth 2.0-based security protocol that authenticates service requests between untrusted hosts across the internet.
+Global Reference Identity Protocol (GRIP) is a token-based security protocol that authenticates service requests between untrusted hosts across the internet.
 
 ## Introduction
 
@@ -12,7 +12,7 @@ With the growing popularity of protocols based on the OAuth 2.0 specification, t
 
 ## Motivation
 
-To enhance SMTP, FTPS, and AS2 protocols with a cross-domain authentication mechanism. Also, consider using this mechanism for other communication technologies, e.g., RESTful, WSS, and WebTransport.
+To enhance SMTP, FTPS, and AS2 protocols with a cross-domain authentication mechanism. Also, consider using this mechanism for other communication technologies, e.g., RESTful, WSS, and WebTransport. The authentication mechanism should be application-protocol-agnostic.
 
 ## Identity Propagation
 
@@ -38,9 +38,23 @@ Assertions are statements from a token producer to a token consumer that contain
 
 In most client-service-to-server-service communication scenarios, three identities are employed: user-identity, client-identity, and server-identity. Mutual TLS/TLS certificates resolve client-identity and server-identity, while tokens resolve user-identity. Mutual TLS during protected resource access also serves as a proof-of-possession of the token mechanism, as stated in [section 4](https://www.rfc-editor.org/rfc/rfc8705#section-4) of the [RFC8705](https://www.rfc-editor.org/rfc/rfc8705) OAuth 2.0 Mutual-TLS Client Authentication and Certificate-Bound Access Tokens specification.
 
-## 2-Legged OAuth 2.0 Identity Propagation
+## Self-Issued Identity Propagation
 
-The sequence diagram illustrated in Figure&nbsp;2 shows the 2-legged identity propagation flow without end-user involvement, where the Client requests access to resources stored on the RS on behalf of the impersonated user.
+The sequence diagram illustrated in Figure&nbsp;2 shows the self-issued identity propagation flow without AS and end-user involvement, where the Client requests access to resources stored on the RS on behalf of the impersonated user using a self-issued token.
+
+The sequence diagram is self-explanatory.
+
+<div class="diagram">
+    <img src=./images/self-issued_identity_propagation_flow.svg alt="Sequence Diagram">
+</div>
+
+<p class="figure">
+Fig.&nbsp;2.&emsp;Self-Issued Identity Propagation flow
+</p>
+
+## 2-Legged Identity Propagation
+
+The sequence diagram illustrated in Figure&nbsp;3 shows the 2-legged identity propagation flow without end-user involvement, where the Client requests access to resources stored on the RS on behalf of the impersonated user using a token generated on the AS.
 
 The sequence diagram is self-explanatory.
 
@@ -49,12 +63,12 @@ The sequence diagram is self-explanatory.
 </div>
 
 <p class="figure">
-Fig.&nbsp;2.&emsp;2-Legged Identity Propagation flow
+Fig.&nbsp;3.&emsp;2-Legged Identity Propagation flow
 </p>
 
-## 3-Legged OAuth 2.0 Identity Propagation
+## 3-Legged Identity Propagation
 
-The sequence diagram illustrated in Figure&nbsp;3 shows the 3-legged identity propagation flow for the user authenticated at the IdP, where the Client requests access to resources stored on the RS on behalf of the authenticated user.
+The sequence diagram illustrated in Figure&nbsp;4 shows the 3-legged identity propagation flow for the user authenticated at the IdP, where the Client requests access to resources stored on the RS on behalf of the authenticated user using a token generated on the AS.
 
 The sequence diagram is self-explanatory; the OIDC authentication flow is omitted for clarity.
 
@@ -63,16 +77,16 @@ The sequence diagram is self-explanatory; the OIDC authentication flow is omitte
 </div>
 
 <p class="figure">
-Fig.&nbsp;3.&emsp;3-Legged Identity Propagation flow
+Fig.&nbsp;4.&emsp;3-Legged Identity Propagation flow
 </p>
 
 ## Client to Resource Server Authentication
 
-In addition to using [mTLS Certificate-Bound Access Tokens](https://www.rfc-editor.org/rfc/rfc8705#name-mutual-tls-client-certifica), it is recommended to use one of the following means of proving ownership of the client identifier:
+In addition to using [mTLS Certificate-Bound Access Tokens](https://www.rfc-editor.org/rfc/rfc8705#section-4) mechanism, it is recommended to use one of the following means of proving ownership of the client identifier:
 
-1. [DNS TXT](https://github.com/cargomail-org/grip/blob/main/images/3-legged_identity_propagation_flow_dns_txt.svg)
-2. [WebFinger](https://github.com/cargomail-org/grip/blob/main/images/3-legged_identity_propagation_flow_webfinger.svg)
-3. [DANE—(DANCE WG)](https://github.com/cargomail-org/grip/blob/main/images/3-legged_identity_propagation_flow_dane.svg)
+1. DNS TXT
+2. WebFinger
+3. DANCE WG
 
 ## Resource Server Discovery
 
