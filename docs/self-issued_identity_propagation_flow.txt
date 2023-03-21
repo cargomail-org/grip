@@ -10,5 +10,5 @@ Client->Client:1. Client generates a token — a signed, using the Client's priv
 
 
 Client->RS:2. Send an HTTP request to the RS with the token using mTLS
-RS->RS:3. Authorization decision\n    1. the client is authenticated via the DNSSEC\n       using the TXT record and CN from the public Client's certificate\n    2. verify the token signature\n    3. validate proof-of-possession\n    4. verify the aud claim\n    5. the domain part of the users's email address\n       and the CN's domain part from the public Client's certificate must match
+RS->RS:3. Authorization decision\n    1. the client is authenticated via the DNSSEC\n       using the TXT record and CN from the public Client's certificate\n    2. verify the token signature\n    3. validate proof-of-possession\n    4. verify the aud claim\n    5. (optional) evaluate embedded tokens\n    6. the domain part of the users's email address\n       and the CN's domain part from the public Client's certificate must match
 RS->Client:4. Return the HTTP response, typically with 200, 201 status code
