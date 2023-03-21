@@ -102,6 +102,3 @@ The primary benefit of Identity Propagation and Assertions in the form of the co
 
 The [GRIP-enhanced SMTP and FTPS services](https://github.com/cargomail-org/grip/tree/main/poc) stand as proof of concept of the Global Reference Identity Protocol security mechanism.
 
-## Acknowledgment
-
-[NIST Special Publication 800-63C](https://pages.nist.gov/800-63-3/sp800-63c.html), Digital Identity Guidelines: Federation and Assertions, has proven to be an abstract framework for the Global Reference Identity Protocol concept.
