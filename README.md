@@ -36,7 +36,7 @@ JWK     JSON Web Key
 
 ## Motivation
 
-To enhance SMTP and FTPS protocols with a cross-domain authentication mechanism. Also, consider using this mechanism for HTTPS-based communication technologies. The authentication mechanism should be application-protocol agnostic.
+To enhance SMTP and FTPS protocols with a cross-domain authentication mechanism. Also, consider using this mechanism for HTTP-based communication technologies. The authentication mechanism should be application-protocol agnostic.
 
 ## Identity Propagation
 
