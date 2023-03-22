@@ -12,7 +12,7 @@ With the growing popularity of communication systems, there is a need for an int
 
 ## GRIP Acronyms
 
-GRIP uses a special jargon. For the sake of brevity of this document, the following list of acronyms will be used:
+GRIP uses special jargon. For the sake of brevity of this document, the following list of acronyms will be used:
 <pre>
 DNS     Domain Name System
 CA      Certificate Authority
