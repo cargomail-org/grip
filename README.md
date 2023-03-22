@@ -12,7 +12,7 @@ With the growing popularity of protocols based on the OAuth 2.0 specification, t
 
 ## Motivation
 
-To enhance SMTP, FTPS, and AS2 protocols with a cross-domain authentication mechanism. Also, consider using this mechanism for other communication technologies, e.g., RESTful, WSS, and WebTransport. The authentication mechanism should be application-protocol-agnostic.
+To enhance SMTP, FTPS, and AS2 protocols with a cross-domain authentication mechanism. Also, consider using this mechanism for other communication technologies, e.g., RESTful, gRPC, WSS, and WebTransport. The authentication mechanism should be application-protocol-agnostic.
 
 ## Identity Propagation
 
