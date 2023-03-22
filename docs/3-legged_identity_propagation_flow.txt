@@ -4,9 +4,9 @@ participant "RS" as RS
 
 bottomparticipants
 
-note over AS:IdP/AS\n• AS acts in the role of a Security Token Service (STS)\n• supports Mutual-TLS Client Certificate-Bound Access Tokens extension of OAuth 2.0\n• supports the Token Exchange extension of OAuth 2.0
-note over Client:RP/Client:\n• uses self-signed or CA-signed certificate,\n  the CN attribute of the public client certificate is used as a global client identifier\n  in respect of the service it represents, e.g., CN=_smtp-client.foo.127.0.0.1.nip.io\n• supports Mutual-TLS Client Certificate-Bound Access Tokens extension of OAuth 2.0\n• is registered at the IdP/AS as a confidential client\n• acts as a client in respect of the RS
-note over RS:RS:\n• supports Mutual-TLS Client Certificate-Bound Access Tokens extension of OAuth 2.0\n• uses the information in the assertion to identify the user\n  and makes authorization decisions using a local ABAC engine\n• should support the IdP/AS issuer discovery mechanism
+note over AS:IdP/AS\n• AS acts in the role of a Security Token Service (STS)\n• supports mTLS Client Certificate-Bound Access Tokens extension of OAuth 2.0\n• supports the Token Exchange extension of OAuth 2.0
+note over Client:RP/Client:\n• uses self-signed or CA-signed certificate,\n  the CN attribute of the public client certificate is used as a global client identifier\n  in respect of the service it represents, e.g., CN=_smtp-client.foo.127.0.0.1.nip.io\n• supports mTLS Client Certificate-Bound Access Tokens extension of OAuth 2.0\n• is registered at the IdP/AS as a confidential client\n• acts as a client in respect of the RS
+note over RS:RS:\n• supports mTLS Client Certificate-Bound Access Tokens extension of OAuth 2.0\n• uses the information in the assertion to identify the user\n  and makes authorization decisions using a local ABAC engine\n• should support the IdP/AS issuer discovery mechanism
 AS<-Client:1. Send an HTTP request to the IdP/AS STS token endpoint using mTLS\n    • grant_type = urn:ietf:params:oauth:grant-type:token-exchange\n    • resource = a target RS URI\n    • requested_token_type = urn:ietf:params:oauth:token-type:jwt\n    • subject_token = access_token\n    • subject_token_type = urn:ietf:params:oauth:token-type:access_token
 AS->AS:2. Authorization decision:\n   1. authenticate the client using the specified credentials\n   2. evaluate the resource parameter\n   3. verify the subject_token signature\n   4. evaluate the subject_token claims
 

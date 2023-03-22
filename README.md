@@ -4,27 +4,48 @@
 
 ## Abstract
 
-Global Reference Identity Protocol (GRIP) is a token-based security protocol that authenticates service requests between untrusted hosts across the internet.
+Global Reference Identity Protocol (GRIP) is a token-based security protocol that authenticates service requests between untrusted hosts across the Internet.
 
 ## Introduction
 
-With the growing popularity of protocols based on the OAuth 2.0 specification, there is a need for an interoperable standard that specifies how to convey information about the user from an Identity Provider (IdP) to a resource server (RS) across security domain boundaries.
+With the growing popularity of communication systems, there is a need for an interoperable standard that specifies how to convey information about the user from one service to another across security domain boundaries.
 
+## GRIP Acronyms
+
+GRIP uses a special jargon. For the sake of brevity of this document, the following list of acronyms will be used:
+
+* SMTP Simple Mail Transfer Protocol
+* FTPS File Transfer Protocol Secure
+* EDI Electronic Data Interchange
+* AS2 a protocol for transmission EDI
+* gRPC Google Remote Procedure Call
+* WSS WebSocket Secure
+</br>
+* TLS Transport Layer Security
+* mTLS Mutual Transport Layer Security
+</br>
+* IdP Identity Provider
+* OIDC OpenID Connect
+* RP Relying Party
+* AS Authorization Server
+* RS Resource Server
+* STS Security Token Service
+* JWT JSON Web Token
+* JWK JSON Web Key
+</br>
+* DNS Domain Name System
+</br>
+* CA Certificate Authority
+* CN Common Name
+</br>
+* WG Working Group
 ## Motivation
 
-To enhance SMTP, FTPS, and AS2 protocols with a cross-domain authentication mechanism. Also, consider using this mechanism for other communication technologies, e.g., RESTful, gRPC, WSS, and WebTransport. The authentication mechanism should be application-protocol-agnostic.
+To enhance SMTP, FTPS, and AS2 protocols with a cross-domain authentication mechanism. Also, consider using this mechanism for other communication technologies, e.g., RESTful, gRPC, WSS, and WebTransport. The authentication mechanism should be application-protocol agnostic.
 
 ## Identity Propagation
 
-In most security concepts and mechanisms, the user's security context propagation stops at the IdP/Relying Party (RP) security domain boundaries. In end-to-end identity propagation, the user's security context is extended to the RS across security domain boundaries, as illustrated in Figure&nbsp;1.
-
-![Model](./images/3-legged_identity_propagation_model.svg)
-
-<p class="figure">
-Fig.&nbsp;1.&emsp;3-Legged End-to-End Identity Propagation Model
-</p>
-
-The user authenticates at the IdP using an authorization code flow. After successful authentication, the RP/Client obtains an access token, which exchanges at the Authorization Server (AS), acting in the role of the JSON-based Security Token Service (STS), for assertion in a JSON Web Token (JWT) format that carries information about the Client and user. The Client presents the token to the RS to gain access to a protected resource on behalf of an authenticated user.
+In most security concepts and mechanisms, the user's security context propagation stops at the user's security domain boundaries. In end-to-end identity propagation, the user's security context is extended outside the user's security perimeter.
 
 ## Impersonation and Delegation
 
@@ -36,11 +57,11 @@ Assertions are statements from a token producer to a token consumer that contain
 
 ## Identities and Certificate-Bound Tokens
 
-In most client-service-to-server-service communication scenarios, three identities are employed: user-identity, client-identity, and server-identity. Mutual TLS/TLS certificates resolve client-identity and server-identity, while tokens resolve user-identity. Mutual TLS during protected resource access also serves as a proof-of-possession of the token mechanism, as stated in [section 4](https://www.rfc-editor.org/rfc/rfc8705#section-4) of the [RFC8705](https://www.rfc-editor.org/rfc/rfc8705) OAuth 2.0 Mutual-TLS Client Authentication and Certificate-Bound Access Tokens specification.
+In most client-service-to-server-service communication scenarios, three identities are employed: user-identity, client-identity, and server-identity. mTLS certificates resolve client-identity and server-identity, while tokens resolve user-identity. mTLS during protected resource access also serves as a proof-of-possession of the token mechanism, as stated in [section 4](https://www.rfc-editor.org/rfc/rfc8705#section-4) of the [RFC8705](https://www.rfc-editor.org/rfc/rfc8705) OAuth 2.0 mTLS Client Authentication and Certificate-Bound Access Tokens specification.
 
 ## Self-Issued Identity Propagation
 
-The sequence diagram illustrated in Figure&nbsp;2 shows the self-issued identity propagation flow without AS and end-user involvement, where the Client requests access to resources stored on the RS on behalf of the impersonated user using a self-issued token.
+The sequence diagram illustrated in Figure&nbsp;1 shows the self-issued identity propagation flow without AS and end-user involvement, where the Client requests access to resources stored on the RS on behalf of the impersonated user using a self-issued token.
 
 The sequence diagram is self-explanatory.
 
@@ -49,12 +70,12 @@ The sequence diagram is self-explanatory.
 </div>
 
 <p class="figure">
-Fig.&nbsp;2.&emsp;Self-Issued Identity Propagation flow
+Fig.&nbsp;1.&emsp;Self-Issued Identity Propagation flow
 </p>
 
 ## 2-Legged Identity Propagation
 
-The sequence diagram illustrated in Figure&nbsp;3 shows the 2-legged identity propagation flow without end-user involvement, where the Client requests access to resources stored on the RS on behalf of the impersonated user using a token generated on the AS.
+The sequence diagram illustrated in Figure&nbsp;2 shows the 2-legged identity propagation flow without end-user involvement, where the Client requests access to resources stored on the RS on behalf of the impersonated user using a token generated on the AS.
 
 The sequence diagram is self-explanatory.
 
@@ -63,12 +84,12 @@ The sequence diagram is self-explanatory.
 </div>
 
 <p class="figure">
-Fig.&nbsp;3.&emsp;2-Legged Identity Propagation flow
+Fig.&nbsp;2.&emsp;2-Legged Identity Propagation flow
 </p>
 
 ## 3-Legged Identity Propagation
 
-The sequence diagram illustrated in Figure&nbsp;4 shows the 3-legged identity propagation flow for the user authenticated at the IdP, where the Client requests access to resources stored on the RS on behalf of the authenticated user using a token generated on the AS.
+The sequence diagram illustrated in Figure&nbsp;3 shows the 3-legged identity propagation flow for the user authenticated at the IdP, where the Client requests access to resources stored on the RS on behalf of the authenticated user using a token generated on the AS.
 
 The sequence diagram is self-explanatory; the OIDC authentication flow is omitted for clarity.
 
@@ -77,12 +98,12 @@ The sequence diagram is self-explanatory; the OIDC authentication flow is omitte
 </div>
 
 <p class="figure">
-Fig.&nbsp;4.&emsp;3-Legged Identity Propagation flow
+Fig.&nbsp;3.&emsp;3-Legged Identity Propagation flow
 </p>
 
 ## Client to Resource Server Authentication
 
-In addition to using [mTLS Certificate-Bound Access Tokens](https://www.rfc-editor.org/rfc/rfc8705#section-4) mechanism, it is recommended to use one of the following means of proving ownership of the client identifier:
+In addition to using the [mTLS Certificate-Bound Access Tokens](https://www.rfc-editor.org/rfc/rfc8705#section-4) mechanism, it is recommended to use one of the following means of proving ownership of the client identifier:
 
 1. DNS TXT
 2. WebFinger
@@ -90,7 +111,7 @@ In addition to using [mTLS Certificate-Bound Access Tokens](https://www.rfc-edit
 
 ## Resource Server Discovery
 
-The resource server is usually accessed using a service-specific protocol such as email, instant messaging, etc. These protocols need to connect to a specific port in addition to connecting with a specific server.
+The resource server is usually accessed using a service-specific protocol such as email or instant messaging. These protocols need to connect to a specific port in addition to connecting with a specific server.
 
 DNS SRV record defines a symbolic name, the transport protocol, and the port and hostname to connect to for accessing the service. Therefore, DNS SRV records are the recommended way to enable the discovery of service-specific resource servers.
 
@@ -98,7 +119,10 @@ DNS SRV record defines a symbolic name, the transport protocol, and the port and
 
 The primary benefit of Identity Propagation and Assertions in the form of the constrained delegation concept is that it addresses the zero-trust between unrelated security domains. Using an OAuth 2.0 technology is an effective option to secure service-to-service communication. From an OAuth 2.0 perspective, the outbound service is an OAuth 2.0 client, and the inbound service is an OAuth 2.0 resource server.
 
+## Implementation
+
+[Cargomail](https://github.com/cargomail-org/cargomail) stands as proof of the concept of the GRIP mechanism.
+
 ## Conclusion
 
-The [GRIP-enhanced SMTP and FTPS services](https://github.com/cargomail-org/grip/tree/main/poc) stand as proof of concept of the Global Reference Identity Protocol security mechanism.
-
+Given that GRIP is application-protocol agnostic, it can be applied to any TLS-protected communication protocol, including SMTP and FTPS. Generally speaking, GRIP allows identity-to-identity communication in a secure manner across the Internet.
