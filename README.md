@@ -13,35 +13,30 @@ With the growing popularity of communication systems, there is a need for an int
 ## GRIP Acronyms
 
 GRIP uses a special jargon. For the sake of brevity of this document, the following list of acronyms will be used:
+<pre>
+DNS     Domain Name System
+CA      Certificate Authority
+CN      Common Name
+TLS     Transport Layer Security
+mTLS    Mutual Transport Layer Security
 
-* SMTP Simple Mail Transfer Protocol
-* FTPS File Transfer Protocol Secure
-* EDI Electronic Data Interchange
-* AS2 a protocol for transmission EDI
-* gRPC Google Remote Procedure Call
-* WSS WebSocket Secure
-</br>
-* TLS Transport Layer Security
-* mTLS Mutual Transport Layer Security
-</br>
-* IdP Identity Provider
-* OIDC OpenID Connect
-* RP Relying Party
-* AS Authorization Server
-* RS Resource Server
-* STS Security Token Service
-* JWT JSON Web Token
-* JWK JSON Web Key
-</br>
-* DNS Domain Name System
-</br>
-* CA Certificate Authority
-* CN Common Name
-</br>
-* WG Working Group
+SMTP    Simple Mail Transfer Protocol
+FTP(S)  File Transfer Protocol (Secure)
+HTTP(S) Hypertext Transfer Protocol (Secure)
+
+IdP     Identity Provider
+OIDC    OpenID Connect
+RP      Relying Party
+AS      Authorization Server
+RS      Resource Server
+STS     Security Token Service
+JWT     JSON Web Token
+JWK     JSON Web Key
+</pre>
+
 ## Motivation
 
-To enhance SMTP, FTPS, and AS2 protocols with a cross-domain authentication mechanism. Also, consider using this mechanism for other communication technologies, e.g., RESTful, gRPC, WSS, and WebTransport. The authentication mechanism should be application-protocol agnostic.
+To enhance SMTP and FTPS protocols with a cross-domain authentication mechanism. Also, consider using this mechanism for HTTPS-based communication technologies. The authentication mechanism should be application-protocol agnostic.
 
 ## Identity Propagation
 
@@ -107,7 +102,7 @@ In addition to using the [mTLS Certificate-Bound Access Tokens](https://www.rfc-
 
 1. DNS TXT
 2. WebFinger
-3. DANCE WG
+3. DANCE Working Group
 
 ## Resource Server Discovery
 
