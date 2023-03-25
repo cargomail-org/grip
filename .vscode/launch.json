@@ -9,14 +9,14 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "poc/as/main.go"
+            "program": "poc/as/."
         },
         {
             "name": "smtpd",
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "poc/smtpd/main.go"
+            "program": "poc/smtpd/."
         }
     ]
 }

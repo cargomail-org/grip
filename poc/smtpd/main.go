@@ -6,8 +6,6 @@ import (
 	"log"
 	"net"
 	"net/mail"
-
-	smtpdgrip "github.com/cargomail-org/smtpd-grip"
 )
 
 const (
@@ -22,12 +20,12 @@ func authHandler(remoteAddr net.Addr, mechanism string, username []byte, passwor
 func mailHandler(origin net.Addr, from string, to []string, data []byte) error {
 	msg, _ := mail.ReadMessage(bytes.NewReader(data))
 	subject := msg.Header.Get("Subject")
-	log.Printf("%sReceived mail from: %s for: %s with subject: %s%s", smtpdgrip.ColorYellow, from, to[0], subject, smtpdgrip.ColorReset)
+	log.Printf("%sReceived mail from: %s for: %s with subject: %s%s", ColorYellow, from, to[0], subject, ColorReset)
 	return nil
 }
 
-func listenAndServeTLS(addr string, handler smtpdgrip.Handler, authHandler smtpdgrip.AuthHandler) error {
-	srv := &smtpdgrip.Server{
+func listenAndServeTLS(addr string, handler Handler, authHandler AuthHandler) error {
+	srv := &Server{
 		Addr:         addr,
 		TLSListener:  false,
 		TLSRequired:  true,
