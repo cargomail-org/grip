@@ -52,7 +52,7 @@ Assertions are statements from a token producer to a token consumer that contain
 
 ## Identities and Certificate-Bound Tokens
 
-In most client-service-to-server-service communication scenarios, three identities are employed: user-identity, client-identity, and server-identity. mTLS certificates resolve client-identity and server-identity, while tokens resolve user-identity. mTLS during protected resource access also serves as a proof-of-possession of the token mechanism, as stated in [section 4](https://www.rfc-editor.org/rfc/rfc8705#section-4) of the [RFC8705](https://www.rfc-editor.org/rfc/rfc8705) OAuth 2.0 mTLS Client Authentication and Certificate-Bound Access Tokens specification.
+In most client-service-to-server-service communication scenarios, three identities are employed: user-identity, client-identity, and server-identity. mTLS certificates resolve client-identity and server-identity, while tokens resolve user-identity. mTLS during protected resource access also serves as a proof-of-possession of the token mechanism, as stated in the [OAuth 2.0 mTLS](https://www.rfc-editor.org/rfc/rfc8705) extension specification.
 
 ## Self-Issued Identity Propagation
 
@@ -102,7 +102,7 @@ In addition to using the [mTLS Certificate-Bound Access Tokens](https://www.rfc-
 
 1. DNS TXT
 2. WebFinger
-3. DANCE Working Group
+3. DANCE (IETF Working Group)
 
 ## Resource Server Discovery
 
