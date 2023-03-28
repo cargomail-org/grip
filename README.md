@@ -101,7 +101,7 @@ Fig.&nbsp;3.&emsp;3-Legged Identity Propagation flow
 In addition to using the [mTLS Certificate-Bound Access Tokens](https://www.rfc-editor.org/rfc/rfc8705#section-4) mechanism, it is recommended to use one of the following means of proving ownership of the client identifier:
 
 1. DNS TXT
-2. WebFinger
+2. Discovery via "well-known" path
 3. DANCE (IETF Working Group)
 
 ## Resource Server Discovery
