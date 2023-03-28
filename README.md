@@ -116,7 +116,7 @@ The primary benefit of Identity Propagation and Assertions in the form of the co
 
 ## Implementation
 
-[Cargomail](https://github.com/cargomail-org/cargomail) — a revised email system, stands as proof of the concept of the GRIP mechanism.
+[Cargomail](https://github.com/cargomail-org/cargomail) — a privacy-aware email system, stands as proof of the concept of the GRIP mechanism.
 
 ## Conclusion
 
