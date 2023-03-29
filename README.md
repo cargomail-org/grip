@@ -34,9 +34,9 @@ JWT     JSON Web Token
 JWK     JSON Web Key
 </pre>
 
-## Motivation
+## Goals and Objectives
 
-To enhance SMTP and FTPS protocols with a cross-domain authentication mechanism. Also, consider using this mechanism for HTTP-based communication technologies. The authentication mechanism should be application-protocol agnostic.
+Enhance SMTP and FTPS protocols with a cross-domain authentication protocol. The authentication protocol should be application-protocol agnostic to support HTTP-based communication technologies. The resulting concept should support the relaying mechanism.
 
 ## Identity Propagation
 
