@@ -8,7 +8,7 @@ Global Reference Identity Protocol (GRIP) is a token-based security protocol tha
 
 ## Introduction
 
-With the growing popularity of communication systems, there is a need for an interoperable standard that specifies how to convey information about the user from one service to another across security domain boundaries.
+With the growing popularity of communication systems, there is a need for an interoperable standard that specifies how to issue and convey information about the user from one service to another across security domain boundaries. Sometimes the final destination is not known at the time of identity information issuance, and that is where the relaying mechanism comes into play.
 
 ## GRIP Acronyms
 
@@ -50,9 +50,9 @@ The OAuth 2.0 intrinsic delegation mechanism allows clients with the appropriate
 
 Assertions are statements from a token producer to a token consumer that contain information about the principal. In the Identity Propagation scenario, the resource server uses the information in the assertion to identify the Client and user to make authorization decisions about their access to resources controlled by that resource server.
 
-## Identities and Certificate-Bound Tokens
+## Identities and mTLS Certificate-Bound Assertions
 
-In most client-service-to-server-service communication scenarios, three identities are employed: user-identity, client-identity, and server-identity. mTLS certificates resolve client-identity and server-identity, while tokens resolve user-identity. mTLS during protected resource access also serves as a proof-of-possession of the token mechanism, as stated in the [OAuth 2.0 mTLS](https://www.rfc-editor.org/rfc/rfc8705) extension specification.
+In most client-service-to-server-service communication scenarios, three identities are employed: user-identity, client-identity, and server-identity. Fundamentally, mTLS certificates resolve client-identity and server-identity, while tokens resolve user-identity. An mTLS Certificate-Bound Assertion is a self-issued assertion in a JWT format signed by an mTLS private key that the client-service uses to authenticate to the server-service, while the mTLS public key hash is published on the client-service domain, where the CN attribute of the mTLS public key certificate is used as a global client identifier in respect of the service it represents.
 
 ## Self-Issued Identity Propagation
 
@@ -84,7 +84,7 @@ Fig.&nbsp;2.&emsp;2-Legged Identity Propagation flow
 
 ## 3-Legged Identity Propagation
 
-The sequence diagram illustrated in Figure&nbsp;3 shows the 3-legged identity propagation flow for the user authenticated at the IdP, where the Client requests access to resources stored on the RS on behalf of the authenticated user using a token generated on the AS.
+The sequence diagram illustrated in Figure&nbsp;3 shows the 3-legged identity propagation flow for the user authenticated at the IdP, where the Client requests access to resources stored on the RS on behalf of the authenticated user using a token generated on the AS. This flow does not support relaying.
 
 The sequence diagram is self-explanatory; the OIDC authentication flow is omitted for clarity.
 
@@ -112,7 +112,7 @@ DNS SRV record defines a symbolic name, the transport protocol, and the port and
 
 ## Usability Considerations
 
-The primary benefit of Identity Propagation and Assertions in the form of the constrained delegation concept is that it addresses the zero-trust between unrelated security domains. Using an OAuth 2.0 technology is an effective option to secure service-to-service communication. From an OAuth 2.0 perspective, the outbound service is an OAuth 2.0 client, and the inbound service is an OAuth 2.0 resource server.
+The primary benefit of Identity Propagation and Assertions in the form of the constrained delegation concept is that it addresses the zero-trust between unrelated security domains. Using an mTLS and OAuth 2.0 technology is an effective option to secure service-to-service communication. From an OAuth 2.0 aspect, the outbound service is an OAuth 2.0 client, and the inbound service is an OAuth 2.0 resource server.
 
 ## Implementation
 
