@@ -50,9 +50,9 @@ The OAuth 2.0 intrinsic delegation mechanism allows clients with the appropriate
 
 Assertions are statements from a token producer to a token consumer that contain information about the principal. In the Identity Propagation scenario, the resource server uses the information in the assertion to identify the Client and user to make authorization decisions about their access to resources controlled by that resource server.
 
-## Identities and mTLS Certificate-Bound Assertions
+## Identities and DNS-Bound Tokens
 
-In most client-service-to-server-service communication scenarios, three identities are employed: user-identity, client-identity, and server-identity. Fundamentally, mTLS certificates resolve client-identity and server-identity, while tokens resolve user-identity. An mTLS Certificate-Bound Assertion is a self-issued assertion in a JWT format signed by an mTLS private key that the client-service uses to authenticate to the server-service, while the mTLS public key hash is published on the client-service domain, where the CN attribute of the mTLS public key certificate is used as a global client identifier in respect of the service it represents.
+In most client-service-to-server-service communication scenarios, three identities are employed: user-identity, client-identity, and server-identity. Fundamentally, mTLS/TLS certificates resolve client-identity and server-identity, while tokens resolve user-identity. A DNS-Bound Token is a self-issued assertion in a JWT format signed by an mTLS private key that the client-service uses to authenticate to the server-service, while the mTLS public key hash is published on the client-service domain, where the CN attribute of the mTLS public key certificate is used as a global client identifier in respect of the service it represents.
 
 ## Self-Issued Identity Propagation
 
@@ -95,14 +95,6 @@ The sequence diagram is self-explanatory; the OIDC authentication flow is omitte
 <p class="figure">
 Fig.&nbsp;3.&emsp;3-Legged Identity Propagation flow
 </p>
-
-## Client to Resource Server Authentication
-
-In addition to using the [mTLS Certificate-Bound Access Tokens](https://www.rfc-editor.org/rfc/rfc8705#section-4) mechanism, it is recommended to use one of the following means of proving ownership of the client identifier:
-
-1. DNS TXT
-2. Discovery via "well-known" path
-3. DANCE (IETF Working Group)
 
 ## Resource Server Discovery
 
