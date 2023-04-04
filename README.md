@@ -84,7 +84,7 @@ Fig.&nbsp;2.&emsp;2-Legged Identity Propagation flow
 
 ## 3-Legged Identity Propagation
 
-The sequence diagram illustrated in Figure&nbsp;3 shows the 3-legged identity propagation flow for the user authenticated at the IdP, where the Client requests access to resources stored on the RS on behalf of the authenticated user using a token generated on the AS. This flow does not support relaying.
+The sequence diagram illustrated in Figure&nbsp;3 shows the 3-legged identity propagation flow for the user authenticated at the IdP, where the Client requests access to resources stored on the RS on behalf of the authenticated user using a token generated on the AS.
 
 The sequence diagram is self-explanatory; the OIDC authentication flow is omitted for clarity.
 
