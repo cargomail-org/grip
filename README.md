@@ -8,7 +8,7 @@ Global Reference Identity Protocol (GRIP) is a token-based security protocol tha
 
 ## Introduction
 
-With the growing popularity of communication systems, there is a need for an interoperable standard that specifies how to issue and convey information about the user from one service to another across security domain boundaries. Sometimes the final destination is not known at the time of identity information issuance, and that is where the relaying mechanism comes into play.
+With the growing popularity of communication systems, there is a need for an interoperable standard that specifies how to issue and convey information about the user from one service to another across security domain boundaries. Sometimes the final destination is not known at the time of identity information issuance, and that is where the relaying and resharing mechanism comes into play.
 
 ## GRIP Acronyms
 
@@ -36,7 +36,7 @@ JWK     JSON Web Key
 
 ## Goals and Objectives
 
-Enhance SMTP and FTPS protocols with a cross-domain authentication protocol. The authentication protocol should be application-protocol agnostic to support HTTP-based communication technologies. The resulting concept should support the relaying mechanism.
+Enhance SMTP and FTPS protocols with a cross-domain authentication protocol. The authentication protocol should be application-protocol agnostic to support HTTP-based communication technologies. The resulting concept should support the relaying and resharing mechanism, which employs "request tokens" and "response tokens."
 
 ## Identity Propagation
 
