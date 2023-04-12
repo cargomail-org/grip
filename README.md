@@ -56,7 +56,7 @@ In most client-service-to-server-service communication scenarios, three identiti
 
 ## Self-Issued Identity Propagation
 
-The sequence diagram illustrated in Figure&nbsp;1 shows the self-issued identity propagation flow without AS and end-user involvement, where the Client requests access to resources stored on the RS on behalf of the impersonated user using a self-issued token.
+Using self-signed certificates ensures you can quickly start with the most straightforward identity propagation mechanism. The sequence diagram illustrated in Figure&nbsp;1 shows the self-issued identity propagation flow without AS and end-user involvement, where the Client requests access to resources stored on the RS on behalf of the impersonated user using a self-issued token.
 
 The sequence diagram is self-explanatory.
 
@@ -67,6 +67,10 @@ The sequence diagram is self-explanatory.
 <p class="figure">
 Fig.&nbsp;1.&emsp;Self-Issued Identity Propagation flow
 </p>
+
+## OAuth 2.0
+
+Incorporating DNS-Bound Tokens into the Certificate-Bound Access Tokens extension of the OAuth 2.0 authorization protocol (see [RFC 8705](https://www.rfc-editor.org/rfc/rfc8705)) adds more complexity to the identity propagation mechanism.
 
 ## 2-Legged Identity Propagation
 
