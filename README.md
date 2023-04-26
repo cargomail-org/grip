@@ -54,7 +54,7 @@ Assertions are statements from a token producer to a token consumer that contain
 
 In most client-service-to-server-service communication scenarios, three identities are employed: user-identity, client-identity, and server-identity. Fundamentally, mTLS/TLS certificates resolve client-identity and server-identity, while tokens resolve user-identity. A DNS-Bound Token is a self-issued assertion in a JWT format signed by an mTLS private key that the client-service uses to authenticate to the server-service, while the mTLS public key hash is published on the client-service domain, where the CN attribute of the mTLS public key certificate is used as a global client identifier in respect of the service it represents.
 
-## Proof of Chain of Possession
+## Chained Identity Propagation
 
 The upcoming [JWT Embedded Tokens](https://www.ietf.org/archive/id/draft-yusef-oauth-nested-jwt-06.html) specification defines a mechanism for embedding tokens into a JWT token. The JWT token and the embedded tokens are issued by different issuers. Using such a mechanism with DNS-Bound JWT tokens provides chained authenticity and integrity protection during identity propagation across multiple security domains.
 
