@@ -44,15 +44,15 @@ In most security concepts and mechanisms, the user's security context propagatio
 
 ## Impersonation and Delegation
 
-The OAuth 2.0 intrinsic delegation mechanism allows clients with the appropriate security token to impersonate the user or being delegated by that user. As a specific form of identity propagation, the [OAuth 2.0 Token Exchange](https://datatracker.ietf.org/doc/html/rfc8693) specification describes impersonation and delegation, where the Client obtains a security token that allows it to act as a user in the case of impersonation or, in the case of delegation, allows it to act on behalf of the user. The output security token may carry the logical name of the target service for which it is constrained.
+The OAuth 2.0 intrinsic delegation mechanism allows clients with the appropriate security token to impersonate the user or being delegated by that user. As a specific form of identity propagation, the [OAuth 2.0 Token Exchange](https://datatracker.ietf.org/doc/html/rfc8693) specification describes impersonation and delegation, where the client obtains a security token that allows it to act as a user in the case of impersonation or, in the case of delegation, allows it to act on behalf of the user. The output security token may carry the logical name of the target service for which it is constrained.
 
 ## Assertions
 
-Assertions are statements from a token producer to a token consumer that contain information about the principal. In the Identity Propagation scenario, the resource server uses the information in the assertion to identify the Client and user to make authorization decisions about their access to resources controlled by that resource server.
+Assertions are statements from a token producer to a token consumer that contain information about the principal. In the Identity Propagation scenario, the resource server uses the information in the assertion to identify the client and user to make authorization decisions about their access to resources controlled by that resource server.
 
 ## Identities and DNS-Bound Tokens
 
-In most client-service-to-server-service communication scenarios, three identities are employed: user-identity, client-identity, and server-identity. Fundamentally, mTLS/TLS certificates resolve client-identity and server-identity, while tokens resolve user-identity. A DNS-Bound Token is a self-issued assertion in a JWT format signed by an mTLS private key that the client-service uses to authenticate to the server-service, while the mTLS public key hash is published on the client-service domain, where the CN attribute of the mTLS public key certificate is used as a global client identifier in respect of the service it represents.
+In some service-to-service communication scenarios, three identities are employed: user, client, and server identities. Fundamentally, mutual TLS (mTLS)/TLS certificates resolve client and server identities, while tokens resolve client and user identities. A DNS-bound token is a self-issued assertion in a JWT format signed by an mTLS private key that the first service uses to authenticate to the second service. The mTLS public key hash is published in the first service domain using the DNS TXT record, where the CN attribute of the mTLS public key certificate is used as a global client identifier in respect of the service it represents.
 
 ## Nested, Chained Identity Propagation
 
@@ -60,7 +60,7 @@ The upcoming [JWT Embedded Tokens](https://www.ietf.org/archive/id/draft-yusef-o
 
 ## Self-Issued Identity Propagation
 
-Using self-signed certificates ensures you can quickly start with the most straightforward identity propagation mechanism. The sequence diagram illustrated in Figure&nbsp;1 shows the self-issued identity propagation flow without AS and end-user involvement, where the Client requests access to resources stored on the RS on behalf of the impersonated user using a self-issued token.
+Using self-signed certificates ensures you can quickly start with the most straightforward identity propagation mechanism. The sequence diagram illustrated in Figure&nbsp;1 shows the self-issued identity propagation flow without AS and end-user involvement, where the client requests access to resources stored on the RS on behalf of the impersonated user using a self-issued token.
 
 The sequence diagram is self-explanatory.
 
@@ -78,7 +78,7 @@ Incorporating DNS-Bound Tokens into the Certificate-Bound Access Tokens extensio
 
 ## 2-Legged Identity Propagation
 
-The sequence diagram illustrated in Figure&nbsp;2 shows the 2-legged identity propagation flow without end-user involvement, where the Client requests access to resources stored on the RS on behalf of the impersonated user using a token generated on the AS.
+The sequence diagram illustrated in Figure&nbsp;2 shows the 2-legged identity propagation flow without end-user involvement, where the client requests access to resources stored on the RS on behalf of the impersonated user using a token generated on the AS.
 
 The sequence diagram is self-explanatory.
 
@@ -92,7 +92,7 @@ Fig.&nbsp;2.&emsp;2-Legged Identity Propagation flow
 
 ## 3-Legged Identity Propagation
 
-The sequence diagram illustrated in Figure&nbsp;3 shows the 3-legged identity propagation flow for the user authenticated at the IdP, where the Client requests access to resources stored on the RS on behalf of the authenticated user using a token generated on the AS.
+The sequence diagram illustrated in Figure&nbsp;3 shows the 3-legged identity propagation flow for the user authenticated at the IdP, where the client requests access to resources stored on the RS on behalf of the authenticated user using a token generated on the AS.
 
 The sequence diagram is self-explanatory; the OIDC authentication flow is omitted for clarity.
 
