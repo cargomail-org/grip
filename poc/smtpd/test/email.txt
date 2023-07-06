@@ -1,7 +1,0 @@
-From: John Doe <jdoe@foo.127.0.0.1.nip.io>
-To: Joe Smith <jsmith@bar.127.0.0.2.nip.io>
-Subject: An example email
-Date: Sa, 4 Mar 2023 14:05:01
-
-Dear Joe,
-Welcome to this example email. What a lovely day.

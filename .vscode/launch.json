@@ -5,18 +5,55 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "as",
+            "name": "cargomail.org",
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "poc/as/."
+            "program": "cargomail/.",
+            // "console": "integratedTerminal",
+            "env": {
+                "DOMAIN_NAME": "cargomail.org",
+                "DB_PATH": "cargomail.org.db",
+                "STORAGE_PATH": "./files/cargomail.org/",
+                "APP_API_BIND": "127.0.0.1:8181",
+                "GRIP_API_BIND": "127.0.0.1:2125",
+                "GRIP_CERT_FILE": "./grip-ca/cargomail.org-server.crt",
+                "GRIP_KEY_FILE": "./grip-ca/cargomail.org-server.key",
+              }
         },
         {
-            "name": "smtpd",
+            "name": "federizer.org",
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "poc/smtpd/."
-        }
+            "program": "cargomail/.",
+            // "console": "integratedTerminal",
+            "env": {
+                "DOMAIN_NAME": "federizer.org",
+                "DB_PATH": "federizer.org.db",
+                "STORAGE_PATH": "./files/federizer.org/",
+                "APP_API_BIND": "127.0.0.2:8181",
+                "GRIP_API_BIND": "127.0.0.2:2125",
+                "GRIP_CERT_FILE": "./grip-ca/federizer.org-server.crt",
+                "GRIP_KEY_FILE": "./grip-ca/federizer.org-server.key",
+              }
+        },
+        {
+            "name": "umabox.org",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "cargomail/.",
+            // "console": "integratedTerminal",
+            "env": {
+                "DOMAIN_NAME": "umabox.org",
+                "DB_PATH": "umabox.org.db",
+                "STORAGE_PATH": "./files/umabox.org/",
+                "APP_API_BIND": "127.0.0.3:8181",
+                "GRIP_API_BIND": "127.0.0.3:2125",
+                "GRIP_CERT_FILE": "./grip-ca/umabox.org-server.crt",
+                "GRIP_KEY_FILE": "./grip-ca/umabox.org-server.key",
+              }
+        },
     ]
 }

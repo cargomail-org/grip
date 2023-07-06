@@ -1,0 +1,16 @@
+# Cargomail
+domain_name: cargomail.org
+
+# Database
+db_path: cargomail.org.db
+
+# File Storage
+storage_path: ./files/cargomail.org/
+
+# App
+app_api_bind: 127.0.0.1:8181
+
+# GRIP
+grip_api_bind: 127.0.0.1:2125
+grip_cert_file: ./grip-ca/cargomail.org-server.crt
+grip_key_file: ./grip-ca/cargomail.org-server.key
