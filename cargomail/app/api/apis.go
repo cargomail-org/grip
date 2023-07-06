@@ -23,7 +23,7 @@ func NewApis(repository repository.Repository, storagePath, domainName string) A
 		Form:   FormApi{domainName: domainName},
 		File:   FileApi{file: repository.File, storagePath: storagePath},
 		Token:  TokenApi{user: repository.User, token: repository.Token},
-		User:   UserApi{user: repository.User, token: repository.Token},
+		User:   UserApi{user: repository.User},
 	}
 }
 
