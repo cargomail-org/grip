@@ -117,8 +117,8 @@ func (api *FileApi) List() http.Handler {
 
 		log.Printf("metadata: %v", metadata)
 
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusCreated)
+		helper.SetJsonHeader(w)
+		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(files)
 	})
 }

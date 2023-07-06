@@ -75,7 +75,7 @@ func (api *UserApi) Register() http.Handler {
 			return
 		}
 
-		w.Header().Set("Content-Type", "application/json")
+		helper.SetJsonHeader(w)
 		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode(user)
 	})
@@ -120,7 +120,7 @@ func (api *TokenApi) Authenticate() http.Handler {
 			return
 		}
 
-		w.Header().Set("Content-Type", "application/json")
+		helper.SetJsonHeader(w)
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(token)
 	})
