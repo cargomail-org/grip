@@ -23,7 +23,10 @@ type File struct {
 }
 
 func (r FileRepository) Create(user *User, uuid, name, path, contentType string, size int64) error {
-	_, err := r.db.Exec(`INSERT INTO
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	_, err := r.db.ExecContext(ctx, `INSERT INTO
 		file(user_id, uuid, name, path, content_type, size)
 		VALUES(?, ?, ?, ?, ?, ?)`, user.ID, uuid, name, path, contentType, size)
 	if err != nil {
