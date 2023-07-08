@@ -5,8 +5,8 @@ import (
 	"cargomail/app/repository"
 	"context"
 	"errors"
+	"log"
 	"net/http"
-	"strings"
 )
 
 type Apis struct {
@@ -39,17 +39,31 @@ func (apis *Apis) contextSetUser(r *http.Request, user *repository.User) *http.R
 // middleware
 func (apis *Apis) Authenticate(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Add("Vary", "Authorization")
+		// w.Header().Add("Vary", "Authorization")
 
-		authorizationHeader := r.Header.Get("Authorization")
+		// authorizationHeader := r.Header.Get("Authorization")
 
-		headerParts := strings.Split(authorizationHeader, " ")
-		if len(headerParts) != 2 || headerParts[0] != "Bearer" {
-			helper.ReturnErr(w, repository.ErrInvalidOrMissingAuthToken, http.StatusForbidden)
+		// headerParts := strings.Split(authorizationHeader, " ")
+		// if len(headerParts) != 2 || headerParts[0] != "Bearer" {
+		// 	helper.ReturnErr(w, repository.ErrInvalidOrMissingAuthToken, http.StatusForbidden)
+		// 	return
+		// }
+
+		// token := headerParts[1]
+
+		cookie, err := r.Cookie("cargomail")
+		if err != nil {
+			switch {
+			case errors.Is(err, http.ErrNoCookie):
+				http.Error(w, "cookie not found", http.StatusBadRequest)
+			default:
+				log.Println(err)
+				http.Error(w, "server error", http.StatusInternalServerError)
+			}
 			return
 		}
 
-		token := headerParts[1]
+		token := cookie.Value
 
 		// TODO magic number!
 		if len(token) != 52 {

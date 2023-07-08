@@ -73,7 +73,7 @@ func (r TokenRepository) Insert(token *Token) error {
 }
 
 func (r TokenRepository) Remove(token string) error {
-	hash := sha256.Sum256([]byte(token))
+	tokenHash := sha256.Sum256([]byte(token))
 
 	query := `
 		DELETE FROM token
@@ -82,6 +82,6 @@ func (r TokenRepository) Remove(token string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	_, err := r.db.ExecContext(ctx, query, hash[:])
+	_, err := r.db.ExecContext(ctx, query, tokenHash[:])
 	return err
 }

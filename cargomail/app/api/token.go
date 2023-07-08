@@ -5,6 +5,7 @@ import (
 	"cargomail/app/repository"
 	"encoding/json"
 	"errors"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -120,6 +121,17 @@ func (api *TokenApi) Authenticate() http.Handler {
 			return
 		}
 
+		cookie := http.Cookie{
+			Name:     "cargomail",
+			Value:    token.Plaintext,
+			Expires:  token.Expiry,
+			Path:     "/api/v1",
+			HttpOnly: true,
+			Secure:   false, // !!!
+			SameSite: http.SameSiteLaxMode,
+		}
+		http.SetCookie(w, &cookie)
+
 		helper.SetJsonHeader(w)
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(token)
@@ -128,17 +140,42 @@ func (api *TokenApi) Authenticate() http.Handler {
 
 func (api *TokenApi) Logout() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		authorizationHeader := r.Header.Get("Authorization")
+		clearCookie := http.Cookie{
+			Name:     "cargomail",
+			Value:    "",
+			MaxAge:   0,
+			Path:     "/api/v1",
+			HttpOnly: true,
+			Secure:   false, // !!!
+			SameSite: http.SameSiteLaxMode,
+		}
+		http.SetCookie(w, &clearCookie)
 
-		headerParts := strings.Split(authorizationHeader, " ")
-		if len(headerParts) != 2 || headerParts[0] != "Bearer" {
-			helper.ReturnErr(w, repository.ErrInvalidOrMissingAuthToken, http.StatusForbidden)
+		// authorizationHeader := r.Header.Get("Authorization")
+
+		// headerParts := strings.Split(authorizationHeader, " ")
+		// if len(headerParts) != 2 || headerParts[0] != "Bearer" {
+		// 	helper.ReturnErr(w, repository.ErrInvalidOrMissingAuthToken, http.StatusForbidden)
+		// 	return
+		// }
+
+		// token := headerParts[1]
+
+		cookie, err := r.Cookie("cargomail")
+		if err != nil {
+			switch {
+			case errors.Is(err, http.ErrNoCookie):
+				http.Error(w, "cookie not found", http.StatusBadRequest)
+			default:
+				log.Println(err)
+				http.Error(w, "server error", http.StatusInternalServerError)
+			}
 			return
 		}
 
-		token := headerParts[1]
+		token := cookie.Value
 
-		err := api.token.Remove(token)
+		err = api.token.Remove(token)
 		if err != nil {
 			helper.ReturnErr(w, err, http.StatusNotFound)
 			return
