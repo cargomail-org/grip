@@ -122,7 +122,7 @@ func (api *SessionApi) Authenticate() http.Handler {
 		}
 
 		cookie := http.Cookie{
-			Name:     "cargomail",
+			Name:     "session",
 			Value:    session.Plaintext,
 			Expires:  session.Expiry,
 			Path:     "/api/v1",
@@ -141,7 +141,7 @@ func (api *SessionApi) Authenticate() http.Handler {
 func (api *SessionApi) Logout() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		clearCookie := http.Cookie{
-			Name:     "cargomail",
+			Name:     "session",
 			Value:    "",
 			MaxAge:   0,
 			Path:     "/api/v1",
@@ -161,7 +161,7 @@ func (api *SessionApi) Logout() http.Handler {
 
 		// token := headerParts[1]
 
-		cookie, err := r.Cookie("cargomail")
+		cookie, err := r.Cookie("session")
 		if err != nil {
 			switch {
 			case errors.Is(err, http.ErrNoCookie):

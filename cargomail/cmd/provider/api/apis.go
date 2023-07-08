@@ -57,7 +57,7 @@ func (apis *Apis) Authenticate(next http.Handler) http.Handler {
 
 		// token := headerParts[1]
 
-		cookie, err := r.Cookie("cargomail")
+		cookie, err := r.Cookie("session")
 		if err != nil {
 			switch {
 			case errors.Is(err, http.ErrNoCookie):
