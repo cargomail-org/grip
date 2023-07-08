@@ -13,12 +13,13 @@
             // "console": "integratedTerminal",
             "env": {
                 "DOMAIN_NAME": "cargomail.org",
-                "DB_PATH": "cargomail.org.db",
-                "STORAGE_PATH": "./files/cargomail.org/",
-                "APP_API_BIND": "127.0.0.1:8181",
-                "GRIP_API_BIND": "127.0.0.1:2125",
-                "GRIP_CERT_FILE": "./grip-ca/cargomail.org-server.crt",
-                "GRIP_KEY_FILE": "./grip-ca/cargomail.org-server.key",
+                "STORAGE_PATH": "./storage/cargomail.org",
+                "DATABASE_PATH": "./storage/cargomail.org/database/cargomail.db",
+                "RESOURCES_PATH": "./storage/cargomail.org/resources/",
+                "TRANSFER_CERT_PATH": "./storage/cargomail.org/certificates/server.crt",
+                "TRANSFER_KEY_PATH": "./storage/cargomail.org/certificates/server.key",
+                "PROVIDER_BIND": "127.0.0.1:8181",
+                "TRANSFER_BIND": "127.0.0.1:2125",
               }
         },
         {
@@ -30,12 +31,13 @@
             // "console": "integratedTerminal",
             "env": {
                 "DOMAIN_NAME": "federizer.org",
-                "DB_PATH": "federizer.org.db",
-                "STORAGE_PATH": "./files/federizer.org/",
-                "APP_API_BIND": "127.0.0.2:8181",
-                "GRIP_API_BIND": "127.0.0.2:2125",
-                "GRIP_CERT_FILE": "./grip-ca/federizer.org-server.crt",
-                "GRIP_KEY_FILE": "./grip-ca/federizer.org-server.key",
+                "STORAGE_PATH": "./storage/federizer.org",
+                "DATABASE_PATH": "./storage/federizer.org/database/cargomail.db",
+                "RESOURCES_PATH": "./storage/federizer.org/resources/",
+                "TRANSFER_CERT_PATH": "./storage/federizer.org/certificates/server.crt",
+                "TRANSFER_KEY_PATH": "./storage/federizer.org/certificates/server.key",
+                "PROVIDER_BIND": "127.0.0.2:8181",
+                "TRANSFER_BIND": "127.0.0.2:2125",
               }
         },
         {
@@ -47,12 +49,13 @@
             // "console": "integratedTerminal",
             "env": {
                 "DOMAIN_NAME": "umabox.org",
-                "DB_PATH": "umabox.org.db",
-                "STORAGE_PATH": "./files/umabox.org/",
-                "APP_API_BIND": "127.0.0.3:8181",
-                "GRIP_API_BIND": "127.0.0.3:2125",
-                "GRIP_CERT_FILE": "./grip-ca/umabox.org-server.crt",
-                "GRIP_KEY_FILE": "./grip-ca/umabox.org-server.key",
+                "STORAGE_PATH": "./storage/umabox.org",
+                "DATABASE_PATH": "./storage/umabox.org/database/cargomail.db",
+                "RESOURCES_PATH": "./storage/umabox.org/resources/",
+                "TRANSFER_CERT_PATH": "./storage/umabox.org/certificates/server.crt",
+                "TRANSFER_KEY_PATH": "./storage/umabox.org/certificates/server.key",
+                "PROVIDER_BIND": "127.0.0.3:8181",
+                "TRANSFER_BIND": "127.0.0.3:2125",
               }
         },
     ]

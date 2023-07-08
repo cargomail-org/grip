@@ -1,14 +1,14 @@
 package main
 
 import (
-	"cargomail/provider"
+	cargomail "cargomail/cmd"
 	"log"
 )
 
 func main() {
-	err := provider.Start()
+	err := cargomail.Start()
 	if err != nil {
-		log.Fatalf("provider service error: %v", err)
+		log.Fatalf("cargomail error: %v", err)
 	}
-	log.Print("provider service shutdown gracefully")
+	log.Print("cargomail shutdown gracefully")
 }

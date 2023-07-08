@@ -19,8 +19,8 @@ cargomail/cargomail
 # SQLite3 database
 **.db
 
-# File storage
-files/
+# Resources storage
+resources/
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
