@@ -2,18 +2,18 @@ package api
 
 import "cargomail/internal/repository"
 
-type ApisParams struct {
+type ApiParams struct {
 	DomainName    string
 	ResourcesPath string
 	Repository    repository.Repository
 }
 
-type Apis struct {
+type Api struct {
 	Health HealthApi
 }
 
-func NewApis(params ApisParams) Apis {
-	return Apis{
+func NewApi(params ApiParams) Api {
+	return Api{
 		Health: HealthApi{params.DomainName},
 	}
 }

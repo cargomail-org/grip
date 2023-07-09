@@ -23,15 +23,15 @@ type ServiceParams struct {
 }
 
 type service struct {
-	apis         api.Apis
+	api         api.Api
 	providerBind string
 }
 
 func NewService(params *ServiceParams) service {
 	repository := repository.NewRepository(params.DB)
 	return service{
-		apis: api.NewApis(
-			api.ApisParams{
+		api: api.NewApi(
+			api.ApiParams{
 				DomainName:    params.DomainName,
 				Repository:    repository,
 				ResourcesPath: params.ResourcesPath,

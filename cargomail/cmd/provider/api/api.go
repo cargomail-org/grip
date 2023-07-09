@@ -9,13 +9,13 @@ import (
 	"net/http"
 )
 
-type ApisParams struct {
+type ApiParams struct {
 	DomainName    string
 	ResourcesPath string
 	Repository    repository.Repository
 }
 
-type Apis struct {
+type Api struct {
 	Health    HealthApi
 	Form      FormApi
 	Resources ResourcesApi
@@ -23,8 +23,8 @@ type Apis struct {
 	User      UserApi
 }
 
-func NewApis(params ApisParams) Apis {
-	return Apis{
+func NewApi(params ApiParams) Api {
+	return Api{
 		Health:    HealthApi{domainName: params.DomainName},
 		Form:      FormApi{domainName: params.DomainName},
 		Resources: ResourcesApi{resources: params.Repository.Resources, resourcesPath: params.ResourcesPath},
@@ -37,13 +37,13 @@ type contextKey string
 
 const userContextKey = contextKey("user")
 
-func (apis *Apis) contextSetUser(r *http.Request, user *repository.User) *http.Request {
+func (api *Api) contextSetUser(r *http.Request, user *repository.User) *http.Request {
 	ctx := context.WithValue(r.Context(), userContextKey, user)
 	return r.WithContext(ctx)
 }
 
 // middleware
-func (apis *Apis) Authenticate(next http.Handler) http.Handler {
+func (api *Api) Authenticate(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// w.Header().Add("Vary", "Authorization")
 
@@ -77,7 +77,7 @@ func (apis *Apis) Authenticate(next http.Handler) http.Handler {
 			return
 		}
 
-		user, err := apis.User.user.GetBySession(repository.ScopeAuthentication, session)
+		user, err := api.User.user.GetBySession(repository.ScopeAuthentication, session)
 		if err != nil {
 			switch {
 			case errors.Is(err, repository.ErrUsernameNotFound):
@@ -88,7 +88,7 @@ func (apis *Apis) Authenticate(next http.Handler) http.Handler {
 			return
 		}
 
-		r = apis.contextSetUser(r, user)
+		r = api.contextSetUser(r, user)
 
 		next.ServeHTTP(w, r)
 	})

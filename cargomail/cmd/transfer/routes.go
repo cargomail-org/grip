@@ -5,5 +5,5 @@ import (
 )
 
 func (svc *service) routes(mux *http.ServeMux) {
-	mux.Handle("/api/v1/health", svc.apis.Health.Healthcheck())
+	mux.Handle("/api/v1/health", svc.api.Health.Healthcheck())
 }
