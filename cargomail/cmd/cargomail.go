@@ -34,13 +34,16 @@ func Start() error {
 	database.Init(db)
 
 	// provider service
-	providerService := provider.NewService(
+	providerService, err := provider.NewService(
 		&provider.ServiceParams{
 			DomainName:    startFlags.DomainName,
 			ResourcesPath: startFlags.ResourcesPath,
 			DB:            db,
 			ProviderBind:  startFlags.ProviderBind,
 		})
+	if err != nil {
+		log.Fatal(err)
+	}
 	providerService.Serve(ctx, errs)
 
 	// transfer service

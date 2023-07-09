@@ -17,7 +17,6 @@ type ApiParams struct {
 
 type Api struct {
 	Health    HealthApi
-	Form      FormApi
 	Resources ResourcesApi
 	Session   SessionApi
 	User      UserApi
@@ -26,7 +25,6 @@ type Api struct {
 func NewApi(params ApiParams) Api {
 	return Api{
 		Health:    HealthApi{domainName: params.DomainName},
-		Form:      FormApi{domainName: params.DomainName},
 		Resources: ResourcesApi{resources: params.Repository.Resources, resourcesPath: params.ResourcesPath},
 		Session:   SessionApi{user: params.Repository.User, session: params.Repository.Session},
 		User:      UserApi{user: params.Repository.User},

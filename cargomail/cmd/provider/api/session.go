@@ -17,8 +17,9 @@ type SessionApi struct {
 }
 
 type credentials struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Username   string `json:"username"`
+	Password   string `json:"password"`
+	RememberMe bool   `json:"rememberMe"`
 }
 
 func isAlnumOrHyphenOrDot(s string) bool {
@@ -51,7 +52,7 @@ func (api *UserApi) Register() http.Handler {
 		helper.FromJson(r.Body, &input)
 
 		if !validCredentials(input) {
-			helper.ReturnErr(w, repository.ErrInvalidCredentialsFormat, http.StatusInternalServerError)
+			helper.ReturnErr(w, repository.ErrInvalidCredentials, http.StatusForbidden)
 			return
 		}
 
@@ -77,7 +78,7 @@ func (api *UserApi) Register() http.Handler {
 		}
 
 		helper.SetJsonHeader(w)
-		w.WriteHeader(http.StatusCreated)
+		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(user)
 	})
 }
@@ -89,7 +90,7 @@ func (api *SessionApi) Authenticate() http.Handler {
 		helper.FromJson(r.Body, &input)
 
 		if !validCredentials(input) {
-			helper.ReturnErr(w, repository.ErrInvalidCredentialsFormat, http.StatusInternalServerError)
+			helper.ReturnErr(w, repository.ErrInvalidCredentials, http.StatusForbidden)
 			return
 		}
 
@@ -124,12 +125,16 @@ func (api *SessionApi) Authenticate() http.Handler {
 		cookie := http.Cookie{
 			Name:     "session",
 			Value:    session.Plaintext,
-			Expires:  session.Expiry,
-			Path:     "/api/v1",
+			Path:     "/",
 			HttpOnly: true,
 			Secure:   false, // !!!
 			SameSite: http.SameSiteLaxMode,
 		}
+
+		if input.RememberMe {
+			cookie.Expires = session.Expiry
+		}
+
 		http.SetCookie(w, &cookie)
 
 		helper.SetJsonHeader(w)
@@ -143,8 +148,8 @@ func (api *SessionApi) Logout() http.Handler {
 		clearCookie := http.Cookie{
 			Name:     "session",
 			Value:    "",
-			MaxAge:   0,
-			Path:     "/api/v1",
+			MaxAge:   -1,
+			Path:     "/",
 			HttpOnly: true,
 			Secure:   false, // !!!
 			SameSite: http.SameSiteLaxMode,

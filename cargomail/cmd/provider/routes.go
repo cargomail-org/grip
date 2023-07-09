@@ -7,10 +7,11 @@ import (
 
 func (svc *service) routes(mux *http.ServeMux, templates map[string]*template.Template) {
 	// App
-	mux.Handle("/", svc.api.Form.HomeForm(templates[HomePage]))
-	mux.Handle("/login", svc.api.Form.LoginForm(templates[LoginPage]))
-	mux.Handle("/logout", http.RedirectHandler("/login", http.StatusSeeOther))
-	mux.Handle("/register", svc.api.Form.RegisterForm(templates[RegisterPage]))
+	mux.Handle("/", svc.app.Authenticate(svc.app.HomeForm(templates[HomePage])))
+	mux.Handle("/login", svc.app.LoginForm(templates[LoginPage]))
+	mux.Handle("/logout", svc.app.Logout())
+	mux.Handle("/register", svc.app.RegisterForm(templates[RegisterPage]))
+	// mux.Handle("/auth/authenticate", svc.app.Session.Authenticate())
 	// Health API
 	mux.Handle("/api/v1/health", svc.api.Health.Healthcheck())
 	// Auth API
