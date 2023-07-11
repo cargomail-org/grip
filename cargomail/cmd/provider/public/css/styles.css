@@ -18,3 +18,23 @@ a.nav-link:hover {
   color: #ffffffe3;
 }
 
+@media screen and (max-width: 575px) {
+  /* body {
+      background-color: cyan;
+  } */
+  .responsive-menu {
+    flex-direction: column;
+  }
+}
+
+@media screen and (min-width: 576px) {
+  /* body {
+      background-color: yellow;
+  } */
+  .responsive-menu {
+    flex-direction: row;
+  }
+}
+
+
+

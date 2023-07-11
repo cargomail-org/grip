@@ -3,7 +3,7 @@
 
 <div style="width: 100%">
     <!-- https://stackoverflow.com/questions/48472771/bootstrap-responsive-sidebar-menu-to-top-navbar/48477019#48477019 -->
-    <div class="row vh-100 overflow-auto">
+    <div class="responsive-menu row vh-100 overflow-auto">
         <div class="col-12 col-sm-3 col-xl-2 px-sm-2 px-0 bg-primary d-flex sticky-top">
             <div class="d-flex flex-sm-column flex-row flex-grow-1 align-items-center align-items-sm-start px-3 pt-2">
                 <ul class="nav nav-pills">
@@ -43,7 +43,7 @@
         </div>
         <div class="col d-flex flex-column h-sm-100">
             <main class="row overflow-auto h-100">
-                <div class="col pt-4" style="height: 75vh!important; max-height: 75vh!important;">
+                <div class="col pt-4" style="height: 0vh!important; max-height: 0vh!important;">
                     {{template "content" .}}
                 </div>
             </main>
