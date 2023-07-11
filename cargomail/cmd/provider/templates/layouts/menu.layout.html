@@ -5,29 +5,34 @@
     <!-- https://stackoverflow.com/questions/48472771/bootstrap-responsive-sidebar-menu-to-top-navbar/48477019#48477019 -->
     <div class="row vh-100 overflow-auto">
         <div class="col-12 col-sm-3 col-xl-2 px-sm-2 px-0 bg-primary d-flex sticky-top">
-            <div
-                class="d-flex flex-sm-column flex-row flex-grow-1 align-items-center align-items-sm-start px-3 pt-2 text-white">
-                <a href="/compose" class="nav-link my-2 px-sm-0 px-2 text-white">
-                    <i class="fs-5 bi-plus-square"></i><span class="ms-1 fs-5 d-none d-sm-inline">Compose</span>
-                </a>
-                <ul class="nav nav-pills flex-sm-column flex-row flex-nowrap flex-shrink-1 flex-sm-grow-0 flex-grow-1 mb-sm-auto mb-0 justify-content-center align-items-center align-items-sm-start"
-                    id="menu">
-                    <li>
-                        <a href="/" class="nav-link px-sm-0 px-2 text-white">
-                            <i class="fs-5 bi-grid-3x3-gap"></i><span class="ms-1 d-none d-sm-inline">Collections</span>
+            <div class="d-flex flex-sm-column flex-row flex-grow-1 align-items-center align-items-sm-start px-3 pt-2">
+                <ul class="nav nav-pills">
+                    <li class="nav-item">
+                        <a href="/compose" class="nav-link my-2 px-sm-0 px-2">
+                            <i class="fs-5 bi-plus-square"></i><span class="ms-1 fs-5 d-none d-sm-inline">Compose</span>
                         </a>
                     </li>
-                    <li>
-                        <a href="/files" class="nav-link px-sm-0 px-2 text-white">
+                </ul>
+                <ul class="nav nav-pills flex-sm-column flex-row flex-nowrap flex-shrink-1 flex-sm-grow-0 flex-grow-1 mb-sm-auto mb-0 justify-content-center align-items-center align-items-sm-start"
+                    id="menu">
+                    <li class="nav-item">
+                        <a href="/" class="nav-link px-sm-0 px-2">
+                            <i class="fs-5 bi-grid-1x2"></i><span class="ms-1 d-none d-sm-inline">Collections</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/files" class="nav-link px-sm-0 px-2">
                             <i class="fs-5 bi-file-earmark-diff"></i><span
                                 class="ms-1 d-none d-sm-inline">Files</span></a>
                     </li>
                 </ul>
                 <div class="dropdown py-sm-4 mt-sm-auto ms-auto ms-sm-0 flex-shrink-1">
-                    <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+                    <a href="#" class="nav-link d-flex align-items-center text-decoration-none dropdown-toggle"
                         id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="https://github.com/mdo.png" alt="hugenerd" width="28" height="28"
-                            class="rounded-circle">
+                        <div class="rounded-circle border d-flex justify-content-center align-items-center"
+                            style="width:28px;height:28px" alt="Avatar">
+                            {{.UsernameLetter}}
+                        </div>
                         <span class="d-none d-sm-inline mx-1">{{.Username}}</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">

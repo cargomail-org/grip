@@ -2,15 +2,18 @@ package app
 
 import (
 	"cargomail/internal/repository"
+	"fmt"
 	"log"
 	"net/http"
+	"strings"
 )
 
 func (app *App) ComposeForm() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
 			type Data struct {
-				Username string
+				Username       string
+				UsernameLetter string
 			}
 
 			user, ok := r.Context().Value(userContextKey).(*repository.User)
@@ -18,7 +21,7 @@ func (app *App) ComposeForm() http.Handler {
 				log.Fatal("missing user context")
 			}
 
-			data := Data{Username: user.Username}
+			data := Data{Username: user.Username, UsernameLetter: fmt.Sprintf("%c", strings.ToUpper(user.Username)[0])}
 
 			t := app.ComposeTemplate
 			t.Execute(w, data)
@@ -30,7 +33,8 @@ func (app *App) CollectionsForm() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
 			type Data struct {
-				Username string
+				Username       string
+				UsernameLetter string
 			}
 
 			user, ok := r.Context().Value(userContextKey).(*repository.User)
@@ -38,7 +42,7 @@ func (app *App) CollectionsForm() http.Handler {
 				log.Fatal("missing user context")
 			}
 
-			data := Data{Username: user.Username}
+			data := Data{Username: user.Username, UsernameLetter: fmt.Sprintf("%c", strings.ToUpper(user.Username)[0])}
 
 			t := app.CollectionsTemplate
 			t.Execute(w, data)
@@ -50,7 +54,8 @@ func (app *App) FilesForm() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
 			type Data struct {
-				Username string
+				Username       string
+				UsernameLetter string
 			}
 
 			user, ok := r.Context().Value(userContextKey).(*repository.User)
@@ -58,7 +63,7 @@ func (app *App) FilesForm() http.Handler {
 				log.Fatal("missing user context")
 			}
 
-			data := Data{Username: user.Username}
+			data := Data{Username: user.Username, UsernameLetter: fmt.Sprintf("%c", strings.ToUpper(user.Username)[0])}
 
 			t := app.FilesTemplate
 			t.Execute(w, data)
