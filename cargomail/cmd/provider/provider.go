@@ -29,14 +29,6 @@ type service struct {
 	providerBind string
 }
 
-var (
-	ComposePage     = "compose.page.html"
-	CollectionsPage = "collections.page.html"
-	FilesPage       = "files.page.html"
-	LoginPage       = "login.page.html"
-	RegisterPage    = "register.page.html"
-)
-
 func NewService(params *ServiceParams) (service, error) {
 	repository := repository.NewRepository(params.DB)
 
@@ -70,7 +62,15 @@ const (
 	publicDir    = "public"
 	templatesDir = "templates"
 	layoutsDir   = "templates/layouts"
-	extension    = "/*.html"
+	// extension    = "/*.html"
+	baseLayout = "/base.layout.html"
+	menuLayout = "/menu.layout.html"
+
+	ComposePage     = "compose.page.html"
+	CollectionsPage = "collections.page.html"
+	FilesPage       = "files.page.html"
+	LoginPage       = "login.page.html"
+	RegisterPage    = "register.page.html"
 )
 
 var (
@@ -92,7 +92,15 @@ func LoadTemplates() (map[string]*template.Template, error) {
 			continue
 		}
 
-		pt, err := template.ParseFS(files, templatesDir+"/"+tmpl.Name(), layoutsDir+extension)
+		//pt, err := template.ParseFS(files, templatesDir+"/"+tmpl.Name(), layoutsDir+extension)
+		var err error
+		var pt *template.Template
+		if tmpl.Name() == RegisterPage || tmpl.Name() == LoginPage {
+			pt, err = template.ParseFS(files, templatesDir+"/"+tmpl.Name(), layoutsDir+baseLayout)
+		} else {
+			pt, err = template.ParseFS(files, templatesDir+"/"+tmpl.Name(), layoutsDir+menuLayout, layoutsDir+baseLayout)
+
+		}
 		if err != nil {
 			return nil, err
 		}
