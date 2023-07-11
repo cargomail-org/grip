@@ -4,21 +4,6 @@ import (
 	"net/http"
 )
 
-func (app *App) HomeForm() http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == "GET" {
-			type Data struct {
-				Username string
-			}
-
-			data := Data{Username: "igor"}
-
-			t := app.CollectionsTemplate
-			t.Execute(w, data)
-		}
-	})
-}
-
 func (app *App) ComposeForm() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {

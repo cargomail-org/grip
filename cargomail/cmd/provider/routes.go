@@ -6,12 +6,11 @@ import (
 
 func (svc *service) routes(mux *http.ServeMux) {
 	// App
-	mux.Handle("/", svc.app.Authenticate(svc.app.HomeForm()))
+	mux.Handle("/", svc.app.Authenticate(svc.app.CollectionsForm()))
 	mux.Handle("/login", svc.app.LoginForm())
 	mux.Handle("/logout", svc.app.Logout())
 	mux.Handle("/register", svc.app.RegisterForm())
 	mux.Handle("/compose", svc.app.Authenticate(svc.app.ComposeForm()))
-	mux.Handle("/collections", svc.app.Authenticate(svc.app.CollectionsForm()))
 	mux.Handle("/files", svc.app.Authenticate(svc.app.FilesForm()))
 
 	// mux.Handle("/auth/authenticate", svc.app.Session.Authenticate())
