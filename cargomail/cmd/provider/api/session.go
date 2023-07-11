@@ -83,7 +83,7 @@ func (api *UserApi) Register() http.Handler {
 	})
 }
 
-func (api *SessionApi) Authenticate() http.Handler {
+func (api *SessionApi) Login() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var input credentials
 

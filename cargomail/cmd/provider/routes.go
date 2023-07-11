@@ -18,7 +18,7 @@ func (svc *service) routes(mux *http.ServeMux) {
 	mux.Handle("/api/v1/health", svc.api.Health.Healthcheck())
 	// Auth API
 	mux.Handle("/api/v1/auth/register", svc.api.User.Register())
-	mux.Handle("/api/v1/auth/authenticate", svc.api.Session.Authenticate())
+	mux.Handle("/api/v1/auth/authenticate", svc.api.Session.Login())
 	mux.Handle("/api/v1/auth/logout", svc.api.Session.Logout())
 	// Resources API
 	mux.Handle("/api/v1/resources/upload", svc.api.Authenticate(svc.api.Resources.Upload()))

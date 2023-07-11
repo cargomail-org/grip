@@ -3,6 +3,7 @@ package app
 import (
 	"cargomail/cmd/provider/api/helper"
 	"cargomail/internal/repository"
+	"context"
 	"errors"
 	"html/template"
 	"log"
@@ -41,6 +42,15 @@ func NewApp(params AppParams) App {
 	}
 }
 
+type contextKey string
+
+const userContextKey = contextKey("user")
+
+func (app *App) contextSetUser(r *http.Request, user *repository.User) *http.Request {
+	ctx := context.WithValue(r.Context(), userContextKey, user)
+	return r.WithContext(ctx)
+}
+
 func redirectToLoginPage(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
@@ -72,7 +82,7 @@ func (app *App) Authenticate(next http.Handler) http.Handler {
 			return
 		}
 
-		_, err = app.repository.User.GetBySession(repository.ScopeAuthentication, session)
+		user, err := app.repository.User.GetBySession(repository.ScopeAuthentication, session)
 		if err != nil {
 			switch {
 			case errors.Is(err, repository.ErrUsernameNotFound):
@@ -82,6 +92,8 @@ func (app *App) Authenticate(next http.Handler) http.Handler {
 			}
 			return
 		}
+
+		r = app.contextSetUser(r, user)
 
 		next.ServeHTTP(w, r)
 	})

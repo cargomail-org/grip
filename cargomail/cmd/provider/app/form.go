@@ -1,6 +1,8 @@
 package app
 
 import (
+	"cargomail/internal/repository"
+	"log"
 	"net/http"
 )
 
@@ -11,7 +13,12 @@ func (app *App) ComposeForm() http.Handler {
 				Username string
 			}
 
-			data := Data{Username: "igor"}
+			user, ok := r.Context().Value(userContextKey).(*repository.User)
+			if !ok {
+				log.Fatal("missing user context")
+			}
+
+			data := Data{Username: user.Username}
 
 			t := app.ComposeTemplate
 			t.Execute(w, data)
@@ -26,7 +33,12 @@ func (app *App) CollectionsForm() http.Handler {
 				Username string
 			}
 
-			data := Data{Username: "igor"}
+			user, ok := r.Context().Value(userContextKey).(*repository.User)
+			if !ok {
+				log.Fatal("missing user context")
+			}
+
+			data := Data{Username: user.Username}
 
 			t := app.CollectionsTemplate
 			t.Execute(w, data)
@@ -41,7 +53,12 @@ func (app *App) FilesForm() http.Handler {
 				Username string
 			}
 
-			data := Data{Username: "igor"}
+			user, ok := r.Context().Value(userContextKey).(*repository.User)
+			if !ok {
+				log.Fatal("missing user context")
+			}
+
+			data := Data{Username: user.Username}
 
 			t := app.FilesTemplate
 			t.Execute(w, data)
