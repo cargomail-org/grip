@@ -10,22 +10,34 @@ import (
 )
 
 type AppParams struct {
-	DomainName string
-	Repository repository.Repository
-	Templates  map[string]*template.Template
+	DomainName          string
+	Repository          repository.Repository
+	ComposeTemplate     *template.Template
+	CollectionsTemplate *template.Template
+	FilesTemplate       *template.Template
+	LoginTemplate       *template.Template
+	RegisterTemplate    *template.Template
 }
 
 type App struct {
-	domainName string
-	repository repository.Repository
-	Templates  map[string]*template.Template
+	domainName          string
+	repository          repository.Repository
+	ComposeTemplate     *template.Template
+	CollectionsTemplate *template.Template
+	FilesTemplate       *template.Template
+	LoginTemplate       *template.Template
+	RegisterTemplate    *template.Template
 }
 
 func NewApp(params AppParams) App {
 	return App{
-		domainName: params.DomainName,
-		repository: params.Repository,
-		Templates:  params.Templates,
+		domainName:          params.DomainName,
+		repository:          params.Repository,
+		ComposeTemplate:     params.ComposeTemplate,
+		CollectionsTemplate: params.CollectionsTemplate,
+		FilesTemplate:       params.FilesTemplate,
+		LoginTemplate:       params.LoginTemplate,
+		RegisterTemplate:    params.RegisterTemplate,
 	}
 }
 

@@ -29,6 +29,14 @@ type service struct {
 	providerBind string
 }
 
+var (
+	ComposePage     = "compose.page.html"
+	CollectionsPage = "collections.page.html"
+	FilesPage       = "files.page.html"
+	LoginPage       = "login.page.html"
+	RegisterPage    = "register.page.html"
+)
+
 func NewService(params *ServiceParams) (service, error) {
 	repository := repository.NewRepository(params.DB)
 
@@ -40,9 +48,13 @@ func NewService(params *ServiceParams) (service, error) {
 	return service{
 		app: app.NewApp(
 			app.AppParams{
-				DomainName: params.DomainName,
-				Repository: repository,
-				Templates:  templates,
+				DomainName:          params.DomainName,
+				Repository:          repository,
+				ComposeTemplate:     templates[ComposePage],
+				CollectionsTemplate: templates[CollectionsPage],
+				FilesTemplate:       templates[FilesPage],
+				LoginTemplate:       templates[LoginPage],
+				RegisterTemplate:    templates[RegisterPage],
 			}),
 		api: api.NewApi(
 			api.ApiParams{
@@ -59,10 +71,6 @@ const (
 	templatesDir = "templates"
 	layoutsDir   = "templates/layouts"
 	extension    = "/*.html"
-
-	HomePage     = "home.page.html"
-	LoginPage    = "login.page.html"
-	RegisterPage = "register.page.html"
 )
 
 var (
@@ -92,9 +100,21 @@ func LoadTemplates() (map[string]*template.Template, error) {
 		templates[tmpl.Name()] = pt
 	}
 
-	_, exists := templates[HomePage]
+	_, exists := templates[ComposePage]
 	if !exists {
-		log.Printf("template %s not found", HomePage)
+		log.Printf("template %s not found", ComposePage)
+		return nil, err
+	}
+
+	_, exists = templates[CollectionsPage]
+	if !exists {
+		log.Printf("template %s not found", CollectionsPage)
+		return nil, err
+	}
+
+	_, exists = templates[FilesPage]
+	if !exists {
+		log.Printf("template %s not found", FilesPage)
 		return nil, err
 	}
 
@@ -116,7 +136,7 @@ func LoadTemplates() (map[string]*template.Template, error) {
 func (svc *service) Serve(ctx context.Context, errs *errgroup.Group) {
 	// Routes
 	mux := http.NewServeMux()
-	svc.routes(mux, svc.app.Templates)
+	svc.routes(mux)
 
 	fs := http.FileServer(http.FS(files))
 	mux.Handle("/"+publicDir+"/", http.StripPrefix("/", fs))

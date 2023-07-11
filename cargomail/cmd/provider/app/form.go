@@ -1,11 +1,10 @@
 package app
 
 import (
-	"html/template"
 	"net/http"
 )
 
-func (app *App) HomeForm(t *template.Template) http.Handler {
+func (app *App) HomeForm() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
 			type Data struct {
@@ -14,6 +13,52 @@ func (app *App) HomeForm(t *template.Template) http.Handler {
 
 			data := Data{Username: "igor"}
 
+			t := app.CollectionsTemplate
+			t.Execute(w, data)
+		}
+	})
+}
+
+func (app *App) ComposeForm() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == "GET" {
+			type Data struct {
+				Username string
+			}
+
+			data := Data{Username: "igor"}
+
+			t := app.ComposeTemplate
+			t.Execute(w, data)
+		}
+	})
+}
+
+func (app *App) CollectionsForm() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == "GET" {
+			type Data struct {
+				Username string
+			}
+
+			data := Data{Username: "igor"}
+
+			t := app.CollectionsTemplate
+			t.Execute(w, data)
+		}
+	})
+}
+
+func (app *App) FilesForm() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == "GET" {
+			type Data struct {
+				Username string
+			}
+
+			data := Data{Username: "igor"}
+
+			t := app.FilesTemplate
 			t.Execute(w, data)
 		}
 	})
@@ -35,7 +80,7 @@ func (app *App) HomeForm(t *template.Template) http.Handler {
 // 	}
 // }
 
-func (app *App) LoginForm(t *template.Template) http.Handler {
+func (app *App) LoginForm() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
 			data := struct {
@@ -44,12 +89,13 @@ func (app *App) LoginForm(t *template.Template) http.Handler {
 				app.domainName,
 			}
 
+			t := app.LoginTemplate
 			t.Execute(w, data)
 		}
 	})
 }
 
-func (app *App) RegisterForm(t *template.Template) http.Handler {
+func (app *App) RegisterForm() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
 			data := struct {
@@ -58,6 +104,7 @@ func (app *App) RegisterForm(t *template.Template) http.Handler {
 				app.domainName,
 			}
 
+			t := app.RegisterTemplate
 			t.Execute(w, data)
 		}
 	})
