@@ -44,9 +44,15 @@
         <div class="col d-flex flex-column h-sm-100">
             <main class="row overflow-auto h-100">
                 <div class="col pt-4" style="height: 0vh!important; max-height: 0vh!important;">
-                    {{template "compose" .}}
-                    {{template "collections" .}}
-                    {{template "files" .}}
+                    <div hidden class="container" id="compose-container">
+                        {{template "compose" .}}
+                    </div>
+                    <div class="collections" id="collections-container">
+                        {{template "collections" .}}
+                    </div>
+                    <div hidden class="files" id="files-container">
+                        {{template "files" .}}
+                    </div>
                 </div>
             </main>
             <footer class="row bg-light py-4 mt-auto">
