@@ -8,7 +8,6 @@ import (
 	"database/sql"
 	"embed"
 	"html/template"
-	"io/fs"
 	"log"
 	"net/http"
 	"time"
@@ -40,13 +39,11 @@ func NewService(params *ServiceParams) (service, error) {
 	return service{
 		app: app.NewApp(
 			app.AppParams{
-				DomainName:          params.DomainName,
-				Repository:          repository,
-				ComposeTemplate:     templates[ComposePage],
-				CollectionsTemplate: templates[CollectionsPage],
-				FilesTemplate:       templates[FilesPage],
-				LoginTemplate:       templates[LoginPage],
-				RegisterTemplate:    templates[RegisterPage],
+				DomainName:       params.DomainName,
+				Repository:       repository,
+				HomeTemplate:     templates[homePage],
+				LoginTemplate:    templates[loginPage],
+				RegisterTemplate: templates[registerPage],
 			}),
 		api: api.NewApi(
 			api.ApiParams{
@@ -60,17 +57,18 @@ func NewService(params *ServiceParams) (service, error) {
 
 const (
 	publicDir    = "public"
-	templatesDir = "templates"
-	layoutsDir   = "templates/layouts"
-	// extension    = "/*.html"
-	baseLayout = "/base.layout.html"
-	menuLayout = "/menu.layout.html"
+	templatesDir = "templates/"
+	layoutsDir   = "templates/layouts/"
+	baseLayout   = "base.layout.html"
+	menuLayout   = "menu.layout.html"
 
-	ComposePage     = "compose.page.html"
-	CollectionsPage = "collections.page.html"
-	FilesPage       = "files.page.html"
-	LoginPage       = "login.page.html"
-	RegisterPage    = "register.page.html"
+	composePage     = "compose.page.html"
+	collectionsPage = "collections.page.html"
+	filesPage       = "files.page.html"
+	loginPage       = "login.page.html"
+	registerPage    = "register.page.html"
+
+	homePage = "home.page"
 )
 
 var (
@@ -81,60 +79,25 @@ var (
 
 func LoadTemplates() (map[string]*template.Template, error) {
 	templates := make(map[string]*template.Template)
+	var err error
 
-	tmplFiles, err := fs.ReadDir(files, templatesDir)
+	templates[registerPage], err = template.ParseFS(files, templatesDir+registerPage, layoutsDir+baseLayout)
 	if err != nil {
 		return nil, err
 	}
 
-	for _, tmpl := range tmplFiles {
-		if tmpl.IsDir() {
-			continue
-		}
-
-		//pt, err := template.ParseFS(files, templatesDir+"/"+tmpl.Name(), layoutsDir+extension)
-		var err error
-		var pt *template.Template
-		if tmpl.Name() == RegisterPage || tmpl.Name() == LoginPage {
-			pt, err = template.ParseFS(files, templatesDir+"/"+tmpl.Name(), layoutsDir+baseLayout)
-		} else {
-			pt, err = template.ParseFS(files, templatesDir+"/"+tmpl.Name(), layoutsDir+menuLayout, layoutsDir+baseLayout)
-
-		}
-		if err != nil {
-			return nil, err
-		}
-
-		templates[tmpl.Name()] = pt
-	}
-
-	_, exists := templates[ComposePage]
-	if !exists {
-		log.Printf("template %s not found", ComposePage)
+	templates[loginPage], err = template.ParseFS(files, templatesDir+loginPage, layoutsDir+baseLayout)
+	if err != nil {
 		return nil, err
 	}
 
-	_, exists = templates[CollectionsPage]
-	if !exists {
-		log.Printf("template %s not found", CollectionsPage)
-		return nil, err
-	}
-
-	_, exists = templates[FilesPage]
-	if !exists {
-		log.Printf("template %s not found", FilesPage)
-		return nil, err
-	}
-
-	_, exists = templates[LoginPage]
-	if !exists {
-		log.Printf("template %s not found", LoginPage)
-		return nil, err
-	}
-
-	_, exists = templates[RegisterPage]
-	if !exists {
-		log.Printf("template %s not found", RegisterPage)
+	templates[homePage], err = template.ParseFS(files,
+		templatesDir+composePage,
+		templatesDir+collectionsPage,
+		templatesDir+filesPage,
+		layoutsDir+menuLayout,
+		layoutsDir+baseLayout)
+	if err != nil {
 		return nil, err
 	}
 

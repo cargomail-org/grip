@@ -1,7 +1,7 @@
 {{template "base" .}}
-{{define "content"}}
+{{define "files"}}
 
-<div class="container" style="height: fit-content!important;">
+<div hidden class="container" id="files-container" style="height: fit-content!important;">
     <form class="row g-2" method="POST" enctype="multipart/form-data"
         action="/api/v1/resources/upload">
         <input type="hidden" name="csrf" value="{{.}}" />

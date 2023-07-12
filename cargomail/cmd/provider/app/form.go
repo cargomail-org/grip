@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func (app *App) ComposeForm() http.Handler {
+func (app *App) HomePage() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
 			type Data struct {
@@ -23,49 +23,7 @@ func (app *App) ComposeForm() http.Handler {
 
 			data := Data{Username: user.Username, UsernameLetter: fmt.Sprintf("%c", strings.ToUpper(user.Username)[0])}
 
-			t := app.ComposeTemplate
-			t.Execute(w, data)
-		}
-	})
-}
-
-func (app *App) CollectionsForm() http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == "GET" {
-			type Data struct {
-				Username       string
-				UsernameLetter string
-			}
-
-			user, ok := r.Context().Value(userContextKey).(*repository.User)
-			if !ok {
-				log.Fatal("missing user context")
-			}
-
-			data := Data{Username: user.Username, UsernameLetter: fmt.Sprintf("%c", strings.ToUpper(user.Username)[0])}
-
-			t := app.CollectionsTemplate
-			t.Execute(w, data)
-		}
-	})
-}
-
-func (app *App) FilesForm() http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == "GET" {
-			type Data struct {
-				Username       string
-				UsernameLetter string
-			}
-
-			user, ok := r.Context().Value(userContextKey).(*repository.User)
-			if !ok {
-				log.Fatal("missing user context")
-			}
-
-			data := Data{Username: user.Username, UsernameLetter: fmt.Sprintf("%c", strings.ToUpper(user.Username)[0])}
-
-			t := app.FilesTemplate
+			t := app.HomeTemplate
 			t.Execute(w, data)
 		}
 	})
@@ -87,7 +45,7 @@ func (app *App) FilesForm() http.Handler {
 // 	}
 // }
 
-func (app *App) LoginForm() http.Handler {
+func (app *App) LoginPage() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
 			data := struct {
@@ -102,7 +60,7 @@ func (app *App) LoginForm() http.Handler {
 	})
 }
 
-func (app *App) RegisterForm() http.Handler {
+func (app *App) RegisterPage() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
 			data := struct {
