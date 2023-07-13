@@ -109,7 +109,9 @@ func (svc *service) Serve(ctx context.Context, errs *errgroup.Group) {
 	mux := http.NewServeMux()
 	svc.routes(mux)
 
-	fs := http.FileServer(http.FS(files))
+	// fs := http.FileServer(http.FS(files)) // comment out for development
+	fs := http.FileServer(http.Dir("cmd/provider")) // comment out for production
+	
 	mux.Handle("/"+publicDir+"/", http.StripPrefix("/", fs))
 
 	http1Server := &http.Server{Handler: mux, Addr: svc.providerBind}
