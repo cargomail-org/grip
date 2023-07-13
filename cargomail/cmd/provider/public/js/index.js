@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
-    collectionsContent();
+    filesContent(); // in prod should be collectionsContent
   });
 
 function composeContent(e) {
