@@ -6,7 +6,8 @@
   width: 22rem !important;
 }
 
-.nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+.nav-tabs .nav-item.show .nav-link,
+.nav-tabs .nav-link.active {
   color: white;
 }
 
@@ -20,6 +21,11 @@ a.nav-link:hover {
 
 div.dt-buttons.btn-group {
   margin-bottom: 10px;
+}
+
+.dataTables_wrapper .dataTables_filter input::-webkit-search-cancel-button {
+  -webkit-appearance: button !important;
+  appearance: button !important;
 }
 
 @media screen and (max-width: 575px) {
@@ -39,6 +45,3 @@ div.dt-buttons.btn-group {
     flex-direction: row;
   }
 }
-
-
-
