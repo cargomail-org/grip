@@ -18,6 +18,10 @@ a.nav-link:hover {
   color: #ffffffe3;
 }
 
+div.dt-buttons.btn-group {
+  margin-bottom: 10px;
+}
+
 @media screen and (max-width: 575px) {
   /* body {
       background-color: cyan;
