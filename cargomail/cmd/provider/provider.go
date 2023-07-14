@@ -62,11 +62,11 @@ const (
 	baseLayout   = "base.layout.html"
 	menuLayout   = "menu.layout.html"
 
-	composePage     = "compose.page.html"
-	collectionsPage = "collections.page.html"
-	filesPage       = "files.page.html"
-	loginPage       = "login.page.html"
-	registerPage    = "register.page.html"
+	composePage  = "compose.page.html"
+	cargoesPage  = "cargoes.page.html"
+	filesPage    = "files.page.html"
+	loginPage    = "login.page.html"
+	registerPage = "register.page.html"
 
 	homePage = "home.page"
 )
@@ -93,7 +93,7 @@ func LoadTemplates() (map[string]*template.Template, error) {
 
 	templates[homePage], err = template.ParseFS(files,
 		templatesDir+composePage,
-		templatesDir+collectionsPage,
+		templatesDir+cargoesPage,
 		templatesDir+filesPage,
 		layoutsDir+menuLayout,
 		layoutsDir+baseLayout)
@@ -111,7 +111,7 @@ func (svc *service) Serve(ctx context.Context, errs *errgroup.Group) {
 
 	// fs := http.FileServer(http.FS(files)) // comment out for development
 	fs := http.FileServer(http.Dir("cmd/provider")) // comment out for production
-	
+
 	mux.Handle("/"+publicDir+"/", http.StripPrefix("/", fs))
 
 	http1Server := &http.Server{Handler: mux, Addr: svc.providerBind}
