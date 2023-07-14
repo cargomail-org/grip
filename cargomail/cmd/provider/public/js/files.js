@@ -112,3 +112,8 @@ export const deleteItems = (e) => {
       console.log("Error while deleting file(s):", error);
     });
 };
+
+export const clearUpload = (e) => {
+  e.preventDefault();
+  document.getElementById("inputUpload").value = "";
+}

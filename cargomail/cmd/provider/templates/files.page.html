@@ -6,15 +6,21 @@
     <form class="row g-2" method="POST" enctype="multipart/form-data" action="/api/v1/resources/upload">
         <input type="hidden" name="csrf" value="{{.}}" />
         <div class="col-auto">
-            <input class="form-control" type="file" name="file" id="formFile">
+            <input class="form-control" id="inputUpload" type="file" name="file" multiple id="formFile">
         </div>
         <div class="col-auto">
-            <input class="btn btn-primary" type="submit" value="Upload">
+            <div class="input-group">
+                <input class="btn btn-primary" type="submit" value="Upload">
+                <button class="btn btn-primary" id="clearButton">Clear!</button>
+            </div>
         </div>
-        <div style="margin:auto">
-            <ui5-button design="Emphasized" id="submit-btn" value="Upload"></ui5-button>
+        <div class="row-auto">
+            <div class="progress" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+                <div class="progress-bar" style="width: 25%">25%</div>
+            </div>
         </div>
     </form>
+
     <!-- Modal -->
     <div class="modal fade" id="confirmDialog" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
         aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -48,7 +54,8 @@
 </div>
 
 <script type="module">
-    import { deleteItems } from "/public/js/files.js";
+    import { clearUpload, deleteItems } from "/public/js/files.js";
+    document.querySelector('#clearButton').addEventListener('click', clearUpload)
     document.querySelector('#confirmButton').addEventListener('click', deleteItems)
 </script>
 <script type="module" src='/public/js/files.js'></script>
