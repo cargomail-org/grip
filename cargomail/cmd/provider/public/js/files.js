@@ -33,7 +33,7 @@ const table = new DataTable("#files-table", {
       render: (data, type, full, meta) => {
         const link = "/api/v1/resource/";
         return `<a href="${link}${full.uuid}">${data}</a>`;
-      }
+      },
     },
     { data: "size", searchable: false },
   ],
@@ -53,7 +53,17 @@ const table = new DataTable("#files-table", {
   },
   order: [[0, "desc"]],
   dom: "Bfrtip",
+  language: {
+    buttons: {
+      pageLength: 'Show %d'
+    }
+  },
+  lengthMenu: [
+    [10, 25, 50],
+    ["10 rows", "25 rows", "50 rows"],
+  ],
   buttons: [
+    "pageLength",
     {
       text: "Reload",
       action: function () {
@@ -61,7 +71,7 @@ const table = new DataTable("#files-table", {
       },
     },
     {
-      text: "Delete selected",
+      text: "Delete",
       action: function () {
         selectedIds = [];
 
@@ -116,4 +126,4 @@ export const deleteItems = (e) => {
 export const clearUpload = (e) => {
   e.preventDefault();
   document.getElementById("inputUpload").value = "";
-}
+};
