@@ -23,6 +23,22 @@ div.dt-buttons.btn-group {
   margin-bottom: 10px;
 }
 
+#subjectHeading {
+  display: -webkit-box;
+  max-width: 240px;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* #subjectHeading {
+  display: inline-block;
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
+} */
+
 .dataTables_wrapper .dataTables_filter input::-webkit-search-cancel-button {
   -webkit-appearance: button !important;
   appearance: button !important;

@@ -16,7 +16,7 @@ const confirmDialog = new bootstrap.Modal(
   document.querySelector("#confirmDialog")
 );
 
-const table = new DataTable("#files-table", {
+const filesTable = new DataTable("#filesTable", {
   paging: true,
   responsive: {
     details: false,
@@ -59,23 +59,25 @@ const table = new DataTable("#files-table", {
     }
   },
   lengthMenu: [
-    [10, 25, 50],
-    ["10 rows", "25 rows", "50 rows"],
+    [5, 10, 25],
+    ["5 rows", "10 rows", "25 rows"],
   ],
   buttons: [
     "pageLength",
     {
       text: "Reload",
       action: function () {
-        table.ajax.reload();
+        filesTable.ajax.reload();
       },
     },
     {
       text: "Delete",
+      className: 'files-delete',
+      enabled: false,
       action: function () {
         selectedIds = [];
 
-        const selectedData = table
+        const selectedData = filesTable
           .rows(".selected")
           .data()
           .map((obj) => obj.id);
@@ -88,6 +90,12 @@ const table = new DataTable("#files-table", {
       },
     },
   ],
+});
+
+filesTable.on('select.dt deselect.dt', () => {
+  filesTable.buttons( ['.files-delete'] ).enable(
+    filesTable.rows( { selected: true } ).indexes().length === 0 ? false : true
+  )
 });
 
 export const deleteItems = (e) => {
@@ -103,7 +111,8 @@ export const deleteItems = (e) => {
   })
     .then((response) => {
       if (response.ok) {
-        table.rows(".selected").remove().draw();
+        filesTable.rows(".selected").remove().draw();
+        filesTable.buttons( ['.files-delete'] ).enable(false);
         console.log("Successfully deleted file(s)");
         if (!Object.keys(response).length) {
           console.log("no return data found");

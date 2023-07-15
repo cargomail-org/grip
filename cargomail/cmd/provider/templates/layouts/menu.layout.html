@@ -10,11 +10,26 @@
                     <li class="nav-item">
                         <a href="/compose" id="compose-link" class="nav-link my-2 px-sm-0 px-2"
                             onclick='composeContent();return false;'>
-                            <i class="bi bi-postcard h3"></i><span class="ms-1 fs-5 d-none d-sm-inline">Compose</span>
+                            <div class="d-flex d-sm-none d-sm-inline">
+                                <i class="bi bi-postcard h2"></i>
+                                <span class="ms-2 mt-1 fs-7"><small id="subjectHeading">Fwd: DEKRA
+                                        Slovensko -
+                                        prijatie
+                                        objednávky</small></span>
+                            </div>
+                            <div class="d-none d-sm-inline">
+                                <i class="bi bi-postcard h2"></i>
+                                <span class="ms-1 fs-5">Compose</span>
+                                <br />
+                                <span class="fs-7"><small id="subjectHeading">Fwd: DEKRA
+                                        Slovensko -
+                                        prijatie
+                                        objednávky</small></span>
+                            </div>
                         </a>
                     </li>
                 </ul>
-                <ul class="nav nav-pills flex-sm-column flex-row flex-nowrap flex-shrink-1 flex-sm-grow-0 flex-grow-1 mb-sm-auto mb-0 justify-content-center align-items-center align-items-sm-start"
+                <ul class="nav nav-pills flex-sm-column flex-row flex-nowrap flex-shrink-1 flex-sm-grow-0 flex-grow-1 mb-sm-auto me-2 justify-content-end align-items-center align-items-sm-start"
                     id="menu">
                     <li class="nav-item">
                         <a href="/" id="cargoes-link" class="nav-link px-sm-0 px-2"
@@ -58,8 +73,13 @@
                     </div>
                 </div>
             </main>
-            <footer hidden class="row bg-light py-4 mt-auto">
-                <div class="col"> Footer content here... </div>
+            <footer hidden class="row bg-light py-3 mt-auto">
+                <div class="col">
+                    <a href="/copy" id="copy-link" class="nav-link px-sm-0 px-2">
+                        <i class="bi bi-clipboard-check h4"></i>
+                        <span class="ms-1 d-sm-inline">Copy selected to Compose Form</span>
+                    </a>
+                </div>
             </footer>
         </div>
     </div>
