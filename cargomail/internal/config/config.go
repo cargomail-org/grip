@@ -17,7 +17,7 @@ type StartFlags = struct {
 	DomainName       string `yaml:"domain_name"`
 	StoragePath      string `yaml:"storage_path"`
 	DatabasePath     string `yaml:"database_path"`
-	ResourcesPath    string `yaml:"resources_path"`
+	FilesPath        string `yaml:"files_path"`
 	TransferCertPath string `yaml:"transfer_cert_path"`
 	TransferKeyPath  string `yaml:"transfer_key_path"`
 	ProviderBind     string `yaml:"provider_bind"`

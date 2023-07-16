@@ -36,12 +36,12 @@ func NewApp(params AppParams) App {
 	}
 }
 
-type contextKey string
+// type contextKey string
 
-const userContextKey = contextKey("user")
+// const UserContextKey = contextKey("user")
 
 func (app *App) contextSetUser(r *http.Request, user *repository.User) *http.Request {
-	ctx := context.WithValue(r.Context(), userContextKey, user)
+	ctx := context.WithValue(r.Context(), repository.UserContextKey, user)
 	return r.WithContext(ctx)
 }
 

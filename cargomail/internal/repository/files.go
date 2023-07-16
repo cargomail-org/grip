@@ -8,11 +8,11 @@ import (
 	"time"
 )
 
-type ResourcesRepository struct {
+type FilesRepository struct {
 	db *sql.DB
 }
 
-type Resource struct {
+type File struct {
 	ID          int64     `json:"id"`
 	UUID        string    `json:"uuid"`
 	Name        string    `json:"name"`
@@ -22,12 +22,12 @@ type Resource struct {
 	CreatedAt   time.Time `json:"created_at"`
 }
 
-func (r ResourcesRepository) Create(user *User, uuid, name, path, contentType string, size int64) error {
+func (r FilesRepository) Create(user *User, uuid, name, path, contentType string, size int64) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	_, err := r.db.ExecContext(ctx, `INSERT INTO
-		resources (user_id, uuid, name, path, content_type, size)
+		files (user_id, uuid, name, path, content_type, size)
 		VALUES(?, ?, ?, ?, ?, ?)`, user.ID, uuid, name, path, contentType, size)
 	if err != nil {
 		log.Println(err)
@@ -37,10 +37,10 @@ func (r ResourcesRepository) Create(user *User, uuid, name, path, contentType st
 	return nil
 }
 
-func (r ResourcesRepository) GetAll(user *User, filters Filters) ([]*Resource, Metadata, error) {
+func (r FilesRepository) GetAll(user *User, filters Filters) ([]*File, Metadata, error) {
 	query := fmt.Sprintf(`
 		SELECT count(*) OVER(), id, uuid, name, path, size, content_type, created_at
-		FROM resources
+		FROM files
 		WHERE user_id = $1
 		ORDER BY %s %s, id ASC
 		LIMIT $2 OFFSET $3`, filters.sortColumn(), filters.sortDirection())
@@ -58,27 +58,27 @@ func (r ResourcesRepository) GetAll(user *User, filters Filters) ([]*Resource, M
 	defer rows.Close()
 
 	totalRecords := 0
-	resources := []*Resource{}
+	files := []*File{}
 
 	for rows.Next() {
-		var resource Resource
+		var file File
 
 		err := rows.Scan(
 			&totalRecords,
-			&resource.ID,
-			&resource.UUID,
-			&resource.Name,
-			&resource.Path,
-			&resource.Size,
-			&resource.ContentType,
-			&resource.CreatedAt,
+			&file.ID,
+			&file.UUID,
+			&file.Name,
+			&file.Path,
+			&file.Size,
+			&file.ContentType,
+			&file.CreatedAt,
 		)
 
 		if err != nil {
 			return nil, Metadata{}, err
 		}
 
-		resources = append(resources, &resource)
+		files = append(files, &file)
 	}
 
 	if err = rows.Err(); err != nil {
@@ -87,5 +87,5 @@ func (r ResourcesRepository) GetAll(user *User, filters Filters) ([]*Resource, M
 
 	metadata := calculateMetadata(totalRecords, filters.Page, filters.PageSize)
 
-	return resources, metadata, nil
+	return files, metadata, nil
 }

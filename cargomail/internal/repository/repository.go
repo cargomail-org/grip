@@ -3,12 +3,15 @@ package repository
 import (
 	"database/sql"
 	"errors"
+
+	tus "github.com/tus/tusd/v2/pkg/handler"
 )
 
 type Repository struct {
-	Resources ResourcesRepository
-	Session   SessionRepository
-	User      UserRepository
+	Files   FilesRepository
+	Storage StorageRepository
+	Session SessionRepository
+	User    UserRepository
 }
 
 var (
@@ -20,10 +23,11 @@ var (
 	ErrFailedValidationResponse = errors.New("failed validation")
 )
 
-func NewRepository(db *sql.DB) Repository {
+func NewRepository(db *sql.DB, tusHandler *tus.Handler) Repository {
 	return Repository{
-		Resources: ResourcesRepository{db: db},
-		Session:   SessionRepository{db: db},
-		User:      UserRepository{db: db},
+		Files:   FilesRepository{db: db},
+		Storage: StorageRepository{db: db, tusHandler: tusHandler},
+		Session: SessionRepository{db: db},
+		User:    UserRepository{db: db},
 	}
 }

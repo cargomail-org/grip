@@ -4,7 +4,7 @@ import "cargomail/internal/repository"
 
 type ApiParams struct {
 	DomainName    string
-	ResourcesPath string
+	FilesPath string
 	Repository    repository.Repository
 }
 

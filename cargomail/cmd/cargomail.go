@@ -36,10 +36,10 @@ func Start() error {
 	// provider service
 	providerService, err := provider.NewService(
 		&provider.ServiceParams{
-			DomainName:    startFlags.DomainName,
-			ResourcesPath: startFlags.ResourcesPath,
-			DB:            db,
-			ProviderBind:  startFlags.ProviderBind,
+			DomainName:   startFlags.DomainName,
+			FilesPath:    startFlags.FilesPath,
+			DB:           db,
+			ProviderBind: startFlags.ProviderBind,
 		})
 	if err != nil {
 		log.Fatal(err)
@@ -50,7 +50,7 @@ func Start() error {
 	transferService := transfer.NewService(
 		&transfer.ServiceParams{
 			DomainName:       startFlags.DomainName,
-			ResourcesPath:    startFlags.ResourcesPath,
+			FilesPath:        startFlags.FilesPath,
 			DB:               db,
 			TransferCertPath: startFlags.TransferCertPath,
 			TransferKeyPath:  startFlags.TransferKeyPath,

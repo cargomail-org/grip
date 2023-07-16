@@ -16,7 +16,7 @@ func (app *App) HomePage() http.Handler {
 				UsernameLetter string
 			}
 
-			user, ok := r.Context().Value(userContextKey).(*repository.User)
+			user, ok := r.Context().Value(repository.UserContextKey).(*repository.User)
 			if !ok {
 				log.Fatal("missing user context")
 			}

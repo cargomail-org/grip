@@ -3,15 +3,15 @@
 
 <div class="container">
     <!-- Upload -->
-    <form class="row g-2" method="POST" enctype="multipart/form-data" action="/api/v1/resources/upload">
+    <form class="row g-2" id="uploadForm" method="POST" enctype="multipart/form-data" action="/api/v1/files/tus/upload/">
         <input type="hidden" name="csrf" value="{{.}}" />
         <div class="col-auto">
-            <input class="form-control" id="inputUpload" type="file" name="file" multiple id="formFile">
+            <input class="form-control" id="inputUpload" type="file" name="files" multiple id="formFile">
         </div>
         <div class="col-auto">
             <div class="input-group">
-                <input class="btn btn-primary" type="submit" value="Upload">
-                <button class="btn btn-primary" id="clearButton">Clear</button>
+                <input class="disabled btn btn-primary" id="uploadButton" type="submit" value="Upload">
+                <button class="disabled btn btn-primary" id="clearButton">Clear</button>
             </div>
         </div>
         <div class="row-auto">
@@ -54,9 +54,11 @@
 </div>
 
 <script type="module">
-    import { clearUpload, deleteItems } from "/public/js/files.js";
-    document.querySelector('#clearButton').addEventListener('click', clearUpload)
-    document.querySelector('#confirmButton').addEventListener('click', deleteItems)
+    import * as tus from "https://cdn.jsdelivr.net/npm/tus-js-client@3.1.0/dist/tus.js";
+    import { inputUploadChanged, clearUpload, deleteItems } from "/public/js/files.js";
+    document.querySelector('#inputUpload').addEventListener('change', inputUploadChanged)
+    document.querySelector('#clearButton').addEventListener('click', clearUpload);
+    document.querySelector('#confirmButton').addEventListener('click', deleteItems);
 </script>
 <script type="module" src='/public/js/files.js'></script>
 

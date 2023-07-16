@@ -7,36 +7,39 @@ import (
 	"errors"
 	"log"
 	"net/http"
+
+	tus "github.com/tus/tusd/v2/pkg/handler"
 )
 
 type ApiParams struct {
-	DomainName    string
-	ResourcesPath string
-	Repository    repository.Repository
+	DomainName string
+	FilesPath  string
+	Repository repository.Repository
+	TusHandler *tus.Handler
 }
 
 type Api struct {
-	Health    HealthApi
-	Resources ResourcesApi
-	Session   SessionApi
-	User      UserApi
+	Health  HealthApi
+	Files   FilesApi
+	Session SessionApi
+	User    UserApi
 }
 
 func NewApi(params ApiParams) Api {
 	return Api{
-		Health:    HealthApi{domainName: params.DomainName},
-		Resources: ResourcesApi{resources: params.Repository.Resources, resourcesPath: params.ResourcesPath},
-		Session:   SessionApi{user: params.Repository.User, session: params.Repository.Session},
-		User:      UserApi{user: params.Repository.User},
+		Health:  HealthApi{domainName: params.DomainName},
+		Files:   FilesApi{files: params.Repository.Files, filesPath: params.FilesPath, tusHandler: params.TusHandler},
+		Session: SessionApi{user: params.Repository.User, session: params.Repository.Session},
+		User:    UserApi{user: params.Repository.User},
 	}
 }
 
-type contextKey string
+// type contextKey string
 
-const userContextKey = contextKey("user")
+// const UserContextKey = contextKey("user")
 
 func (api *Api) contextSetUser(r *http.Request, user *repository.User) *http.Request {
-	ctx := context.WithValue(r.Context(), userContextKey, user)
+	ctx := context.WithValue(r.Context(), repository.UserContextKey, user)
 	return r.WithContext(ctx)
 }
 

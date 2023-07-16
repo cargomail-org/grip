@@ -1,7 +1,7 @@
 domain_name: cargomail.org
 storage_path: ./storage/cargomail.org
 database_path: ./storage/cargomail.org/database/cargomail.db
-resources_path: ./storage/cargomail.org/resources/
+files_path: ./storage/cargomail.org/resources/files/
 transfer_cert_path: ./storage/cargomail.org/certificates/server.crt
 transfer_key_path: ./storage/cargomail.org/certificates/server.key
 provider_bind: 127.0.0.1:8181
