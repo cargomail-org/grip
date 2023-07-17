@@ -44,6 +44,9 @@ func (r FilesRepository) Create(user *User, uuid string, checksum []byte, name s
 }
 
 func (r FilesRepository) GetAll(user *User, filters Filters) ([]*File, Metadata, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
 	var query string
 	if filters.Page == 0 || filters.PageSize == 0 {
 		query = fmt.Sprintf(`
@@ -59,9 +62,6 @@ func (r FilesRepository) GetAll(user *User, filters Filters) ([]*File, Metadata,
 		ORDER BY %s %s, id ASC
 		LIMIT $2 OFFSET $3`, filters.sortColumn(), filters.sortDirection())
 	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
 
 	args := []interface{}{user.ID, filters.limit(), filters.offset()}
 
@@ -128,4 +128,55 @@ func (r FilesRepository) DeleteByUuidList(user *User, uuidList []string) error {
 	}
 
 	return nil
+}
+
+func (r FilesRepository) GetOriginalFileName(user *User, uuid string) (string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	query := `
+		SELECT name, size, content_type, created_at
+		FROM file
+		WHERE user_id = $1 AND
+		      uuid = $2`
+
+	args := []interface{}{user.ID, uuid}
+
+	rows, err := r.db.QueryContext(ctx, query, args...)
+	if err != nil {
+		return "", err
+	}
+
+	defer rows.Close()
+
+	files := []*File{}
+
+	for rows.Next() {
+		var file File
+
+		err := rows.Scan(
+			&file.Name,
+			&file.Size,
+			&file.ContentType,
+			&file.CreatedAt,
+		)
+
+		if err != nil {
+			return "", err
+		}
+
+		file.Hash = fmt.Sprintf("%x", file.Hash)
+
+		files = append(files, &file)
+	}
+
+	if err = rows.Err(); err != nil {
+		return "", err
+	}
+
+	if len(files) == 0 {
+		return "not found", ErrFileNameNotFound
+	}
+
+	return files[0].Name, nil
 }

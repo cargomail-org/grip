@@ -21,6 +21,7 @@ var (
 	ErrMissingUserContext       = errors.New("missing user context")
 	ErrInvalidOrMissingSession  = errors.New("invalid or missing session")
 	ErrFailedValidationResponse = errors.New("failed validation")
+	ErrFileNameNotFound         = errors.New("filename not found")
 )
 
 func NewRepository(db *sql.DB, tusHandler *tus.Handler) Repository {

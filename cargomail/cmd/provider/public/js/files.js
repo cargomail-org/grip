@@ -19,15 +19,16 @@ const confirmDialog = new bootstrap.Modal(
 const uploadForm = document.getElementById("uploadForm");
 
 uploadForm.onsubmit = async (e) => {
-  e.preventDefault();
+  e?.preventDefault();
   const form = e.currentTarget;
   const url = uploadForm.action;
 
   const formData = new FormData(uploadForm);
 
-  for (const pair of formData.entries()) {
-    if (typeof pair[1] == "object") {
-      const file = pair[1];
+  const entries = [...formData.entries()];
+  entries.forEach(function (entry, index) {
+    if (entry[1] instanceof File) {
+      const file = entry[1];
       const singleFileFormData = new FormData();
       singleFileFormData.append("files", file);
 
@@ -39,13 +40,16 @@ uploadForm.onsubmit = async (e) => {
           },
           body: singleFileFormData,
         });
-        const content = await rawResponse.json();
+        if (rawResponse.ok) {
+          const content = await rawResponse.json();
 
-        filesTable.row.add(content);
-        filesTable.draw();
+          filesTable.row.add(content);
+          filesTable.draw();
+        }
       })();
     }
-  }
+  });
+  clearUpload();
 };
 
 const filesTable = new DataTable("#filesTable", {
@@ -64,7 +68,7 @@ const filesTable = new DataTable("#filesTable", {
       data: "name",
       render: (data, type, full, meta) => {
         const link = "/api/v1/files/";
-        return `<a href="${link}${full.uuid}">${data}</a>`;
+        return `<a href="${link}${full.uuid}" target="_blank">${data}</a>`;
       },
     },
     { data: "size", searchable: false },
@@ -135,7 +139,7 @@ filesTable.on("select.dt deselect.dt", () => {
 });
 
 export const deleteItems = (e) => {
-  e.preventDefault();
+  e?.preventDefault();
 
   confirmDialog.hide();
 
@@ -156,13 +160,13 @@ export const deleteItems = (e) => {
         filesTable.rows(".selected").remove().draw();
         filesTable.buttons([".files-delete"]).enable(false);
         console.log("Successfully deleted file(s)");
-        }
+      }
     }
   })();
 };
 
 export const inputUploadChanged = (e) => {
-  e.preventDefault();
+  e?.preventDefault();
   const files = e.target.files;
   if (files.length && files.length > 0) {
     document.getElementById("uploadButton").classList.remove("disabled");
@@ -174,8 +178,8 @@ export const inputUploadChanged = (e) => {
 };
 
 export const clearUpload = (e) => {
-  e.preventDefault();
+  e?.preventDefault();
   document.getElementById("uploadButton").classList.add("disabled");
-  document.getElementById("inputUpload").value = "";
+  uploadForm.reset();
   document.getElementById("clearButton").classList.add("disabled");
 };
