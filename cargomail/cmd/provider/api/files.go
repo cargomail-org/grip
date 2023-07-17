@@ -118,21 +118,23 @@ func (api *FilesApi) Upload() http.Handler {
 
 func (api *FilesApi) Download() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == "GET" {
-			user, ok := r.Context().Value(repository.UserContextKey).(*repository.User)
-			if !ok {
-				helper.ReturnErr(w, repository.ErrMissingUserContext, http.StatusInternalServerError)
-				return
-			}
+		user, ok := r.Context().Value(repository.UserContextKey).(*repository.User)
+		if !ok {
+			helper.ReturnErr(w, repository.ErrMissingUserContext, http.StatusInternalServerError)
+			return
+		}
 
-			uuid := path.Base(r.URL.Path)
+		uuid := path.Base(r.URL.Path)
 
-			fileName, err := api.files.GetOriginalFileName(user, uuid)
-			if err != nil {
-				helper.ReturnErr(w, err, http.StatusNotFound)
-				return
-			}
+		fileName, err := api.files.GetOriginalFileName(user, uuid)
+		if err != nil {
+			helper.ReturnErr(w, err, http.StatusNotFound)
+			return
+		}
 
+		if r.Method == "HEAD" {
+			w.WriteHeader(http.StatusOK)
+		} else if r.Method == "GET" {
 			filePath := api.filesPath + uuid
 			w.Header().Set("Content-Type", "application/octet-stream")
 			w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%q", fileName))

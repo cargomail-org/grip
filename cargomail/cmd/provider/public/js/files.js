@@ -68,7 +68,8 @@ const filesTable = new DataTable("#filesTable", {
       data: "name",
       render: (data, type, full, meta) => {
         const link = "/api/v1/files/";
-        return `<a href="${link}${full.uuid}" target="_blank">${data}</a>`;
+        // return `<a href="${link}${full.uuid}" target="_blank">${data}</a>`;
+        return `<a href="javascript:;" onclick="downloadURI('${link}${full.uuid}', '${data}');">${data}</a>`;
       },
     },
     { data: "size", searchable: false },
