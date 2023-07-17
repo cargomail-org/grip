@@ -3,6 +3,7 @@ package api
 import (
 	"cargomail/cmd/provider/api/helper"
 	"cargomail/internal/repository"
+	"crypto/sha256"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -82,16 +83,29 @@ func (api *FilesApi) Upload() http.Handler {
 			}
 			defer f.Close()
 
-			written, err := io.Copy(f, file)
+			hash := sha256.New()
+			written, err := io.Copy(f, io.TeeReader(file, hash))
 			if err != nil {
 				log.Println(err)
 				return
 			}
 
-			api.files.Create(user, uuid, files[i].Filename, filepath, files[i].Header.Get("content-type"), written)
+			checksum := hash.Sum(nil)
+			contentType := files[i].Header.Get("content-type")
+			createdAt, err := api.files.Create(user, uuid, checksum, files[i].Filename, filepath, contentType, written)
+			if err != nil {
+				log.Println(err)
+				return
+			}
 
+			checksumString := fmt.Sprintf("%x", checksum)
 			uploadedFile := repository.File{
-				Name: files[i].Filename,
+				UUID:        uuid,
+				Hash:        checksumString,
+				Name:        files[i].Filename,
+				Size:        written,
+				ContentType: contentType,
+				CreatedAt:   createdAt,
 			}
 
 			json.NewEncoder(w).Encode(uploadedFile)
@@ -122,12 +136,12 @@ func (api *FilesApi) GetAll() http.Handler {
 		var err error
 		filters.Page, err = strconv.Atoi(qs.Get("page"))
 		if err != nil {
-			filters.Page = 1
+			filters.Page = 0
 		}
 
 		filters.PageSize, err = strconv.Atoi(qs.Get("page_size"))
 		if err != nil {
-			filters.PageSize = 20
+			filters.PageSize = 0
 		}
 
 		filters.Sort = qs.Get("sort")
@@ -153,5 +167,38 @@ func (api *FilesApi) GetAll() http.Handler {
 		helper.SetJsonHeader(w)
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(files)
+	})
+}
+
+func (api *FilesApi) DeleteByUuidList() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		user, ok := r.Context().Value(repository.UserContextKey).(*repository.User)
+		if !ok {
+			helper.ReturnErr(w, repository.ErrMissingUserContext, http.StatusInternalServerError)
+			return
+		}
+
+		var l []string
+
+		err := json.NewDecoder(r.Body).Decode(&l)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		err = api.files.DeleteByUuidList(user, l)
+		if err != nil {
+			helper.ReturnErr(w, err, http.StatusInternalServerError)
+			return
+		}
+
+		filepath := api.filesPath
+
+		for _, uuid := range l {
+			_ = os.Remove(filepath + uuid)
+		}
+
+		helper.SetJsonHeader(w)
+		w.WriteHeader(http.StatusNoContent)
 	})
 }

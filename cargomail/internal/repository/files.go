@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 )
 
@@ -13,37 +14,51 @@ type FilesRepository struct {
 }
 
 type File struct {
-	ID          int64     `json:"id"`
+	ID          int64     `json:"-"`
 	UUID        string    `json:"uuid"`
+	Hash        string    `json:"-"`
 	Name        string    `json:"name"`
-	Path        string    `json:"path"`
+	Path        string    `json:"-"`
 	Size        int64     `json:"size"`
 	ContentType string    `json:"content_type"`
 	CreatedAt   time.Time `json:"created_at"`
 }
 
-func (r FilesRepository) Create(user *User, uuid, name, path, contentType string, size int64) error {
+func (r FilesRepository) Create(user *User, uuid string, checksum []byte, name string, path string, contentType string, size int64) (time.Time, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	_, err := r.db.ExecContext(ctx, `INSERT INTO
-		files (user_id, uuid, name, path, content_type, size)
-		VALUES(?, ?, ?, ?, ?, ?)`, user.ID, uuid, name, path, contentType, size)
+	row := r.db.QueryRowContext(ctx, `INSERT INTO
+		file (user_id, uuid, hash, name, path, content_type, size)
+		VALUES(?, ?, ?, ?, ?, ?, ?) RETURNING created_at;`, user.ID, uuid, checksum, name, path, contentType, size)
+
+	err := row.Scan(&user.CreatedAt)
+	if row.Err() == sql.ErrNoRows {
+		return time.Time{}, nil
+	}
 	if err != nil {
-		log.Println(err)
-		return err
+		return time.Time{}, err
 	}
 
-	return nil
+	return user.CreatedAt, nil
 }
 
 func (r FilesRepository) GetAll(user *User, filters Filters) ([]*File, Metadata, error) {
-	query := fmt.Sprintf(`
-		SELECT count(*) OVER(), id, uuid, name, path, size, content_type, created_at
-		FROM files
+	var query string
+	if filters.Page == 0 || filters.PageSize == 0 {
+		query = fmt.Sprintf(`
+		SELECT count(*) OVER(), id, uuid, hash, name, path, size, content_type, created_at
+		FROM file
+		WHERE user_id = $1
+		ORDER BY %s %s, id ASC`, filters.sortColumn(), filters.sortDirection())
+	} else {
+		query = fmt.Sprintf(`
+		SELECT count(*) OVER(), id, uuid, hash, name, path, size, content_type, created_at
+		FROM file
 		WHERE user_id = $1
 		ORDER BY %s %s, id ASC
 		LIMIT $2 OFFSET $3`, filters.sortColumn(), filters.sortDirection())
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -67,6 +82,7 @@ func (r FilesRepository) GetAll(user *User, filters Filters) ([]*File, Metadata,
 			&totalRecords,
 			&file.ID,
 			&file.UUID,
+			&file.Hash,
 			&file.Name,
 			&file.Path,
 			&file.Size,
@@ -78,6 +94,8 @@ func (r FilesRepository) GetAll(user *User, filters Filters) ([]*File, Metadata,
 			return nil, Metadata{}, err
 		}
 
+		file.Hash = fmt.Sprintf("%x", file.Hash)
+
 		files = append(files, &file)
 	}
 
@@ -88,4 +106,26 @@ func (r FilesRepository) GetAll(user *User, filters Filters) ([]*File, Metadata,
 	metadata := calculateMetadata(totalRecords, filters.Page, filters.PageSize)
 
 	return files, metadata, nil
+}
+
+func (r FilesRepository) DeleteByUuidList(user *User, uuidList []string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if len(uuidList) > 0 {
+		uuids := fmt.Sprintf("%v", uuidList)
+		uuids = uuids[1 : len(uuids)-1]
+		uuids = strings.ReplaceAll(uuids, " ", `","`)
+
+		_, err := r.db.ExecContext(ctx, `DELETE FROM
+			file
+			WHERE user_id = $1 AND
+				  uuid IN ("`+uuids+`");`, user.ID)
+		if err != nil {
+			log.Println(err)
+			return err
+		}
+	}
+
+	return nil
 }

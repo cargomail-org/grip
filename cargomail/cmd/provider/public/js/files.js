@@ -34,7 +34,7 @@ export const createTusUploadInstance = (url, file) => {
   return upload;
 };
 
-let selectedIds = [];
+let selectedUuids = [];
 
 const confirmDialog = new bootstrap.Modal(
   document.querySelector("#confirmDialog")
@@ -45,15 +45,77 @@ const uploadForm = document.getElementById("uploadForm");
 uploadForm.onsubmit = async (e) => {
   e.preventDefault();
   const form = e.currentTarget;
-  const url = uploadForm.action;
+  // using tus
+  // const url = uploadForm.action + "/tus/upload";
+  // using FormData
+  const url = uploadForm.action + "/upload";
 
   const formData = new FormData(uploadForm);
 
   for (const pair of formData.entries()) {
     if (typeof pair[1] == "object") {
       const file = pair[1];
-      const upload = createTusUploadInstance(url, file);
-      upload.start();
+      // using tus
+      // const upload = createTusUploadInstance(url, file);
+      // upload.start();
+
+      // using FormData
+      const singleFileFormData = new FormData();
+      singleFileFormData.append("files", file);
+
+      (async () => {
+        const rawResponse = await fetch(url, {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+          },
+          body: singleFileFormData,
+        });
+        const content = await rawResponse.json();
+
+        filesTable.row.add(content);
+        filesTable.draw();
+
+        // let newdata = Array.from(filesTable.data());
+        // newdata.unshift(content);
+        // filesTable.clear();
+        // for (const row of newdata) {
+        //   filesTable.row.add(row);
+        // }
+        // filesTable.draw();
+      })();
+
+      /*const response = await fetch(url, {
+        method: "POST",
+        body: singleFileFormData,
+      })
+        .then((response) => {
+          if (response.ok) {
+            console.log("Successfully uploaded file");
+            // if (!Object.keys(response).length) {
+            //   console.log("no return data found");
+            //   return;
+            // }
+            // const uploadedFiles = response.json();
+
+            // let newdata = Array.from(filesTable.data());
+            // newdata.unshift(["my", "new", "row"]);
+            // filesTable.clear();
+            // for (const row of newdata) {
+            //   filesTable.row.add(row);
+            // }
+            // filesTable.draw();
+          }
+          // throw new Error("something went wrong");
+        })
+        .then((data) => {
+          if (data) {
+            console.log("File uploaded:", data);
+          }
+        })
+        .catch((error) => {
+          console.log("Error while uploading file:", error);
+        });*/
     }
   }
 };
@@ -99,7 +161,7 @@ const filesTable = new DataTable("#filesTable", {
     dataSrc: "",
   },
   columns: [
-    { data: "id", visible: false, searchable: false },
+    { data: "uuid", visible: false, searchable: false },
     { data: null, visible: true, orderable: false, width: "15px" },
     {
       data: "name",
@@ -109,6 +171,7 @@ const filesTable = new DataTable("#filesTable", {
       },
     },
     { data: "size", searchable: false },
+    { data: "created_at", searchable: true },
   ],
   columnDefs: [
     {
@@ -124,7 +187,7 @@ const filesTable = new DataTable("#filesTable", {
     selector: "td:first-child",
     info: true,
   },
-  order: [[0, "desc"]],
+  order: [[4, "desc"]],
   dom: "Bfrtip",
   language: {
     buttons: {
@@ -149,16 +212,16 @@ const filesTable = new DataTable("#filesTable", {
       className: "files-delete",
       enabled: false,
       action: function () {
-        selectedIds = [];
+        selectedUuids = [];
 
         const selectedData = filesTable
           .rows(".selected")
           .data()
-          .map((obj) => obj.id);
+          .map((obj) => obj.uuid);
         if (selectedData.length > 0) {
           confirmDialog.show();
           for (let i = 0; i < selectedData.length; i++) {
-            selectedIds.push(parseInt(selectedData[i], 10));
+            selectedUuids.push(selectedData[i]);
           }
         }
       },
@@ -179,11 +242,13 @@ export const deleteItems = (e) => {
 
   confirmDialog.hide();
 
-  console.log(selectedIds);
+  console.log(selectedUuids);
 
   fetch("api/v1/files/delete", {
     method: "post",
-    body: JSON.stringify(selectedIds),
+    Accept: "application/json",
+    "Content-Type": "application/json",
+    body: JSON.stringify(selectedUuids),
   })
     .then((response) => {
       if (response.ok) {

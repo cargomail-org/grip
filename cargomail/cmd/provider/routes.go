@@ -22,4 +22,5 @@ func (svc *service) routes(mux *http.ServeMux) {
 	mux.Handle("/api/v1/files/upload", svc.api.Authenticate(svc.api.Files.Upload()))
 	mux.Handle("/api/v1/files/tus/upload/", svc.api.Authenticate(svc.api.Files.TusUpload()))
 	mux.Handle("/api/v1/files", svc.api.Authenticate(svc.api.Files.GetAll()))
+	mux.Handle("/api/v1/files/delete", svc.api.Authenticate(svc.api.Files.DeleteByUuidList()))
 }

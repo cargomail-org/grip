@@ -24,16 +24,18 @@ func Init(db *sql.DB) {
 		expiry 			TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 		scope 			TEXT NOT NULL
  	);
-	CREATE TABLE IF NOT EXISTS files (
+	CREATE TABLE IF NOT EXISTS file (
 		id				INTEGER PRIMARY KEY,
 		user_id 		INTEGER NOT NULL REFERENCES user ON DELETE CASCADE,
 		uuid			TEXT UNIQUE,
+		hash 			BLOB NOT NULL,
 		name			TEXT NOT NULL,
 		path			TEXT NOT NULL,
 		size			INTEGER NOT NULL,
 		content_type	TEXT NOT NULL,
 		created_at		TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 	);
+	CREATE INDEX IF NOT EXISTS idx_file_hash ON file(hash);
 	`)
 	if err != nil {
 		log.Fatal(err)

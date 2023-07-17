@@ -3,7 +3,7 @@
 
 <div class="container">
     <!-- Upload -->
-    <form class="row g-2" id="uploadForm" method="POST" enctype="multipart/form-data" action="/api/v1/files/tus/upload/">
+    <form class="row g-2" id="uploadForm" method="POST" enctype="multipart/form-data" action="/api/v1/files">
         <input type="hidden" name="csrf" value="{{.}}" />
         <div class="col-auto">
             <input class="form-control" id="inputUpload" type="file" name="files" multiple id="formFile">
@@ -44,10 +44,11 @@
     <table id="filesTable" class="table table-striped table-bordered" width="100%">
         <thead>
             <tr>
-                <th>ID</th>
+                <th>UUID</th>
                 <th></th>
                 <th>Name</th>
                 <th>Size</th>
+                <th>Created</th>
             </tr>
         </thead>
     </table>
