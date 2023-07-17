@@ -10,30 +10,6 @@ import "datatables.net-buttons-bs5";
 import "datatables.net-responsive";
 import "datatables.net-responsive-bs5";
 
-export const startOrResumeUpload = (upload) => {
-  upload.findPreviousUploads().then(function (previousUploads) {
-    if (previousUploads.length) {
-      upload.resumeFromPreviousUpload(previousUploads[0]);
-    }
-    upload.start();
-  });
-};
-
-export const createTusUploadInstance = (url, file) => {
-  const upload = new tus.Upload(file, {
-    endpoint: url,
-    retryDelays: [0, 3000, 5000],
-    chunkSize: 8192, // dev - upload slowdown
-    enableChecksum: true,
-    metadata: {
-      filename: file.name,
-      filetype: file.type,
-    },
-    onError: (error) => console.log("failed because: " + error),
-  });
-  return upload;
-};
-
 let selectedUuids = [];
 
 const confirmDialog = new bootstrap.Modal(
@@ -45,21 +21,13 @@ const uploadForm = document.getElementById("uploadForm");
 uploadForm.onsubmit = async (e) => {
   e.preventDefault();
   const form = e.currentTarget;
-  // using tus
-  // const url = uploadForm.action + "/tus/upload";
-  // using FormData
-  const url = uploadForm.action + "/upload";
+  const url = uploadForm.action;
 
   const formData = new FormData(uploadForm);
 
   for (const pair of formData.entries()) {
     if (typeof pair[1] == "object") {
       const file = pair[1];
-      // using tus
-      // const upload = createTusUploadInstance(url, file);
-      // upload.start();
-
-      // using FormData
       const singleFileFormData = new FormData();
       singleFileFormData.append("files", file);
 
@@ -75,81 +43,10 @@ uploadForm.onsubmit = async (e) => {
 
         filesTable.row.add(content);
         filesTable.draw();
-
-        // let newdata = Array.from(filesTable.data());
-        // newdata.unshift(content);
-        // filesTable.clear();
-        // for (const row of newdata) {
-        //   filesTable.row.add(row);
-        // }
-        // filesTable.draw();
       })();
-
-      /*const response = await fetch(url, {
-        method: "POST",
-        body: singleFileFormData,
-      })
-        .then((response) => {
-          if (response.ok) {
-            console.log("Successfully uploaded file");
-            // if (!Object.keys(response).length) {
-            //   console.log("no return data found");
-            //   return;
-            // }
-            // const uploadedFiles = response.json();
-
-            // let newdata = Array.from(filesTable.data());
-            // newdata.unshift(["my", "new", "row"]);
-            // filesTable.clear();
-            // for (const row of newdata) {
-            //   filesTable.row.add(row);
-            // }
-            // filesTable.draw();
-          }
-          // throw new Error("something went wrong");
-        })
-        .then((data) => {
-          if (data) {
-            console.log("File uploaded:", data);
-          }
-        })
-        .catch((error) => {
-          console.log("Error while uploading file:", error);
-        });*/
     }
   }
 };
-
-/* uploadForm.onsubmit = async (e) => {
-  e.preventDefault();
-  const form = e.currentTarget;
-  const url = uploadForm.action;
-
-  const formData = new FormData(uploadForm);
-  const response = await fetch(url, {
-    method: "POST",
-    body: formData,
-  })
-    .then((response) => {
-      if (response.ok) {
-        console.log("Successfully uploaded file(s)");
-        if (!Object.keys(response).length) {
-          console.log("no return data found");
-          return;
-        }
-        return response && response.json();
-      }
-      throw new Error("something went wrong");
-    })
-    .then((data) => {
-      if (data) {
-        console.log("File(s) uploaded:", data);
-      }
-    })
-    .catch((error) => {
-      console.log("Error while uploading file(s):", error);
-    });
-}; */
 
 const filesTable = new DataTable("#filesTable", {
   paging: true,

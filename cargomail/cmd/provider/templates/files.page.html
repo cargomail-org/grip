@@ -3,7 +3,7 @@
 
 <div class="container">
     <!-- Upload -->
-    <form class="row g-2" id="uploadForm" method="POST" enctype="multipart/form-data" action="/api/v1/files">
+    <form class="row g-2" id="uploadForm" method="POST" enctype="multipart/form-data" action="/api/v1/files/upload">
         <input type="hidden" name="csrf" value="{{.}}" />
         <div class="col-auto">
             <input class="form-control" id="inputUpload" type="file" name="files" multiple id="formFile">
@@ -55,7 +55,6 @@
 </div>
 
 <script type="module">
-    import * as tus from "https://cdn.jsdelivr.net/npm/tus-js-client@3.1.0/dist/tus.js";
     import { inputUploadChanged, clearUpload, deleteItems } from "/public/js/files.js";
     document.querySelector('#inputUpload').addEventListener('change', inputUploadChanged)
     document.querySelector('#clearButton').addEventListener('click', clearUpload);
