@@ -141,33 +141,24 @@ export const deleteItems = (e) => {
 
   console.log(selectedUuids);
 
-  fetch("api/v1/files/delete", {
-    method: "post",
-    Accept: "application/json",
-    "Content-Type": "application/json",
-    body: JSON.stringify(selectedUuids),
-  })
-    .then((response) => {
-      if (response.ok) {
+  (async () => {
+    const rawResponse = await fetch("api/v1/files/delete", {
+      method: "DELETE",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(selectedUuids),
+    });
+    if (rawResponse.ok) {
+      const content = await rawResponse.json();
+      if (content?.status == "OK") {
         filesTable.rows(".selected").remove().draw();
         filesTable.buttons([".files-delete"]).enable(false);
         console.log("Successfully deleted file(s)");
-        if (!Object.keys(response).length) {
-          console.log("no return data found");
-          return;
         }
-        return response && response.json();
-      }
-      throw new Error("something went wrong");
-    })
-    .then((data) => {
-      if (data) {
-        console.log("File(s) deleted:", data);
-      }
-    })
-    .catch((error) => {
-      console.log("Error while deleting file(s):", error);
-    });
+    }
+  })();
 };
 
 export const inputUploadChanged = (e) => {
