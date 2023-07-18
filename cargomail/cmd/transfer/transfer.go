@@ -9,8 +9,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/tus/tusd/v2/pkg/filestore"
-	tus "github.com/tus/tusd/v2/pkg/handler"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -31,24 +29,7 @@ type service struct {
 }
 
 func NewService(params *ServiceParams) service {
-	// tus
-	store := filestore.FileStore{
-		Path: params.FilesPath,
-	}
-
-	composer := tus.NewStoreComposer()
-	store.UseIn(composer)
-
-	tusHandler, err := tus.NewHandler(tus.Config{
-		BasePath:              "/api/v1/files/tus/upload",
-		StoreComposer:         composer,
-		NotifyCompleteUploads: true,
-	})
-	if err != nil {
-		log.Printf("unable to create tus handler: %s", err)
-	}
-
-	repository := repository.NewRepository(params.DB, tusHandler)
+	repository := repository.NewRepository(params.DB)
 	return service{
 		api: api.NewApi(
 			api.ApiParams{

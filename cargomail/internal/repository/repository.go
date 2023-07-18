@@ -3,13 +3,10 @@ package repository
 import (
 	"database/sql"
 	"errors"
-
-	tus "github.com/tus/tusd/v2/pkg/handler"
 )
 
 type Repository struct {
 	Files   FilesRepository
-	Storage StorageRepository
 	Session SessionRepository
 	User    UserRepository
 }
@@ -24,10 +21,9 @@ var (
 	ErrFileNameNotFound         = errors.New("filename not found")
 )
 
-func NewRepository(db *sql.DB, tusHandler *tus.Handler) Repository {
+func NewRepository(db *sql.DB) Repository {
 	return Repository{
 		Files:   FilesRepository{db: db},
-		Storage: StorageRepository{db: db, tusHandler: tusHandler},
 		Session: SessionRepository{db: db},
 		User:    UserRepository{db: db},
 	}

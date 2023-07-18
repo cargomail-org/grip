@@ -15,28 +15,11 @@ import (
 	"strconv"
 
 	"github.com/google/uuid"
-	tus "github.com/tus/tusd/v2/pkg/handler"
 )
 
 type FilesApi struct {
-	files      repository.FilesRepository
-	filesPath  string
-	tusHandler *tus.Handler
-}
-
-func (api *FilesApi) TusUpload() http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Println(r.Method)
-		if r.Method == "POST" {
-			api.tusHandler.PostFile(w, r)
-		} else if r.Method == "HEAD" {
-			api.tusHandler.HeadFile(w, r)
-		} else if r.Method == "PATCH" {
-			api.tusHandler.PatchFile(w, r)
-		} else if r.Method == "DEL" {
-			api.tusHandler.DelFile(w, r)
-		}
-	})
+	files     repository.FilesRepository
+	filesPath string
 }
 
 func (api *FilesApi) Upload() http.Handler {

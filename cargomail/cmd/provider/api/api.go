@@ -7,15 +7,12 @@ import (
 	"errors"
 	"log"
 	"net/http"
-
-	tus "github.com/tus/tusd/v2/pkg/handler"
 )
 
 type ApiParams struct {
 	DomainName string
 	FilesPath  string
 	Repository repository.Repository
-	TusHandler *tus.Handler
 }
 
 type Api struct {
@@ -28,7 +25,7 @@ type Api struct {
 func NewApi(params ApiParams) Api {
 	return Api{
 		Health:  HealthApi{domainName: params.DomainName},
-		Files:   FilesApi{files: params.Repository.Files, filesPath: params.FilesPath, tusHandler: params.TusHandler},
+		Files:   FilesApi{files: params.Repository.Files, filesPath: params.FilesPath},
 		Session: SessionApi{user: params.Repository.User, session: params.Repository.Session},
 		User:    UserApi{user: params.Repository.User},
 	}
