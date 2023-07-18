@@ -44,6 +44,13 @@ div.dt-buttons.btn-group {
   appearance: button !important;
 }
 
+.notransition {
+  -webkit-transition: none !important;
+  -moz-transition: none !important;
+  -o-transition: none !important;
+  transition: none !important;
+}
+
 @media screen and (max-width: 575px) {
   /* body {
       background-color: cyan;

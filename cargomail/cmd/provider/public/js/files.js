@@ -20,10 +20,12 @@ const uploadForm = document.getElementById("uploadForm");
 
 const uploadFile = (url, file, onProgress) =>
   new Promise((resolve, reject) => {
+    let lastLoaded = 0;
     const xhr = new XMLHttpRequest();
-    xhr.upload.addEventListener("progress", (e) =>
-      onProgress(e.loaded / e.total)
-    );
+    xhr.upload.addEventListener("progress", (e) => {
+      onProgress(e.loaded - lastLoaded, e.loaded, e.total, lastLoaded == 0);
+      lastLoaded = e.loaded;
+    });
     xhr.addEventListener("load", () =>
       resolve({ status: xhr.status, body: xhr.response })
     );
@@ -40,14 +42,71 @@ const uploadFile = (url, file, onProgress) =>
     xhr.send(formData);
   });
 
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+const multipartOverhead = 180; // ca. 180
+let estimatedTotal = 0;
+let realTotal = 0;
+let uploadedTotal = 0;
+let filesCnt = 0;
+
+const uploadProgressBar = document.getElementById("uploadProgressBar");
+uploadProgressBar.classList.add("notransition");
+uploadProgressBar.setAttribute("style", "width: 0%");
+uploadProgressBar.innerText = "";
+
 uploadForm.onsubmit = async (e) => {
   e?.preventDefault();
 
-  const onProgress = (progress) =>
-    console.log("Progress:", `${Math.round(progress * 100)}%`);
+  const onProgress = (chunkSize, loaded, total, firstChunk) => {
+    uploadedTotal += chunkSize;
+
+    if (firstChunk) {
+      realTotal += total;
+    }
+
+    if (filesCnt == 1) {
+      estimatedTotal == realTotal;
+    }
+
+    if (loaded == total) {
+      filesCnt--;
+    }
+
+    const progress = Math.round((uploadedTotal / estimatedTotal) * 100);
+    uploadProgressBar.setAttribute("style", `width: ${Math.floor(progress)}%`);
+
+    if (filesCnt == 0) {
+      filesCnt = 0;
+      estimatedTotal = 0;
+      realTotal = 0;
+      uploadedTotal = 0;
+      uploadProgressBar.innerText = `${progress}%`;
+      sleep(10000).then(() => {
+        if (filesCnt == 0) {
+          uploadProgressBar.classList.add("notransition");
+          uploadProgressBar.setAttribute("style", "width: 0%");
+          uploadProgressBar.innerText = "";
+        }
+      });
+    }
+  };
+
+  uploadProgressBar.classList.remove("notransition");
+  uploadProgressBar.innerText = "";
 
   const url = uploadForm.action;
-  const files = e.currentTarget.files.files;
+  const files = [...e.currentTarget.files.files];
+
+  filesCnt += files.length;
+
+  for (let i = 0; i < files.length; i++) {
+    estimatedTotal += files[i].size + multipartOverhead;
+  }
+
+  clearUpload();
 
   for (let i = 0; i < files.length; i++) {
     const response = await uploadFile(url, files[i], onProgress);
@@ -55,13 +114,12 @@ uploadForm.onsubmit = async (e) => {
     if (response.status != 201) {
       throw new Error(`File upload failed - Status code: ${response.status}`);
     }
+
     if (response.status == 201) {
       filesTable.row.add(response.body);
       filesTable.draw();
     }
   }
-
-  clearUpload();
 };
 
 const filesTable = new DataTable("#filesTable", {
