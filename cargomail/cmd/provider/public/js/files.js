@@ -18,37 +18,49 @@ const confirmDialog = new bootstrap.Modal(
 
 const uploadForm = document.getElementById("uploadForm");
 
+const uploadFile = (url, file, onProgress) =>
+  new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.upload.addEventListener("progress", (e) =>
+      onProgress(e.loaded / e.total)
+    );
+    xhr.addEventListener("load", () =>
+      resolve({ status: xhr.status, body: xhr.response })
+    );
+    xhr.addEventListener("error", () =>
+      reject(new Error("File upload failed"))
+    );
+    xhr.addEventListener("abort", () =>
+      reject(new Error("File upload aborted"))
+    );
+    xhr.open("POST", url, true);
+    xhr.responseType = "json";
+    const formData = new FormData();
+    formData.append(`files`, file);
+    xhr.send(formData);
+  });
+
 uploadForm.onsubmit = async (e) => {
   e?.preventDefault();
-  const form = e.currentTarget;
+
+  const onProgress = (progress) =>
+    console.log("Progress:", `${Math.round(progress * 100)}%`);
+
   const url = uploadForm.action;
+  const files = e.currentTarget.files.files;
 
-  const formData = new FormData(uploadForm);
+  for (let i = 0; i < files.length; i++) {
+    const response = await uploadFile(url, files[i], onProgress);
 
-  const entries = [...formData.entries()];
-  entries.forEach(function (entry, index) {
-    if (entry[1] instanceof File) {
-      const file = entry[1];
-      const singleFileFormData = new FormData();
-      singleFileFormData.append("files", file);
-
-      (async () => {
-        const rawResponse = await fetch(url, {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-          },
-          body: singleFileFormData,
-        });
-        if (rawResponse.ok) {
-          const content = await rawResponse.json();
-
-          filesTable.row.add(content);
-          filesTable.draw();
-        }
-      })();
+    if (response.status != 201) {
+      throw new Error(`File upload failed - Status code: ${response.status}`);
     }
-  });
+    if (response.status == 201) {
+      filesTable.row.add(response.body);
+      filesTable.draw();
+    }
+  }
+
   clearUpload();
 };
 

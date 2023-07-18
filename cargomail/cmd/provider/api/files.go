@@ -55,7 +55,7 @@ func (api *FilesApi) Upload() http.Handler {
 			}
 
 			helper.SetJsonHeader(w)
-			w.WriteHeader(http.StatusOK)
+			w.WriteHeader(http.StatusCreated)
 
 			files := r.MultipartForm.File["files"]
 			for i := range files {
