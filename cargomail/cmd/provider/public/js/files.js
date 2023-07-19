@@ -12,8 +12,8 @@ import "datatables.net-responsive-bs5";
 
 let selectedUuids = [];
 
-const confirmDialog = new bootstrap.Modal(
-  document.querySelector("#confirmDialog")
+const filesConfirmDialog = new bootstrap.Modal(
+  document.querySelector("#filesConfirmDialog")
 );
 
 const uploadForm = document.getElementById("uploadForm");
@@ -228,7 +228,7 @@ const filesTable = new DataTable("#filesTable", {
           .data()
           .map((obj) => obj.uuid);
         if (selectedData.length > 0) {
-          confirmDialog.show();
+          filesConfirmDialog.show();
           for (let i = 0; i < selectedData.length; i++) {
             selectedUuids.push(selectedData[i]);
           }
@@ -252,7 +252,7 @@ filesTable.on("select.dt deselect.dt", () => {
 export const deleteItems = (e) => {
   e?.preventDefault();
 
-  confirmDialog.hide();
+  filesConfirmDialog.hide();
 
   console.log(selectedUuids);
 

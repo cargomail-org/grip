@@ -91,6 +91,7 @@ func (api *FilesApi) Upload() http.Handler {
 					Size:        written,
 					ContentType: contentType,
 					CreatedAt:   createdAt,
+					Timestamp:   createdAt.UnixMilli(),
 				}
 
 				json.NewEncoder(w).Encode(uploadedFile)
