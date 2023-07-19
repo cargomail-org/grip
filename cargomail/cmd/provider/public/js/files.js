@@ -122,6 +122,24 @@ uploadForm.onsubmit = async (e) => {
   }
 };
 
+const formatBytes = (bytes, decimals = 2) => {
+  if (!+bytes) return "0 Bytes";
+
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = [
+    "B",
+    "KB",
+    "MB",
+    "GB",
+    "TB",
+  ];
+
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+};
+
 const filesTable = new DataTable("#filesTable", {
   paging: true,
   responsive: {
@@ -144,19 +162,23 @@ const filesTable = new DataTable("#filesTable", {
     },
     {
       data: "file_size",
-      render: {
-        sort: "size",
-        type: "size",
-        _: "display",
+      render: function (data, type) {
+        if (type === "display") {
+          return formatBytes(data, 0);
+        } else {
+          return data;
+        }
       },
     },
-    // { data: "created_at", searchable: true },
     {
       data: "created_at",
-      render: {
-        sort: "timestamp",
-        type: "timestamp",
-        _: "display",
+      render: function (data, type) {
+        if (type === "display") {
+          var d = new Date(data);
+          return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+        } else {
+          return data;
+        }
       },
     },
   ],
