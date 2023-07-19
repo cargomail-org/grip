@@ -142,8 +142,23 @@ const filesTable = new DataTable("#filesTable", {
         return `<a href="javascript:;" onclick="downloadURI('${link}${full.uuid}', '${data}');">${data}</a>`;
       },
     },
-    { data: "size", searchable: false },
-    { data: "created_at", searchable: true },
+    {
+      data: "file_size",
+      render: {
+        sort: "size",
+        type: "size",
+        _: "display",
+      },
+    },
+    // { data: "created_at", searchable: true },
+    {
+      data: "created_at",
+      render: {
+        sort: "timestamp",
+        type: "timestamp",
+        _: "display",
+      },
+    },
   ],
   columnDefs: [
     {
@@ -167,8 +182,8 @@ const filesTable = new DataTable("#filesTable", {
     },
   },
   lengthMenu: [
-    [5, 10, 25],
-    ["5 rows", "10 rows", "25 rows"],
+    [10, 25, 50],
+    ["10 rows", "25 rows", "50 rows"],
   ],
   buttons: [
     "pageLength",
@@ -202,11 +217,14 @@ const filesTable = new DataTable("#filesTable", {
 });
 
 filesTable.on("select.dt deselect.dt", () => {
-  filesTable
-    .buttons([".files-delete"])
-    .enable(
-      filesTable.rows({ selected: true }).indexes().length === 0 ? false : true
-    );
+  const selected = filesTable.rows({ selected: true }).indexes().length > 0;
+  filesTable.buttons([".files-delete"]).enable(selected ? true : false);
+
+  if (selected) {
+    document.getElementById("copySelectedFiles").classList.remove("disabled");
+  } else {
+    document.getElementById("copySelectedFiles").classList.add("disabled");
+  }
 });
 
 export const deleteItems = (e) => {

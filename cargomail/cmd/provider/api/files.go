@@ -170,13 +170,13 @@ func (api *FilesApi) GetAll() http.Handler {
 				return
 			}
 
-			files, metadata, err := api.files.GetAll(user, filters)
+			files, _, err := api.files.GetAll(user, filters)
 			if err != nil {
 				helper.ReturnErr(w, err, http.StatusInternalServerError)
 				return
 			}
 
-			log.Printf("metadata: %v", metadata)
+			// log.Printf("metadata: %v", metadata)
 
 			helper.SetJsonHeader(w)
 			w.WriteHeader(http.StatusOK)

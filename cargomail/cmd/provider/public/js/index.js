@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-  filesContent(); // in prod should be cargoesContent
+  composeContent(); // in prod should be cargoesContent
 });
 
 function composeContent(e) {
@@ -11,6 +11,10 @@ function composeContent(e) {
 
   document.getElementById("files-container").hidden = true;
   document.getElementById("files-link").classList.remove("active");
+
+  document.getElementById("composePanel").hidden = false;
+  document.getElementById("cargoesPanel").hidden = true;
+  document.getElementById("filesPanel").hidden = true;
 }
 
 function cargoesContent(e) {
@@ -22,6 +26,10 @@ function cargoesContent(e) {
 
   document.getElementById("files-container").hidden = true;
   document.getElementById("files-link").classList.remove("active");
+
+  document.getElementById("composePanel").hidden = true;
+  document.getElementById("cargoesPanel").hidden = false;
+  document.getElementById("filesPanel").hidden = true;
 }
 
 function filesContent(e) {
@@ -33,6 +41,10 @@ function filesContent(e) {
 
   document.getElementById("files-container").hidden = false;
   document.getElementById("files-link").classList.add("active");
+  
+  document.getElementById("composePanel").hidden = true;
+  document.getElementById("cargoesPanel").hidden = true;
+  document.getElementById("filesPanel").hidden = false;
 }
 
 const downloadURI = (uri, name) => {

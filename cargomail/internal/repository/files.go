@@ -1,27 +1,42 @@
 package repository
 
 import (
+	"cargomail/internal/repository/helper"
 	"context"
 	"database/sql"
 	"fmt"
 	"log"
 	"strings"
 	"time"
+
+	"cloud.google.com/go/civil"
 )
 
 type FilesRepository struct {
 	db *sql.DB
 }
 
+type FileSize struct {
+	Display string `json:"display"`
+	Size    int64  `json:"size"`
+}
+
+type FileCreatedAt struct {
+	Display   string `json:"display"`
+	Timestamp int64  `json:"timestamp"`
+}
+
 type File struct {
-	ID          int64     `json:"-"`
-	UUID        string    `json:"uuid"`
-	Hash        string    `json:"-"`
-	Name        string    `json:"name"`
-	Path        string    `json:"-"`
-	Size        int64     `json:"size"`
-	ContentType string    `json:"content_type"`
-	CreatedAt   time.Time `json:"created_at"`
+	ID               int64         `json:"-"`
+	UUID             string        `json:"uuid"`
+	Hash             string        `json:"-"`
+	Name             string        `json:"name"`
+	Path             string        `json:"-"`
+	Size             int64         `json:"-"`
+	SizeDisplay      FileSize      `json:"file_size"`
+	ContentType      string        `json:"content_type"`
+	CreatedAt        time.Time     `json:"-"`
+	CreatedAtDisplay FileCreatedAt `json:"created_at"`
 }
 
 func (r FilesRepository) Create(user *User, uuid string, checksum []byte, name string, path string, contentType string, size int64) (time.Time, error) {
@@ -95,6 +110,20 @@ func (r FilesRepository) GetAll(user *User, filters Filters) ([]*File, Metadata,
 		}
 
 		file.Hash = fmt.Sprintf("%x", file.Hash)
+		file.SizeDisplay = FileSize{
+			Display: helper.PrettyByteSize(file.Size),
+			Size:    file.Size,
+		}
+
+		display := fmt.Sprintf("%v %d:%02d",
+			civil.DateTimeOf(file.CreatedAt).Date,
+			civil.DateTimeOf(file.CreatedAt).Time.Hour,
+			civil.DateTimeOf(file.CreatedAt).Time.Minute)
+
+		file.CreatedAtDisplay = FileCreatedAt{
+			Display:   display,
+			Timestamp: file.CreatedAt.UnixMilli(),
+		}
 
 		files = append(files, &file)
 	}

@@ -23,13 +23,28 @@ div.dt-buttons.btn-group {
   margin-bottom: 10px;
 }
 
-#subjectHeading {
+.subject-heading {
   display: -webkit-box;
   max-width: 240px;
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+.bi-postcard {
+  margin-bottom: 0px !important;
+}
+
+/* Bootstrap 5 tweak: do not underline links unless hovered over */
+a:not([class*="btn"]) {
+  text-decoration: none;
+}
+a:not([class*="btn"]):hover {
+  text-decoration: underline;
+}
+
+/* a.btn {border-radius: .25rem; border: 1px solid transparent; padding: .5rem 1rem; color: #fff; }
+a.btn:hover { border-radius: .25rem; } */
 
 /* #subjectHeading {
   display: inline-block;
