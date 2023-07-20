@@ -8,7 +8,7 @@
             <div class="d-flex flex-sm-column flex-row flex-grow-1 align-items-center align-items-sm-start px-3 pt-1">
                 <ul class="nav nav-pills">
                     <li class="nav-item">
-                        <a href="/compose" id="compose-link" class="nav-link my-2 px-sm-0 px-2"
+                        <a href="/compose" id="composeLink" class="nav-link my-2 px-sm-0 px-2"
                             onclick='composeContent();return false;'>
                             <div class="d-flex d-sm-none d-sm-inline">
                                 <i class="bi bi-postcard h2"></i>
@@ -26,13 +26,13 @@
                 <ul class="nav nav-pills flex-sm-column flex-row flex-nowrap flex-shrink-1 flex-sm-grow-0 flex-grow-1 mb-sm-auto me-2 justify-content-end align-items-center align-items-sm-start"
                     id="menu">
                     <li class="nav-item">
-                        <a href="/" id="cargoes-link" class="nav-link px-sm-0 px-2"
+                        <a href="/" id="cargoesLink" class="nav-link px-sm-0 px-2"
                             onclick='cargoesContent();return false;'>
                             <i class="bi bi-grid-1x2 h5"></i><span class="ms-1 d-none d-sm-inline">Cargoes</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="/files" id="files-link" class="nav-link px-sm-0 px-2"
+                        <a href="/files" id="filesLink" class="nav-link px-sm-0 px-2"
                             onclick='filesContent();return false;'>
                             <i class="bi bi-file-earmark-diff h4"></i><span
                                 class="ms-1 d-none d-sm-inline">Files</span></a>
@@ -40,14 +40,14 @@
                 </ul>
                 <div class="dropdown py-sm-4 mt-sm-auto ms-auto ms-sm-0 flex-shrink-1">
                     <a href="#" class="nav-link d-flex align-items-center text-decoration-none dropdown-toggle"
-                        id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                        id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
                         <div class="rounded-circle border d-flex justify-content-center align-items-center"
                             style="width:28px;height:28px" alt="Avatar">
                             {{.UsernameLetter}}
                         </div>
                         <span class="d-none d-sm-inline mx-1">{{.Username}}</span>
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
+                    <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser">
                         <li><a class="dropdown-item" href="/logout">Sign out</a></li>
                     </ul>
                 </div>
@@ -56,13 +56,13 @@
         <div class="col d-flex flex-column h-sm-100">
             <main class="row overflow-auto h-100">
                 <div class="col pt-4" style="height: 0vh!important; max-height: 0vh!important;">
-                    <div hidden class="container" id="compose-container">
+                    <div hidden class="container" id="composeContainer">
                         {{template "compose" .}}
                     </div>
-                    <div hidden class="cargoes" id="cargoes-container">
+                    <div hidden class="cargoes" id="cargoesContainer">
                         {{template "cargoes" .}}
                     </div>
-                    <div hidden class="files" id="files-container">
+                    <div hidden class="files" id="filesContainer">
                         {{template "files" .}}
                     </div>
                 </div>

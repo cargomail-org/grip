@@ -43,17 +43,6 @@ a:not([class*="btn"]):hover {
   text-decoration: underline;
 }
 
-/* a.btn {border-radius: .25rem; border: 1px solid transparent; padding: .5rem 1rem; color: #fff; }
-a.btn:hover { border-radius: .25rem; } */
-
-/* #subjectHeading {
-  display: inline-block;
-  max-width: 120px;
-  white-space: nowrap;
-  overflow: hidden !important;
-  text-overflow: ellipsis;
-} */
-
 .dataTables_wrapper .dataTables_filter input::-webkit-search-cancel-button {
   -webkit-appearance: button !important;
   appearance: button !important;
@@ -67,18 +56,12 @@ a.btn:hover { border-radius: .25rem; } */
 }
 
 @media screen and (max-width: 575px) {
-  /* body {
-      background-color: cyan;
-  } */
   .responsive-menu {
     flex-direction: column;
   }
 }
 
 @media screen and (min-width: 576px) {
-  /* body {
-      background-color: yellow;
-  } */
   .responsive-menu {
     flex-direction: row;
   }

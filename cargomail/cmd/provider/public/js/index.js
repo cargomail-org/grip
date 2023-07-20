@@ -3,14 +3,14 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function composeContent(e) {
-  document.getElementById("compose-container").hidden = false;
-  document.getElementById("compose-link").classList.add("active");
+  document.getElementById("composeContainer").hidden = false;
+  document.getElementById("composeLink").classList.add("active");
 
-  document.getElementById("cargoes-container").hidden = true;
-  document.getElementById("cargoes-link").classList.remove("active");
+  document.getElementById("cargoesContainer").hidden = true;
+  document.getElementById("cargoesLink").classList.remove("active");
 
-  document.getElementById("files-container").hidden = true;
-  document.getElementById("files-link").classList.remove("active");
+  document.getElementById("filesContainer").hidden = true;
+  document.getElementById("filesLink").classList.remove("active");
 
   document.getElementById("composePanel").hidden = false;
   document.getElementById("cargoesPanel").hidden = true;
@@ -18,14 +18,14 @@ function composeContent(e) {
 }
 
 function cargoesContent(e) {
-  document.getElementById("compose-container").hidden = true;
-  document.getElementById("compose-link").classList.remove("active");
+  document.getElementById("composeContainer").hidden = true;
+  document.getElementById("composeLink").classList.remove("active");
 
-  document.getElementById("cargoes-container").hidden = false;
-  document.getElementById("cargoes-link").classList.add("active");
+  document.getElementById("cargoesContainer").hidden = false;
+  document.getElementById("cargoesLink").classList.add("active");
 
-  document.getElementById("files-container").hidden = true;
-  document.getElementById("files-link").classList.remove("active");
+  document.getElementById("filesContainer").hidden = true;
+  document.getElementById("filesLink").classList.remove("active");
 
   document.getElementById("composePanel").hidden = true;
   document.getElementById("cargoesPanel").hidden = false;
@@ -33,14 +33,14 @@ function cargoesContent(e) {
 }
 
 function filesContent(e) {
-  document.getElementById("compose-container").hidden = true;
-  document.getElementById("compose-link").classList.remove("active");
+  document.getElementById("composeContainer").hidden = true;
+  document.getElementById("composeLink").classList.remove("active");
 
-  document.getElementById("cargoes-container").hidden = true;
-  document.getElementById("cargoes-link").classList.remove("active");
+  document.getElementById("cargoesContainer").hidden = true;
+  document.getElementById("cargoesLink").classList.remove("active");
 
-  document.getElementById("files-container").hidden = false;
-  document.getElementById("files-link").classList.add("active");
+  document.getElementById("filesContainer").hidden = false;
+  document.getElementById("filesLink").classList.add("active");
   
   document.getElementById("composePanel").hidden = true;
   document.getElementById("cargoesPanel").hidden = true;
