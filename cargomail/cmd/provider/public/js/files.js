@@ -175,7 +175,7 @@ const filesTable = new DataTable("#filesTable", {
       render: function (data, type) {
         if (type === "display") {
           var d = new Date(data);
-          return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+          return d.getDate() + "-" + (d.getMonth() + 1) + "-" + d.getFullYear();
         } else {
           return data;
         }
