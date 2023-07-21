@@ -55,10 +55,11 @@
 </div>
 
 <script type="module">
-    import { inputUploadChanged, clearUpload, deleteItems } from "/public/js/files.js";
+    import { inputUploadChanged, clearUpload, deleteItems, copySelectedFiles } from "/public/js/files.js";
     document.querySelector('#inputUpload').addEventListener('change', inputUploadChanged)
     document.querySelector('#clearButton').addEventListener('click', clearUpload);
     document.querySelector('#filesConfirmButton').addEventListener('click', deleteItems);
+    document.querySelector('#copySelectedFiles').addEventListener('click', copySelectedFiles);
 </script>
 
 {{end}}

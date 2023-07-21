@@ -10,6 +10,8 @@ import "datatables.net-buttons-bs5";
 import "datatables.net-responsive";
 import "datatables.net-responsive-bs5";
 
+import { addItems as composeAddItems} from "/public/js/compose.js";
+
 let selectedUuids = [];
 
 const filesConfirmDialog = new bootstrap.Modal(
@@ -120,24 +122,6 @@ uploadForm.onsubmit = async (e) => {
       filesTable.draw();
     }
   }
-};
-
-const formatBytes = (bytes, decimals = 2) => {
-  if (!+bytes) return "0 Bytes";
-
-  const k = 1024;
-  const dm = decimals < 0 ? 0 : decimals;
-  const sizes = [
-    "B",
-    "KB",
-    "MB",
-    "GB",
-    "TB",
-  ];
-
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 };
 
 const filesTable = new DataTable("#filesTable", {
@@ -254,8 +238,6 @@ export const deleteItems = (e) => {
 
   filesConfirmDialog.hide();
 
-  console.log(selectedUuids);
-
   (async () => {
     const rawResponse = await fetch("api/v1/files/delete", {
       method: "DELETE",
@@ -274,6 +256,13 @@ export const deleteItems = (e) => {
       }
     }
   })();
+};
+
+export const copySelectedFiles = (e) => {
+  e?.preventDefault();
+
+  const selected = filesTable.rows(".selected").data();
+  composeAddItems(selected);
 };
 
 export const inputUploadChanged = (e) => {
