@@ -62,6 +62,8 @@ const (
 	baseLayout   = "base.layout.html"
 	menuLayout   = "menu.layout.html"
 
+	contactsPage  = "contacts.page.html"
+	profilePage  = "profile.page.html"
 	composePage  = "compose.page.html"
 	cargoesPage  = "cargoes.page.html"
 	filesPage    = "files.page.html"
@@ -92,6 +94,8 @@ func LoadTemplates() (map[string]*template.Template, error) {
 	}
 
 	templates[homePage], err = template.ParseFS(files,
+		templatesDir+contactsPage,
+		templatesDir+profilePage,
 		templatesDir+composePage,
 		templatesDir+cargoesPage,
 		templatesDir+filesPage,

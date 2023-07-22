@@ -14,6 +14,8 @@ const toInput = document.getElementById("toInput");
 const subjectInput = document.getElementById("subjectInput");
 const messageText = document.getElementById("messageText");
 
+const composeForm = document.getElementById("composeForm");
+
 const subjectHeadings = document.getElementsByClassName("subject-heading");
 let bouncerTimeout = null;
 
@@ -52,7 +54,7 @@ const composeTable = new DataTable("#composeTable", {
       render: (data, type, full, meta) => {
         const link = "/api/v1/files/";
         // return `<a href="${link}${full.uuid}" target="_blank">${data}</a>`;
-        return `<a href="javascript:;" onclick="downloadURI('${link}${full.uuid}', '${data}');">${data}</a>`;
+        return `<a href="javascript:;" onclick="downloadURI('composeForm', '${link}${full.uuid}', '${data}');">${data}</a>`;
       },
     },
     {

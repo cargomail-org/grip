@@ -18,6 +18,8 @@ func (svc *service) routes(mux *http.ServeMux) {
 	mux.Handle("/api/v1/auth/register", svc.api.User.Register())
 	mux.Handle("/api/v1/auth/authenticate", svc.api.Session.Login())
 	mux.Handle("/api/v1/auth/logout", svc.api.Session.Logout())
+	// User API
+	mux.Handle("/api/v1/user/profile", svc.api.Authenticate(svc.api.User.Profile()))
 	// Files API
 	mux.Handle("/api/v1/files/upload", svc.api.Authenticate(svc.api.Files.Upload()))
 	mux.Handle("/api/v1/files", svc.api.Authenticate(svc.api.Files.GetAll()))

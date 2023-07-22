@@ -78,7 +78,7 @@ func (api *UserApi) Register() http.Handler {
 		}
 
 		helper.SetJsonHeader(w)
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode(user)
 	})
 }

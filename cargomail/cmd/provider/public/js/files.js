@@ -10,7 +10,7 @@ import "datatables.net-buttons-bs5";
 import "datatables.net-responsive";
 import "datatables.net-responsive-bs5";
 
-import { addItems as composeAddItems} from "/public/js/compose.js";
+import { addItems as composeAddItems } from "/public/js/compose.js";
 
 let selectedUuids = [];
 
@@ -129,9 +129,57 @@ const filesTable = new DataTable("#filesTable", {
   responsive: {
     details: false,
   },
-  ajax: {
-    url: "/api/v1/files",
-    dataSrc: "",
+  ajax: function (data, callback, settings) {
+    (async () => {
+      const form = uploadForm;
+
+      const alert = form.querySelector('div[name="alert"]');
+      if (alert) alert.remove();
+      let response;
+
+      try {
+        const result = await fetch("/api/v1/files", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        response = await parseJSON(result);
+
+        if (result.status != 200) {
+          const error = new Error(result.statusText);
+          error.response = response;
+          throw error;
+        }
+      } catch (error) {
+        let errMessage = "unknown error";
+        if (
+          error != null &&
+          "response" in error &&
+          error.response != null &&
+          error.response.Err
+        ) {
+          errMessage =
+            error.response.Err.charAt(0).toUpperCase() +
+            error.response.Err.slice(1);
+        } else if (error != null) {
+          errMessage = error.message;
+        }
+
+        form.insertAdjacentHTML(
+          "beforeend",
+          `<div class="alert alert-warning alert-dismissible fade show" role="alert" name="alert">
+                ${errMessage}
+                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+           </div>`
+        );
+        return;
+      }
+
+      console.table(response);
+      callback({ data: response });
+    })();
   },
   columns: [
     { data: "uuid", visible: false, searchable: false },
@@ -141,7 +189,7 @@ const filesTable = new DataTable("#filesTable", {
       render: (data, type, full, meta) => {
         const link = "/api/v1/files/";
         // return `<a href="${link}${full.uuid}" target="_blank">${data}</a>`;
-        return `<a href="javascript:;" onclick="downloadURI('${link}${full.uuid}', '${data}');">${data}</a>`;
+        return `<a href="javascript:;" onclick="downloadURI('uploadForm', '${link}${full.uuid}', '${data}');">${data}</a>`;
       },
     },
     {
@@ -239,22 +287,57 @@ export const deleteItems = (e) => {
   filesConfirmDialog.hide();
 
   (async () => {
-    const rawResponse = await fetch("api/v1/files/delete", {
-      method: "DELETE",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(selectedUuids),
-    });
-    if (rawResponse.ok) {
-      const content = await rawResponse.json();
-      if (content?.status == "OK") {
-        filesTable.rows(".selected").remove().draw();
-        filesTable.buttons([".files-delete"]).enable(false);
-        console.log("Successfully deleted file(s)");
+    const form = uploadForm;
+
+    const alert = form.querySelector('div[name="alert"]');
+    if (alert) alert.remove();
+    let response;
+
+    try {
+      const result = await fetch("api/v1/files/delete", {
+        method: "DELETE",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(selectedUuids),
+      });
+
+      response = await parseJSON(result);
+
+      if (result.status != 200) {
+        const error = new Error(result.statusText);
+        error.response = response;
+        throw error;
       }
+    } catch (error) {
+      let errMessage = "unknown error";
+      if (
+        error != null &&
+        "response" in error &&
+        error.response != null &&
+        error.response.Err
+      ) {
+        errMessage =
+          error.response.Err.charAt(0).toUpperCase() +
+          error.response.Err.slice(1);
+      } else if (error != null) {
+        errMessage = error.message;
+      }
+
+      form.insertAdjacentHTML(
+        "beforeend",
+        `<div class="alert alert-warning alert-dismissible fade show" role="alert" name="alert">
+              ${errMessage}
+               <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+         </div>`
+      );
+      return;
     }
+
+    filesTable.rows(".selected").remove().draw();
+    filesTable.buttons([".files-delete"]).enable(false);
+    console.log("Successfully deleted file(s)");
   })();
 };
 
