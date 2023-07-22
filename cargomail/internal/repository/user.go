@@ -18,7 +18,14 @@ type User struct {
 	ID        int64     `json:"id"`
 	Username  string    `json:"username"`
 	Password  password  `json:"-"`
+	FirstName string    `json:"firstname"`
+	LastName  string    `json:"lastname"`
 	CreatedAt time.Time `json:"created_at"`
+}
+
+type UserProfile struct {
+	FirstName string `json:"firstname"`
+	LastName  string `json:"lastname"`
 }
 
 type password struct {
@@ -54,11 +61,11 @@ func (p *password) Matches(plaintextPassword string) (bool, error) {
 
 func (r UserRepository) Create(user *User) error {
 	query := `
-		INSERT INTO user (username, password_hash)
-		VALUES ($1, $2)
-		RETURNING id, created_at`
+		INSERT INTO user (username, password_hash, firstname, lastname)
+		VALUES ($1, $2, $3, $4)
+		RETURNING id, created_at;`
 
-	args := []interface{}{user.Username, user.Password.hash}
+	args := []interface{}{user.Username, user.Password.hash, user.FirstName, user.LastName}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -76,11 +83,55 @@ func (r UserRepository) Create(user *User) error {
 	return nil
 }
 
+func (r UserRepository) UpdateProfile(user *User) error {
+	query := `
+		UPDATE user
+		SET firstname = $1,
+			lastname = $2
+		WHERE username = $3;`
+
+	args := []interface{}{user.FirstName, user.LastName, user.Username}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	_, err := r.db.ExecContext(ctx, query, args...)
+
+	return err
+}
+
+func (r UserRepository) GetProfile(username string) (*UserProfile, error) {
+	query := `
+		SELECT firstname, lastname
+		FROM user
+		WHERE username = $1;`
+
+	var profile UserProfile
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	err := r.db.QueryRowContext(ctx, query, username).Scan(
+		&profile.FirstName,
+		&profile.LastName,
+	)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return nil, ErrUsernameNotFound
+		default:
+			return nil, err
+		}
+	}
+
+	return &profile, nil
+}
+
 func (r UserRepository) GetByUsername(username string) (*User, error) {
 	query := `
 		SELECT id, username, password_hash, created_at
 		FROM user
-		WHERE username = $1`
+		WHERE username = $1;`
 
 	var user User
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -115,7 +166,7 @@ func (r UserRepository) GetBySession(sessionScope, sessionPlaintext string) (*Us
 		ON user.id = session.user_id
 		WHERE session.hash = $1
 		AND session.scope = $2
-		AND session.expiry > $3`
+		AND session.expiry > $3;`
 
 	args := []interface{}{sessionHash[:], sessionScope, time.Now()}
 

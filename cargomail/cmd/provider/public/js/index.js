@@ -125,6 +125,9 @@ function profileContent(e) {
   document.getElementById("filesPanel").hidden = true;
   document.getElementById("contactsPanel").hidden = true;
   document.getElementById("profilePanel").hidden = false;
+
+  const profileForm = document.getElementById("profileForm");
+  loadProfile(profileForm);
 }
 
 const formatBytes = (bytes, decimals = 2) => {
@@ -139,6 +142,22 @@ const formatBytes = (bytes, decimals = 2) => {
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 };
 
+const loadProfile = async (form) => {
+  const response = await api(form.id, 200, "/api/v1/user/profile", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (response === false) {
+    return;
+  }
+
+  form.querySelector('input[name="firstname"]').value = response.firstname
+  form.querySelector('input[name="lastname"]').value = response.lastname
+};
+
 const downloadURI = (formId, uri, name) => {
   (async () => {
     const response = await api(formId, 200, uri, {
@@ -147,7 +166,7 @@ const downloadURI = (formId, uri, name) => {
         Accept: "application/json",
       },
     });
-  
+
     if (response === false) {
       return;
     }

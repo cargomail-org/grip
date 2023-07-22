@@ -25,8 +25,8 @@ func Init(db *sql.DB) {
 		id				INTEGER PRIMARY KEY,
 		username		TEXT NOT NULL UNIQUE,
 		password_hash	TEXT NOT NULL,
-		firstname		TEXT,
-		lastname		TEXT,
+		firstname		TEXT DEFAULT "",
+		lastname		TEXT DEFAULT "",
 		created_at		TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 	);
 	CREATE TABLE IF NOT EXISTS session (
