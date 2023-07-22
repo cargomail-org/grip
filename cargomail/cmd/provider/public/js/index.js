@@ -139,63 +139,16 @@ const formatBytes = (bytes, decimals = 2) => {
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 };
 
-// index.js, auth.js
-async function parseJSON(response) {
-  if (
-    response.status === 204 ||
-    response.status === 205 ||
-    parseInt(response.headers.get("content-length")) === 0
-  ) {
-    return null;
-  }
-  return await response.json();
-}
-
 const downloadURI = (formId, uri, name) => {
   (async () => {
-    const form = document.getElementById(formId);
-
-    const alert = form.querySelector('div[name="alert"]');
-    if (alert) alert.remove();
-    let response;
-
-    try {
-      const result = await fetch(uri, {
-        method: "HEAD",
-        headers: {
-          Accept: "application/json",
-        },
-      });
-
-      // response = await parseJSON(result); no response data expected in HEAD method request
-
-      if (result.status != 200) {
-        const error = new Error(result.statusText);
-        error.response = response;
-        throw error;
-      }
-    } catch (error) {
-      let errMessage = "unknown error";
-      if (
-        error != null &&
-        "response" in error &&
-        error.response != null &&
-        error.response.Err
-      ) {
-        errMessage =
-          error.response.Err.charAt(0).toUpperCase() +
-          error.response.Err.slice(1);
-      } else if (error != null) {
-        errMessage = error.message;
-      }
-
-      form.insertAdjacentHTML(
-        "beforeend",
-        `<div class="alert alert-warning alert-dismissible fade show" role="alert" name="alert">
-              ${errMessage}
-               <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-         </div>`
-      );
+    const response = await api(formId, 200, uri, {
+      method: "HEAD",
+      headers: {
+        Accept: "application/json",
+      },
+    });
+  
+    if (response === false) {
       return;
     }
 

@@ -131,49 +131,14 @@ const filesTable = new DataTable("#filesTable", {
   },
   ajax: function (data, callback, settings) {
     (async () => {
-      const form = uploadForm;
-
-      const alert = form.querySelector('div[name="alert"]');
-      if (alert) alert.remove();
-      let response;
-
-      try {
-        const result = await fetch("/api/v1/files", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        response = await parseJSON(result);
-
-        if (result.status != 200) {
-          const error = new Error(result.statusText);
-          error.response = response;
-          throw error;
-        }
-      } catch (error) {
-        let errMessage = "unknown error";
-        if (
-          error != null &&
-          "response" in error &&
-          error.response != null &&
-          error.response.Err
-        ) {
-          errMessage =
-            error.response.Err.charAt(0).toUpperCase() +
-            error.response.Err.slice(1);
-        } else if (error != null) {
-          errMessage = error.message;
-        }
-
-        form.insertAdjacentHTML(
-          "beforeend",
-          `<div class="alert alert-warning alert-dismissible fade show" role="alert" name="alert">
-                ${errMessage}
-                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-           </div>`
-        );
+      const response = await api(uploadForm.id, 200, "/api/v1/files", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    
+      if (response === false) {
         return;
       }
 
@@ -287,51 +252,16 @@ export const deleteItems = (e) => {
   filesConfirmDialog.hide();
 
   (async () => {
-    const form = uploadForm;
-
-    const alert = form.querySelector('div[name="alert"]');
-    if (alert) alert.remove();
-    let response;
-
-    try {
-      const result = await fetch("api/v1/files/delete", {
-        method: "DELETE",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(selectedUuids),
-      });
-
-      response = await parseJSON(result);
-
-      if (result.status != 200) {
-        const error = new Error(result.statusText);
-        error.response = response;
-        throw error;
-      }
-    } catch (error) {
-      let errMessage = "unknown error";
-      if (
-        error != null &&
-        "response" in error &&
-        error.response != null &&
-        error.response.Err
-      ) {
-        errMessage =
-          error.response.Err.charAt(0).toUpperCase() +
-          error.response.Err.slice(1);
-      } else if (error != null) {
-        errMessage = error.message;
-      }
-
-      form.insertAdjacentHTML(
-        "beforeend",
-        `<div class="alert alert-warning alert-dismissible fade show" role="alert" name="alert">
-              ${errMessage}
-               <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-         </div>`
-      );
+    const response = await api(uploadForm.id, 200, "api/v1/files/delete", {
+      method: "DELETE",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(selectedUuids),
+    });
+  
+    if (response === false) {
       return;
     }
 
