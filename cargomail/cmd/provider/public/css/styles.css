@@ -55,14 +55,36 @@ a:not([class*="btn"]):hover {
   transition: none !important;
 }
 
+.base-spinner {
+  display: block;
+  position: fixed;
+  z-index: 1031;
+  top: calc( 50% - ( 0px / 2) );
+  right: calc( 50% - ( 30px / 2) );
+}
+
 @media screen and (max-width: 575px) {
   .responsive-menu {
     flex-direction: column;
+  }
+  .menu-spinner {
+    display: block;
+    position: fixed;
+    z-index: 1031;
+    top: calc( 50% - ( 0px / 2) );
+    right: calc( 50% - ( 30px / 2) );
   }
 }
 
 @media screen and (min-width: 576px) {
   .responsive-menu {
     flex-direction: row;
+  }
+  .menu-spinner {
+    display: block;
+    position: fixed;
+    z-index: 1031;
+    top: calc( 50% - ( 0px / 2) );
+    right: calc( 50% - ( 210px / 2) );
   }
 }

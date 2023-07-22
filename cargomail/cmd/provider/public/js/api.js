@@ -16,7 +16,14 @@ const api = async (formId, status, url, options) => {
   if (alert) alert.remove();
   let response;
 
+  let spinner = document.querySelector(".menu-spinner");
+  if (!spinner) {
+    spinner = document.querySelector(".base-spinner");
+  }
+
   try {
+    spinner.hidden = false;
+
     const result = await fetch(url, options);
 
     if (options.method != "HEAD") {
@@ -51,6 +58,8 @@ const api = async (formId, status, url, options) => {
            </div>`
     );
     return false;
+  } finally {
+    spinner.hidden = true;
   }
 
   return response;
