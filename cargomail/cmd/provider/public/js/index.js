@@ -168,6 +168,10 @@ const loadProfile = async (form) => {
     document.getElementById("loggedUsername").innerHTML = loggedUsername;
   }
 
+  const profileDomainName = document.getElementById("profileDomainName").innerHTML;
+
+  document.getElementById("profileUsername").innerHTML = `${response.username}@${profileDomainName}`;
+
   form.querySelector('input[name="firstname"]').value = response.firstname;
   form.querySelector('input[name="lastname"]').value = response.lastname;
 };

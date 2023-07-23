@@ -4,6 +4,8 @@
 <div class="container">
     <!-- Profile -->
     <form class="row g-2" id="profileForm" method="POST" action="/api/v1/user/profile">
+        <div hidden id="profileDomainName">{{.DomainName}}</div>
+        <p class="font-weight-normal" id="profileUsername"></p>
         <div class="form-floating mb-1">
             <input class="form-control" id="firstNameInput" type="text" name="firstname" placeholder="First name"
                 data-sb-validations="" />

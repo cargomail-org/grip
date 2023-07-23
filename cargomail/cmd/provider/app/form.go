@@ -12,6 +12,7 @@ func (app *App) HomePage() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
 			type Data struct {
+				DomainName     string
 				Username       string
 				UsernameLetter string
 			}
@@ -21,7 +22,7 @@ func (app *App) HomePage() http.Handler {
 				log.Fatal("missing user context")
 			}
 
-			data := Data{Username: user.Username, UsernameLetter: fmt.Sprintf("%c", strings.ToUpper(user.Username)[0])}
+			data := Data{DomainName: app.domainName, Username: user.Username, UsernameLetter: fmt.Sprintf("%c", strings.ToUpper(user.Username)[0])}
 
 			t := app.HomeTemplate
 			t.Execute(w, data)
