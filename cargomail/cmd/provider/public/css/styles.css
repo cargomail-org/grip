@@ -101,10 +101,6 @@ a:not([class*="btn"]):hover {
 
 @media screen and (min-width: 1200px) {
   #loggedUsername {
-    display: inline-block;
     max-width: calc(16vw - 90px);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
 }
