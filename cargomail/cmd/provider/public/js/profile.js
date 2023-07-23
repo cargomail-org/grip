@@ -21,4 +21,14 @@ profileForm.onsubmit = async (e) => {
   if (response === false) {
     return;
   }
+
+  const loggedUsername =
+    response.firstname.length > 0 ? response.firstname : response.username;
+
+  if (loggedUsername?.length) {
+    document.getElementById("loggedUsernameLetter").innerHTML = loggedUsername
+      .charAt(0)
+      .toUpperCase();
+    document.getElementById("loggedUsername").innerHTML = loggedUsername;
+  }
 };

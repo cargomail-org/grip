@@ -142,7 +142,6 @@ const filesTable = new DataTable("#filesTable", {
         return;
       }
 
-      console.table(response);
       callback({ data: response });
     })();
   },

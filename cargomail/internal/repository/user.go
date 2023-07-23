@@ -24,6 +24,7 @@ type User struct {
 }
 
 type UserProfile struct {
+	Username  string `json:"username"`
 	FirstName string `json:"firstname"`
 	LastName  string `json:"lastname"`
 }
@@ -83,7 +84,9 @@ func (r UserRepository) Create(user *User) error {
 	return nil
 }
 
-func (r UserRepository) UpdateProfile(user *User) error {
+func (r UserRepository) UpdateProfile(user *User) (*UserProfile, error) {
+	profile := UserProfile{}
+
 	query := `
 		UPDATE user
 		SET firstname = $1,
@@ -96,13 +99,20 @@ func (r UserRepository) UpdateProfile(user *User) error {
 	defer cancel()
 
 	_, err := r.db.ExecContext(ctx, query, args...)
+	if err != nil {
+		return &profile, err
+	}
 
-	return err
+	profile.Username = user.Username
+	profile.FirstName = user.FirstName
+	profile.LastName = user.LastName
+
+	return &profile, err
 }
 
 func (r UserRepository) GetProfile(username string) (*UserProfile, error) {
 	query := `
-		SELECT firstname, lastname
+		SELECT username, firstname, lastname
 		FROM user
 		WHERE username = $1;`
 
@@ -111,6 +121,7 @@ func (r UserRepository) GetProfile(username string) (*UserProfile, error) {
 	defer cancel()
 
 	err := r.db.QueryRowContext(ctx, query, username).Scan(
+		&profile.Username,
 		&profile.FirstName,
 		&profile.LastName,
 	)

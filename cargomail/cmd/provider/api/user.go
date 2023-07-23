@@ -26,13 +26,15 @@ func (api *UserApi) Profile() http.Handler {
 				return
 			}
 
-			err = api.user.UpdateProfile(user)
+			profile, err := api.user.UpdateProfile(user)
 			if err != nil {
 				helper.ReturnErr(w, err, http.StatusInternalServerError)
 				return
 			}
 
+			helper.SetJsonHeader(w)
 			w.WriteHeader(http.StatusOK)
+			json.NewEncoder(w).Encode(profile)
 		} else if r.Method == "GET" {
 			profile, err := api.user.GetProfile(user.Username)
 			if err != nil {

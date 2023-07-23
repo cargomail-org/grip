@@ -1,5 +1,10 @@
+let profileForm;
+
 document.addEventListener("DOMContentLoaded", function () {
   composeContent(); // in prod should be cargoesContent
+
+  profileForm = document.getElementById("profileForm");
+  loadProfile(profileForm);
 });
 
 function composeContent(e) {
@@ -126,7 +131,6 @@ function profileContent(e) {
   document.getElementById("contactsPanel").hidden = true;
   document.getElementById("profilePanel").hidden = false;
 
-  const profileForm = document.getElementById("profileForm");
   loadProfile(profileForm);
 }
 
@@ -154,8 +158,18 @@ const loadProfile = async (form) => {
     return;
   }
 
-  form.querySelector('input[name="firstname"]').value = response.firstname
-  form.querySelector('input[name="lastname"]').value = response.lastname
+  const loggedUsername =
+    response.firstname.length > 0 ? response.firstname : response.username;
+
+  if (loggedUsername?.length) {
+    document.getElementById("loggedUsernameLetter").innerHTML = loggedUsername
+      .charAt(0)
+      .toUpperCase();
+    document.getElementById("loggedUsername").innerHTML = loggedUsername;
+  }
+
+  form.querySelector('input[name="firstname"]').value = response.firstname;
+  form.querySelector('input[name="lastname"]').value = response.lastname;
 };
 
 const downloadURI = (formId, uri, name) => {

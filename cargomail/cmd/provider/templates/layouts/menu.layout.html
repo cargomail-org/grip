@@ -43,10 +43,9 @@
                     <a href="#" class="nav-link d-flex align-items-center text-decoration-none dropdown-toggle"
                         id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
                         <div class="rounded-circle border d-flex justify-content-center align-items-center"
-                            style="width:28px;height:28px" alt="Avatar">
-                            {{.UsernameLetter}}
+                            id="loggedUsernameLetter" style="width:28px;height:28px" alt="Avatar">
                         </div>
-                        <span class="d-none d-sm-inline mx-1">{{.Username}}</span>
+                        <span class="d-none d-sm-inline mx-1" id="loggedUsername"></span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-light text-small shadow" aria-labelledby="dropdownUser">
                         <li class="dropdown-item">
