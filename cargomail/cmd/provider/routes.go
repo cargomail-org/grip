@@ -2,27 +2,87 @@ package provider
 
 import (
 	"net/http"
+	"strings"
 )
 
-func (svc *service) routes(mux *http.ServeMux) {
-	// App
-	mux.Handle("/", svc.app.Authenticate(svc.app.HomePage()))
-	mux.Handle("/login", svc.app.LoginPage())
-	mux.Handle("/logout", svc.app.Logout())
-	mux.Handle("/register", svc.app.RegisterPage())
+type Entry struct {
+	Method  string
+	Path    string
+	Handler http.Handler
+}
 
-	// mux.Handle("/auth/authenticate", svc.app.Session.Authenticate())
+type Router struct {
+	routes []Entry
+}
+
+func NewRouter() *Router { return new(Router) }
+
+func (t *Router) Route(method, path string, handler http.Handler) {
+	e := Entry{
+		Method:  method,
+		Path:    path,
+		Handler: handler,
+	}
+
+	t.routes = append(t.routes, e)
+}
+
+func (e *Entry) Match(r *http.Request) bool {
+	if r.Method != e.Method {
+		return false
+	}
+
+	if r.URL.Path == e.Path ||
+		(len(e.Path) > 1 &&
+			e.Path[len(e.Path)-2] != '/' &&
+			e.Path[len(e.Path)-1] == '/' &&
+			strings.HasPrefix(r.URL.Path, e.Path)) {
+		return true
+	}
+
+	return false
+}
+
+func (t *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	for _, e := range t.routes {
+		match := e.Match(r)
+		if !match {
+			continue
+		}
+
+		e.Handler.ServeHTTP(w, r)
+		return
+	}
+
+	http.NotFound(w, r)
+}
+
+func (svc *service) routes(r *Router) {
+	// App
+	r.Route("GET", "/", svc.app.Authenticate(svc.app.HomePage()))
+	r.Route("GET", "/login", svc.app.LoginPage())
+	r.Route("GET", "/logout", svc.app.Logout())
+	r.Route("GET", "/register", svc.app.RegisterPage())
+
+	// r.Route("GET", "/auth/authenticate", svc.app.Session.Authenticate())
 	// Health API
-	mux.Handle("/api/v1/health", svc.api.Health.Healthcheck())
+	r.Route("GET", "/api/v1/health", svc.api.Health.Healthcheck())
 	// Auth API
-	mux.Handle("/api/v1/auth/register", svc.api.User.Register())
-	mux.Handle("/api/v1/auth/authenticate", svc.api.Session.Login())
-	mux.Handle("/api/v1/auth/logout", svc.api.Session.Logout())
+	r.Route("POST", "/api/v1/auth/register", svc.api.User.Register())
+	r.Route("POST", "/api/v1/auth/authenticate", svc.api.Session.Login())
+	r.Route("GET", "/api/v1/auth/logout", svc.api.Session.Logout())
 	// User API
-	mux.Handle("/api/v1/user/profile", svc.api.Authenticate(svc.api.User.Profile()))
+	r.Route("PATCH", "/api/v1/user/profile", svc.api.Authenticate(svc.api.User.Profile()))
+	r.Route("GET", "/api/v1/user/profile", svc.api.Authenticate(svc.api.User.Profile()))
+	// Contacts API
+	// r.Route("POST", "/api/v1/contacts", svc.api.Authenticate(svc.api.Contacts.Create()))
+	// r.Route("GET", "/api/v1/contacts", svc.api.Authenticate(svc.api.Contacts.GetAll()))
+	// r.Route("PUT", "/api/v1/contacts", svc.api.Authenticate(svc.api.Contacts.Update()))
+	// r.Route("DELETE", "/api/v1/contacts", svc.api.Authenticate(svc.api.Contacts.DeleteByUuidList()))
 	// Files API
-	mux.Handle("/api/v1/files/upload", svc.api.Authenticate(svc.api.Files.Upload()))
-	mux.Handle("/api/v1/files", svc.api.Authenticate(svc.api.Files.GetAll()))
-	mux.Handle("/api/v1/files/delete", svc.api.Authenticate(svc.api.Files.DeleteByUuidList()))
-	mux.Handle("/api/v1/files/", svc.api.Authenticate(svc.api.Files.Download()))
+	r.Route("POST", "/api/v1/files/upload", svc.api.Authenticate(svc.api.Files.Upload()))
+	r.Route("GET", "/api/v1/files", svc.api.Authenticate(svc.api.Files.GetAll()))
+	r.Route("HEAD", "/api/v1/files/", svc.api.Authenticate(svc.api.Files.Download()))
+	r.Route("GET", "/api/v1/files/", svc.api.Authenticate(svc.api.Files.Download()))
+	r.Route("DELETE", "/api/v1/files/delete", svc.api.Authenticate(svc.api.Files.DeleteByUuidList()))
 }

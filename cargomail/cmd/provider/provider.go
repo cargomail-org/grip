@@ -62,7 +62,7 @@ const (
 	baseLayout   = "base.layout.html"
 	menuLayout   = "menu.layout.html"
 
-	contactsPage  = "contacts.page.html"
+	contactsPage = "contacts.page.html"
 	profilePage  = "profile.page.html"
 	composePage  = "compose.page.html"
 	cargoesPage  = "cargoes.page.html"
@@ -109,16 +109,16 @@ func LoadTemplates() (map[string]*template.Template, error) {
 }
 
 func (svc *service) Serve(ctx context.Context, errs *errgroup.Group) {
-	// Routes
-	mux := http.NewServeMux()
-	svc.routes(mux)
+	router := NewRouter()
+
+	svc.routes(router)
 
 	// fs := http.FileServer(http.FS(files)) // comment out for development
 	fs := http.FileServer(http.Dir("cmd/provider")) // comment out for production
 
-	mux.Handle("/"+publicDir+"/", http.StripPrefix("/", fs))
+	router.Route("GET", "/"+publicDir+"/", http.StripPrefix("/", fs))
 
-	http1Server := &http.Server{Handler: mux, Addr: svc.providerBind}
+	http1Server := &http.Server{Handler: router, Addr: svc.providerBind}
 	// http2.ConfigureServer(http1Server, &http2.Server{})
 
 	errs.Go(func() error {
