@@ -21,9 +21,13 @@ const api = async (formId, status, url, options) => {
     spinner = document.querySelector(".base-spinner");
   }
 
+  let loading = true;
+  setTimeout(() => {
+    if (loading) {
+      spinner.hidden = false;
+    }
+  }, "200");
   try {
-    spinner.hidden = false;
-
     const result = await fetch(url, options);
 
     if (options.method != "HEAD") {
@@ -59,6 +63,7 @@ const api = async (formId, status, url, options) => {
     );
     return false;
   } finally {
+    loading = false;
     spinner.hidden = true;
   }
 
