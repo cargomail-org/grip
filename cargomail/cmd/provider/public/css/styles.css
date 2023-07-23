@@ -59,8 +59,8 @@ a:not([class*="btn"]):hover {
   display: block;
   position: fixed;
   z-index: 1031;
-  top: calc( 50% - ( 0px / 2) );
-  right: calc( 50% - ( 30px / 2) );
+  top: calc(50% - (0px / 2));
+  right: calc(50% - (30px / 2));
 }
 
 @media screen and (max-width: 575px) {
@@ -71,8 +71,14 @@ a:not([class*="btn"]):hover {
     display: block;
     position: fixed;
     z-index: 1031;
-    top: calc( 50% - ( 0px / 2) );
-    right: calc( 50% - ( 30px / 2) );
+    top: calc(50% - (0px / 2));
+    right: calc(50% - (30px / 2));
+  }
+  .dropdown {
+    width: auto;
+  }  
+  #loggedUsername {
+    display: none;
   }
 }
 
@@ -84,7 +90,17 @@ a:not([class*="btn"]):hover {
     display: block;
     position: fixed;
     z-index: 1031;
-    top: calc( 50% - ( 0px / 2) );
-    right: calc( 50% - ( 210px / 2) );
+    top: calc(50% - (0px / 2));
+    right: calc(50% - (210px / 2));
+  }
+  .dropdown {
+    width: calc(9vw + (80px));
+  }  
+  #loggedUsername {
+    display: inline-block;
+    width: calc(9vw + (10px));
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
