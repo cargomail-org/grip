@@ -129,7 +129,7 @@ func Init(db *sql.DB) {
 	BEGIN
 		SELECT RAISE(ABORT, 'Update "last_stmt" not allowed')
 		WHERE (new.last_stmt < 0 OR new.last_stmt > 2)
-		   OR (old.last_stmt = 2 AND new.last_stmt <> old.last_stmt);
+		   OR (old.last_stmt = 2 AND new.last_stmt = 1); -- Untrash = trashed (2) -> inserted (0)
 	END;
 	
 	CREATE TRIGGER IF NOT EXISTS contact_after_update_delete
