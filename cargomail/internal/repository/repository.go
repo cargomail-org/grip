@@ -15,6 +15,10 @@ var (
 	ErrFileNameNotFound         = errors.New("filename not found")
 )
 
+type History struct {
+	Num int64 `json:"num"`
+}
+
 type Repository struct {
 	Files    FilesRepository
 	Session  SessionRepository

@@ -77,6 +77,7 @@ func (svc *service) routes(r *Router) {
 	// Contacts API
 	r.Route("POST", "/api/v1/contacts", svc.api.Authenticate(svc.api.Contacts.Create()))
 	r.Route("GET", "/api/v1/contacts", svc.api.Authenticate(svc.api.Contacts.GetAll()))
+	r.Route("GET", "/api/v1/contacts/sync", svc.api.Authenticate(svc.api.Contacts.GetHistory()))
 	r.Route("PUT", "/api/v1/contacts", svc.api.Authenticate(svc.api.Contacts.Update()))
 	r.Route("DELETE", "/api/v1/contacts", svc.api.Authenticate(svc.api.Contacts.DeleteByUuidList()))
 	// Files API

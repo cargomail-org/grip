@@ -56,6 +56,32 @@ func (api *ContactsApi) GetAll() http.Handler {
 	})
 }
 
+func (api *ContactsApi) GetHistory() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		user, ok := r.Context().Value(repository.UserContextKey).(*repository.User)
+		if !ok {
+			helper.ReturnErr(w, repository.ErrMissingUserContext, http.StatusInternalServerError)
+			return
+		}
+
+		var history *repository.History
+
+		err := json.NewDecoder(r.Body).Decode(&history)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		contactsHistory, err := api.contacts.GetHistory(user, history)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		helper.SetJsonResponse(w, http.StatusCreated, contactsHistory)
+	})
+}
+
 func (api *ContactsApi) Update() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 

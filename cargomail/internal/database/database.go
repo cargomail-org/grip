@@ -14,10 +14,10 @@ func Init(db *sql.DB) {
 	_, err := db.ExecContext(ctx, `
 	------------------------------tables-----------------------------
 
-	CREATE TABLE IF NOT EXISTS timeline_seq (
+	CREATE TABLE IF NOT EXISTS contacts_timeline_seq (
 			num integer(8) NOT NULL
 	);
-	CREATE TABLE IF NOT EXISTS history_seq (
+	CREATE TABLE IF NOT EXISTS contacts_history_seq (
 		num integer(8) NOT NULL
 	);
 
@@ -55,7 +55,7 @@ func Init(db *sql.DB) {
 		lastname		TEXT,
 		timeline_id		INTEGER(8) NOT NULL DEFAULT 0,
 		history_id 		INTEGER(8) NOT NULL DEFAULT 0,
-		last_stmt  		INTEGER(2) NOT NULL DEFAULT 0, -- 0-insert, 1-update, 2-mark for delete
+		last_stmt  		INTEGER(2) NOT NULL DEFAULT 0, -- 0-inserted, 1-updated, 2-trashed
 		created_at		TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 	);
 
@@ -69,13 +69,13 @@ func Init(db *sql.DB) {
 
 	------------------------------initialization---------------------
 
-	INSERT INTO timeline_seq(num) 
+	INSERT INTO contacts_timeline_seq(num) 
 		SELECT 1
-		WHERE NOT EXISTS (SELECT 1 from timeline_seq);
+		WHERE NOT EXISTS (SELECT 1 from contacts_timeline_seq);
 
-	INSERT INTO history_seq(num) 
+	INSERT INTO contacts_history_seq(num) 
 		SELECT 1
-		WHERE NOT EXISTS (SELECT 1 from history_seq);
+		WHERE NOT EXISTS (SELECT 1 from contacts_history_seq);
 
 	------------------------------triggers---------------------------		
 
@@ -84,11 +84,11 @@ func Init(db *sql.DB) {
 		ON contact
 		FOR EACH ROW
 	BEGIN
-		UPDATE timeline_seq SET num = (num + 1);
-		UPDATE history_seq SET num = (num + 1);
+		UPDATE contacts_timeline_seq SET num = (num + 1);
+		UPDATE contacts_history_seq SET num = (num + 1);
 		UPDATE contact
-		SET timeline_id = (SELECT num FROM timeline_seq),
-			history_id  = (SELECT num FROM history_seq),
+		SET timeline_id = (SELECT num FROM contacts_timeline_seq),
+			history_id  = (SELECT num FROM contacts_history_seq),
 			last_stmt   = 0
 		WHERE id = new.id;
 	END;
@@ -111,16 +111,16 @@ func Init(db *sql.DB) {
 		ON contact
 		FOR EACH ROW
 	BEGIN
-		UPDATE timeline_seq SET num = (num + 1);
-		UPDATE history_seq SET num = (num + 1);
+		UPDATE contacts_timeline_seq SET num = (num + 1);
+		UPDATE contacts_history_seq SET num = (num + 1);
 		UPDATE contact
-		SET timeline_id = (SELECT num FROM timeline_seq),
-			history_id  = (SELECT num FROM history_seq),
+		SET timeline_id = (SELECT num FROM contacts_timeline_seq),
+			history_id  = (SELECT num FROM contacts_history_seq),
 			last_stmt   = 1
 		WHERE id = old.id;
 	END;
 	
-	-- Mark for delete
+	-- Trashed
 	CREATE TRIGGER IF NOT EXISTS contact_before_update_delete
 		BEFORE UPDATE OF
 			last_stmt
@@ -139,9 +139,9 @@ func Init(db *sql.DB) {
 		FOR EACH ROW
 		WHEN new.last_stmt = 2
 	BEGIN
-		UPDATE history_seq SET num = (num + 1);
+		UPDATE contacts_history_seq SET num = (num + 1);
 		UPDATE contact
-		SET history_id = (SELECT num FROM history_seq),
+		SET history_id = (SELECT num FROM contacts_history_seq),
 			last_stmt  = new.last_stmt
 		WHERE id = old.id;
 	END;
