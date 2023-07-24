@@ -44,7 +44,7 @@ func (r *ContactsRepository) Create(user *User, contact *Contact) (*Contact, err
 	query := `
 		INSERT INTO contact (user_id, uuid, email_address, firstname, lastname)
 		VALUES ($1, $2, $3, $4, $5)
-		RETURNING *;`
+		RETURNING * ;`
 
 	contact.Uuid = uuid.NewString()
 	args := []interface{}{user.ID, contact.Uuid, contact.EmailAddress, contact.FirstName, contact.LastName}
@@ -55,4 +55,44 @@ func (r *ContactsRepository) Create(user *User, contact *Contact) (*Contact, err
 	}
 
 	return contact, nil
+}
+
+func (r *ContactsRepository) GetAll(user *User) ([]*Contact, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `
+		SELECT *
+		FROM contact
+		WHERE user_id = $1
+		ORDER BY created_at DESC;`
+
+	args := []interface{}{user.ID}
+
+	rows, err := r.db.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	contacts := []*Contact{}
+
+	for rows.Next() {
+		var contact Contact
+
+		err := rows.Scan(contact.Scan()...)
+
+		if err != nil {
+			return nil, err
+		}
+
+		contacts = append(contacts, &contact)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return contacts, nil
 }

@@ -61,7 +61,7 @@ func (r FilesRepository) GetAll(user *User, filters Filters) ([]*File, Metadata,
 		FROM file
 		WHERE user_id = $1
 		ORDER BY %s %s, id ASC
-		LIMIT $2 OFFSET $3`, filters.sortColumn(), filters.sortDirection())
+		LIMIT $2 OFFSET $3;`, filters.sortColumn(), filters.sortDirection())
 	}
 
 	args := []interface{}{user.ID, filters.limit(), filters.offset()}
@@ -141,7 +141,7 @@ func (r FilesRepository) GetOriginalFileName(user *User, uuid string) (string, e
 		SELECT name, size, content_type, created_at
 		FROM file
 		WHERE user_id = $1 AND
-		      uuid = $2`
+		      uuid = $2;`
 
 	args := []interface{}{user.ID, uuid}
 

@@ -40,7 +40,19 @@ func (api *ContactsApi) Create() http.Handler {
 
 func (api *ContactsApi) GetAll() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		user, ok := r.Context().Value(repository.UserContextKey).(*repository.User)
+		if !ok {
+			helper.ReturnErr(w, repository.ErrMissingUserContext, http.StatusInternalServerError)
+			return
+		}
 
+		contacts, err := api.contacts.GetAll(user)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		helper.SetJsonResponse(w, http.StatusCreated, contacts)
 	})
 }
 
