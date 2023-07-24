@@ -28,3 +28,12 @@ func FromJson[T any](body io.Reader, target T) {
 	json.Unmarshal(buf.Bytes(), &target)
 }
 
+func SetJsonResponse(w http.ResponseWriter, statusCode int, data interface{}) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	if statusCode > 0 {
+		w.WriteHeader(statusCode)
+	}
+	if data != nil {
+		json.NewEncoder(w).Encode(data)
+	}
+}

@@ -59,28 +59,28 @@ func (r SessionRepository) New(userID int64, ttl time.Duration, scope string) (*
 }
 
 func (r SessionRepository) Insert(session *Session) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
 	query := `
 		INSERT INTO session (hash, user_id, expiry, scope)
 		VALUES ($1, $2, $3, $4);`
 
 	args := []interface{}{session.Hash, session.UserID, session.Expiry, session.Scope}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
 	_, err := r.db.ExecContext(ctx, query, args...)
 	return err
 }
 
 func (r SessionRepository) Remove(session string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
 	sessionHash := sha256.Sum256([]byte(session))
 
 	query := `
 		DELETE FROM session
 		WHERE hash = $1;`
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
 
 	_, err := r.db.ExecContext(ctx, query, sessionHash[:])
 	return err

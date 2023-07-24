@@ -36,8 +36,7 @@ func (api *FilesApi) Upload() http.Handler {
 			return
 		}
 
-		helper.SetJsonHeader(w)
-		w.WriteHeader(http.StatusCreated)
+		helper.SetJsonResponse(w, http.StatusCreated, nil)
 
 		files := r.MultipartForm.File["files"]
 		for i := range files {
@@ -93,7 +92,7 @@ func (api *FilesApi) Upload() http.Handler {
 				Timestamp:   createdAt.UnixMilli(),
 			}
 
-			json.NewEncoder(w).Encode(uploadedFile)
+			helper.SetJsonResponse(w, http.StatusOK, uploadedFile)
 		}
 	})
 }
@@ -174,11 +173,7 @@ func (api *FilesApi) GetAll() http.Handler {
 			return
 		}
 
-		// log.Printf("metadata: %v", metadata)
-
-		helper.SetJsonHeader(w)
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(files)
+		helper.SetJsonResponse(w, http.StatusOK, files)
 	})
 }
 
@@ -210,8 +205,6 @@ func (api *FilesApi) DeleteByUuidList() http.Handler {
 			_ = os.Remove(filepath + uuid)
 		}
 
-		helper.SetJsonHeader(w)
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(map[string]string{"status": "OK"})
+		helper.SetJsonResponse(w, http.StatusOK, map[string]string{"status": "OK"})
 	})
 }

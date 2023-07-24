@@ -3,7 +3,6 @@ package api
 import (
 	"cargomail/cmd/provider/api/helper"
 	"cargomail/internal/repository"
-	"encoding/json"
 	"errors"
 	"log"
 	"net/http"
@@ -77,9 +76,7 @@ func (api *UserApi) Register() http.Handler {
 			return
 		}
 
-		helper.SetJsonHeader(w)
-		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(user)
+		helper.SetJsonResponse(w, http.StatusCreated, user)
 	})
 }
 
@@ -137,9 +134,7 @@ func (api *SessionApi) Login() http.Handler {
 
 		http.SetCookie(w, &cookie)
 
-		helper.SetJsonHeader(w)
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(session)
+		helper.SetJsonResponse(w, http.StatusOK, session)
 	})
 }
 

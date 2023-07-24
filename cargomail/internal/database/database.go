@@ -56,7 +56,7 @@ func Init(db *sql.DB) {
 		timeline_id		INTEGER(8) NOT NULL DEFAULT 0,
 		history_id 		INTEGER(8) NOT NULL DEFAULT 0,
 		last_stmt  		INTEGER(2) NOT NULL DEFAULT 0, -- 0-insert, 1-update, 2-mark for delete
-		timestamp		TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+		created_at		TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 	);
 
 	------------------------------indexes----------------------------
@@ -90,7 +90,7 @@ func Init(db *sql.DB) {
 		SET timeline_id = (SELECT num FROM timeline_seq),
 			history_id  = (SELECT num FROM history_seq),
 			last_stmt   = 0,
-			timestamp   = CURRENT_TIMESTAMP
+			created_at  = CURRENT_TIMESTAMP
 		WHERE id = new.id;
 	END;
 	
@@ -118,7 +118,7 @@ func Init(db *sql.DB) {
 		SET timeline_id = (SELECT num FROM timeline_seq),
 			history_id  = (SELECT num FROM history_seq),
 			last_stmt   = 1,
-			timestamp   = CURRENT_TIMESTAMP
+			created_at  = CURRENT_TIMESTAMP
 		WHERE id = old.id;
 	END;
 	
@@ -145,7 +145,7 @@ func Init(db *sql.DB) {
 		UPDATE contact
 		SET history_id = (SELECT num FROM history_seq),
 			last_stmt  = new.last_stmt,
-			timestamp  = CURRENT_TIMESTAMP
+			created_at = CURRENT_TIMESTAMP
 		WHERE id = old.id;
 	END;
 	

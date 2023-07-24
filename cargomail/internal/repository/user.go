@@ -61,15 +61,15 @@ func (p *password) Matches(plaintextPassword string) (bool, error) {
 }
 
 func (r UserRepository) Create(user *User) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
 	query := `
 		INSERT INTO user (username, password_hash, firstname, lastname)
 		VALUES ($1, $2, $3, $4)
 		RETURNING id, created_at;`
 
 	args := []interface{}{user.Username, user.Password.hash, user.FirstName, user.LastName}
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
 
 	err := r.db.QueryRowContext(ctx, query, args...).Scan(&user.ID, &user.CreatedAt)
 	if err != nil {
@@ -85,6 +85,9 @@ func (r UserRepository) Create(user *User) error {
 }
 
 func (r UserRepository) UpdateProfile(user *User) (*UserProfile, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
 	profile := UserProfile{}
 
 	query := `
@@ -94,9 +97,6 @@ func (r UserRepository) UpdateProfile(user *User) (*UserProfile, error) {
 		WHERE username = $3;`
 
 	args := []interface{}{user.FirstName, user.LastName, user.Username}
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
 
 	_, err := r.db.ExecContext(ctx, query, args...)
 	if err != nil {
@@ -111,14 +111,15 @@ func (r UserRepository) UpdateProfile(user *User) (*UserProfile, error) {
 }
 
 func (r UserRepository) GetProfile(username string) (*UserProfile, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
 	query := `
 		SELECT username, firstname, lastname
 		FROM user
 		WHERE username = $1;`
 
 	var profile UserProfile
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
 
 	err := r.db.QueryRowContext(ctx, query, username).Scan(
 		&profile.Username,
@@ -139,14 +140,15 @@ func (r UserRepository) GetProfile(username string) (*UserProfile, error) {
 }
 
 func (r UserRepository) GetByUsername(username string) (*User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
 	query := `
 		SELECT id, username, password_hash, created_at
 		FROM user
 		WHERE username = $1;`
 
 	var user User
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
 
 	err := r.db.QueryRowContext(ctx, query, username).Scan(
 		&user.ID,
@@ -168,6 +170,9 @@ func (r UserRepository) GetByUsername(username string) (*User, error) {
 }
 
 func (r UserRepository) GetBySession(sessionScope, sessionPlaintext string) (*User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
 	sessionHash := sha256.Sum256([]byte(sessionPlaintext))
 
 	query := `
@@ -182,9 +187,6 @@ func (r UserRepository) GetBySession(sessionScope, sessionPlaintext string) (*Us
 	args := []interface{}{sessionHash[:], sessionScope, time.Now()}
 
 	var user User
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
 
 	err := r.db.QueryRowContext(ctx, query, args...).Scan(
 		&user.ID,

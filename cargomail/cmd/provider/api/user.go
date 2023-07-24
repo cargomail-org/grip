@@ -32,9 +32,7 @@ func (api *UserApi) Profile() http.Handler {
 				return
 			}
 
-			helper.SetJsonHeader(w)
-			w.WriteHeader(http.StatusOK)
-			json.NewEncoder(w).Encode(profile)
+			helper.SetJsonResponse(w, http.StatusOK, profile)
 		} else if r.Method == "GET" {
 			profile, err := api.user.GetProfile(user.Username)
 			if err != nil {
@@ -46,9 +44,8 @@ func (api *UserApi) Profile() http.Handler {
 				}
 				return
 			}
-			helper.SetJsonHeader(w)
-			w.WriteHeader(http.StatusOK)
-			json.NewEncoder(w).Encode(profile)
+
+			helper.SetJsonResponse(w, http.StatusOK, profile)
 		}
 	})
 }
