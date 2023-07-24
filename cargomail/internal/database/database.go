@@ -15,10 +15,10 @@ func Init(db *sql.DB) {
 	------------------------------tables-----------------------------
 
 	CREATE TABLE IF NOT EXISTS contacts_timeline_seq (
-			num integer(8) NOT NULL
+		last_timeline_id integer(8) NOT NULL
 	);
 	CREATE TABLE IF NOT EXISTS contacts_history_seq (
-		num integer(8) NOT NULL
+		last_history_id integer(8) NOT NULL
 	);
 
 	CREATE TABLE IF NOT EXISTS user (
@@ -69,11 +69,11 @@ func Init(db *sql.DB) {
 
 	------------------------------initialization---------------------
 
-	INSERT INTO contacts_timeline_seq(num) 
+	INSERT INTO contacts_timeline_seq(last_timeline_id) 
 		SELECT 1
 		WHERE NOT EXISTS (SELECT 1 from contacts_timeline_seq);
 
-	INSERT INTO contacts_history_seq(num) 
+	INSERT INTO contacts_history_seq(last_history_id) 
 		SELECT 1
 		WHERE NOT EXISTS (SELECT 1 from contacts_history_seq);
 
@@ -84,11 +84,11 @@ func Init(db *sql.DB) {
 		ON contact
 		FOR EACH ROW
 	BEGIN
-		UPDATE contacts_timeline_seq SET num = (num + 1);
-		UPDATE contacts_history_seq SET num = (num + 1);
+		UPDATE contacts_timeline_seq SET last_timeline_id = (last_timeline_id + 1);
+		UPDATE contacts_history_seq SET last_history_id = (last_history_id + 1);
 		UPDATE contact
-		SET timeline_id = (SELECT num FROM contacts_timeline_seq),
-			history_id  = (SELECT num FROM contacts_history_seq),
+		SET timeline_id = (SELECT last_timeline_id FROM contacts_timeline_seq),
+			history_id  = (SELECT last_history_id FROM contacts_history_seq),
 			last_stmt   = 0
 		WHERE id = new.id;
 	END;
@@ -111,11 +111,11 @@ func Init(db *sql.DB) {
 		ON contact
 		FOR EACH ROW
 	BEGIN
-		UPDATE contacts_timeline_seq SET num = (num + 1);
-		UPDATE contacts_history_seq SET num = (num + 1);
+		UPDATE contacts_timeline_seq SET last_timeline_id = (last_timeline_id + 1);
+		UPDATE contacts_history_seq SET last_history_id = (last_history_id + 1);
 		UPDATE contact
-		SET timeline_id = (SELECT num FROM contacts_timeline_seq),
-			history_id  = (SELECT num FROM contacts_history_seq),
+		SET timeline_id = (SELECT last_timeline_id FROM contacts_timeline_seq),
+			history_id  = (SELECT last_history_id FROM contacts_history_seq),
 			last_stmt   = 1
 		WHERE id = old.id;
 	END;
@@ -139,9 +139,9 @@ func Init(db *sql.DB) {
 		FOR EACH ROW
 		WHEN new.last_stmt = 2
 	BEGIN
-		UPDATE contacts_history_seq SET num = (num + 1);
+		UPDATE contacts_history_seq SET last_history_id = (last_history_id + 1);
 		UPDATE contact
-		SET history_id = (SELECT num FROM contacts_history_seq),
+		SET history_id = (SELECT last_history_id FROM contacts_history_seq),
 			last_stmt  = new.last_stmt
 		WHERE id = old.id;
 	END;

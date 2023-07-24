@@ -27,7 +27,7 @@ type Contact struct {
 }
 
 type ContactsHistory struct {
-	History          int64 `json:"num"`
+	History          int64 `json:"last_history_id"`
 	ContactsInserted []*Contact
 	ContactsUpdated  []*Contact
 	ContactsTrashed  []*Contact
@@ -138,7 +138,7 @@ func (r *ContactsRepository) GetHistory(user *User, history *History) (*Contacts
 			  history_id > $2
 		ORDER BY created_at DESC;`
 
-	args := []interface{}{user.ID, history.Num}
+	args := []interface{}{user.ID, history.LastHistoryId}
 
 	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -178,7 +178,7 @@ func (r *ContactsRepository) GetHistory(user *User, history *History) (*Contacts
 			  history_id > $2
 		ORDER BY created_at DESC;`
 
-	args = []interface{}{user.ID, history.Num}
+	args = []interface{}{user.ID, history.LastHistoryId}
 
 	rows, err = tx.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -212,7 +212,7 @@ func (r *ContactsRepository) GetHistory(user *User, history *History) (*Contacts
 			  history_id > $2
 		ORDER BY created_at DESC;`
 
-	args = []interface{}{user.ID, history.Num}
+	args = []interface{}{user.ID, history.LastHistoryId}
 
 	rows, err = tx.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -237,9 +237,9 @@ func (r *ContactsRepository) GetHistory(user *User, history *History) (*Contacts
 		return nil, err
 	}
 
-	// history number
+	// history
 	query = `
-	SELECT num FROM contacts_history_seq;`
+	SELECT last_history_id FROM contacts_history_seq;`
 
 	err = tx.QueryRowContext(ctx, query).Scan(&contactsHistory.History)
 	if err != nil {
