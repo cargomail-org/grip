@@ -16,18 +16,20 @@ type ApiParams struct {
 }
 
 type Api struct {
-	Health  HealthApi
-	Files   FilesApi
-	Session SessionApi
-	User    UserApi
+	Health   HealthApi
+	Files    FilesApi
+	Session  SessionApi
+	User     UserApi
+	Contacts ContactsApi
 }
 
 func NewApi(params ApiParams) Api {
 	return Api{
-		Health:  HealthApi{domainName: params.DomainName},
-		Files:   FilesApi{files: params.Repository.Files, filesPath: params.FilesPath},
-		Session: SessionApi{user: params.Repository.User, session: params.Repository.Session},
-		User:    UserApi{user: params.Repository.User},
+		Health:   HealthApi{domainName: params.DomainName},
+		Files:    FilesApi{files: params.Repository.Files, filesPath: params.FilesPath},
+		Session:  SessionApi{user: params.Repository.User, session: params.Repository.Session},
+		User:     UserApi{user: params.Repository.User},
+		Contacts: ContactsApi{contacts: params.Repository.Contacts},
 	}
 }
 
