@@ -36,10 +36,6 @@ func NewApp(params AppParams) App {
 	}
 }
 
-// type contextKey string
-
-// const UserContextKey = contextKey("user")
-
 func (app *App) contextSetUser(r *http.Request, user *repository.User) *http.Request {
 	ctx := context.WithValue(r.Context(), repository.UserContextKey, user)
 	return r.WithContext(ctx)
@@ -47,10 +43,6 @@ func (app *App) contextSetUser(r *http.Request, user *repository.User) *http.Req
 
 func redirectToLoginPage(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
-}
-
-func redirectToHomePage(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 // middleware

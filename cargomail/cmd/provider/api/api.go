@@ -33,10 +33,6 @@ func NewApi(params ApiParams) Api {
 	}
 }
 
-// type contextKey string
-
-// const UserContextKey = contextKey("user")
-
 func (api *Api) contextSetUser(r *http.Request, user *repository.User) *http.Request {
 	ctx := context.WithValue(r.Context(), repository.UserContextKey, user)
 	return r.WithContext(ctx)
