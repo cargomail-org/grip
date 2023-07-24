@@ -41,17 +41,41 @@ func (r *ContactsRepository) Create(user *User, contact *Contact) (*Contact, err
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+
 	query := `
 		INSERT INTO contact (user_id, uuid, email_address, firstname, lastname)
 		VALUES ($1, $2, $3, $4, $5)
-		RETURNING * ;`
+		RETURNING id;`
 
 	contact.Uuid = uuid.NewString()
+
 	args := []interface{}{user.ID, contact.Uuid, contact.EmailAddress, contact.FirstName, contact.LastName}
 
-	err := r.db.QueryRowContext(ctx, query, args...).Scan(contact.Scan()...)
+	err = tx.QueryRowContext(ctx, query, args...).Scan(&contact.ID)
 	if err != nil {
 		return &Contact{}, err
+	}
+
+	query = `
+		SELECT *
+		FROM contact
+		WHERE id = $1 AND user_id = $2
+		ORDER BY created_at DESC;`
+
+	args = []interface{}{contact.ID, user.ID}
+
+	err = tx.QueryRowContext(ctx, query, args...).Scan(contact.Scan()...)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = tx.Commit(); err != nil {
+		return nil, err
 	}
 
 	return contact, nil

@@ -89,8 +89,7 @@ func Init(db *sql.DB) {
 		UPDATE contact
 		SET timeline_id = (SELECT num FROM timeline_seq),
 			history_id  = (SELECT num FROM history_seq),
-			last_stmt   = 0,
-			created_at  = CURRENT_TIMESTAMP
+			last_stmt   = 0
 		WHERE id = new.id;
 	END;
 	
@@ -117,8 +116,7 @@ func Init(db *sql.DB) {
 		UPDATE contact
 		SET timeline_id = (SELECT num FROM timeline_seq),
 			history_id  = (SELECT num FROM history_seq),
-			last_stmt   = 1,
-			created_at  = CURRENT_TIMESTAMP
+			last_stmt   = 1
 		WHERE id = old.id;
 	END;
 	
@@ -144,8 +142,7 @@ func Init(db *sql.DB) {
 		UPDATE history_seq SET num = (num + 1);
 		UPDATE contact
 		SET history_id = (SELECT num FROM history_seq),
-			last_stmt  = new.last_stmt,
-			created_at = CURRENT_TIMESTAMP
+			last_stmt  = new.last_stmt
 		WHERE id = old.id;
 	END;
 	
