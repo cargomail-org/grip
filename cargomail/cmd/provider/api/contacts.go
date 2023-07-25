@@ -72,13 +72,13 @@ func (api *ContactsApi) GetHistory() http.Handler {
 			return
 		}
 
-		contactsHistory, err := api.contacts.GetHistory(user, history)
+		contactHistory, err := api.contacts.GetHistory(user, history)
 		if err != nil {
 			log.Println(err)
 			return
 		}
 
-		helper.SetJsonResponse(w, http.StatusCreated, contactsHistory)
+		helper.SetJsonResponse(w, http.StatusCreated, contactHistory)
 	})
 }
 
@@ -88,7 +88,7 @@ func (api *ContactsApi) Update() http.Handler {
 	})
 }
 
-func (api *ContactsApi) DeleteByUuidList() http.Handler {
+func (api *ContactsApi) TrashByUuidList() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 	})

@@ -14,10 +14,10 @@ func Init(db *sql.DB) {
 	_, err := db.ExecContext(ctx, `
 	------------------------------tables-----------------------------
 
-	CREATE TABLE IF NOT EXISTS contacts_timeline_seq (
+	CREATE TABLE IF NOT EXISTS contact_timeline_seq (
 		last_timeline_id integer(8) NOT NULL
 	);
-	CREATE TABLE IF NOT EXISTS contacts_history_seq (
+	CREATE TABLE IF NOT EXISTS contact_history_seq (
 		last_history_id integer(8) NOT NULL
 	);
 
@@ -53,10 +53,11 @@ func Init(db *sql.DB) {
 		email_address   TEXT,
 		firstname		TEXT,
 		lastname		TEXT,
+		created_at		TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+		modified_at		TIMESTAMP,
 		timeline_id		INTEGER(8) NOT NULL DEFAULT 0,
 		history_id 		INTEGER(8) NOT NULL DEFAULT 0,
-		last_stmt  		INTEGER(2) NOT NULL DEFAULT 0, -- 0-inserted, 1-updated, 2-trashed
-		created_at		TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+		last_stmt  		INTEGER(2) NOT NULL DEFAULT 0 -- 0-inserted, 1-updated, 2-trashed
 	);
 
 	------------------------------indexes----------------------------
@@ -69,26 +70,26 @@ func Init(db *sql.DB) {
 
 	------------------------------initialization---------------------
 
-	INSERT INTO contacts_timeline_seq(last_timeline_id) 
+	INSERT INTO contact_timeline_seq(last_timeline_id) 
 		SELECT 1
-		WHERE NOT EXISTS (SELECT 1 from contacts_timeline_seq);
+		WHERE NOT EXISTS (SELECT 1 from contact_timeline_seq);
 
-	INSERT INTO contacts_history_seq(last_history_id) 
+	INSERT INTO contact_history_seq(last_history_id) 
 		SELECT 1
-		WHERE NOT EXISTS (SELECT 1 from contacts_history_seq);
+		WHERE NOT EXISTS (SELECT 1 from contact_history_seq);
 
-	------------------------------triggers---------------------------		
+	------------------------------contacts triggers---------------------------		
 
 	CREATE TRIGGER IF NOT EXISTS contact_after_insert
 		AFTER INSERT
 		ON contact
 		FOR EACH ROW
 	BEGIN
-		UPDATE contacts_timeline_seq SET last_timeline_id = (last_timeline_id + 1);
-		UPDATE contacts_history_seq SET last_history_id = (last_history_id + 1);
+		UPDATE contact_timeline_seq SET last_timeline_id = (last_timeline_id + 1);
+		UPDATE contact_history_seq SET last_history_id = (last_history_id + 1);
 		UPDATE contact
-		SET timeline_id = (SELECT last_timeline_id FROM contacts_timeline_seq),
-			history_id  = (SELECT last_history_id FROM contacts_history_seq),
+		SET timeline_id = (SELECT last_timeline_id FROM contact_timeline_seq),
+			history_id  = (SELECT last_history_id FROM contact_history_seq),
 			last_stmt   = 0
 		WHERE id = new.id;
 	END;
@@ -111,17 +112,18 @@ func Init(db *sql.DB) {
 		ON contact
 		FOR EACH ROW
 	BEGIN
-		UPDATE contacts_timeline_seq SET last_timeline_id = (last_timeline_id + 1);
-		UPDATE contacts_history_seq SET last_history_id = (last_history_id + 1);
+		UPDATE contact_timeline_seq SET last_timeline_id = (last_timeline_id + 1);
+		UPDATE contact_history_seq SET last_history_id = (last_history_id + 1);
 		UPDATE contact
-		SET timeline_id = (SELECT last_timeline_id FROM contacts_timeline_seq),
-			history_id  = (SELECT last_history_id FROM contacts_history_seq),
-			last_stmt   = 1
+		SET timeline_id = (SELECT last_timeline_id FROM contact_timeline_seq),
+			history_id  = (SELECT last_history_id FROM contact_history_seq),
+			last_stmt   = 1,
+			modified_at = CURRENT_TIMESTAMP
 		WHERE id = old.id;
 	END;
 	
 	-- Trashed
-	CREATE TRIGGER IF NOT EXISTS contact_before_update_delete
+	CREATE TRIGGER IF NOT EXISTS contact_before_trashed
 		BEFORE UPDATE OF
 			last_stmt
 		ON contact
@@ -129,20 +131,21 @@ func Init(db *sql.DB) {
 	BEGIN
 		SELECT RAISE(ABORT, 'Update "last_stmt" not allowed')
 		WHERE (new.last_stmt < 0 OR new.last_stmt > 2)
-		   OR (old.last_stmt = 2 AND new.last_stmt = 1); -- Untrash = trashed (2) -> inserted (0)
+		   OR (old.last_stmt = 2 AND new.last_stmt != 0); -- Untrash = trashed (2) -> inserted (0)
 	END;
 	
-	CREATE TRIGGER IF NOT EXISTS contact_after_update_delete
+	CREATE TRIGGER IF NOT EXISTS contact_after_trashed
 		AFTER UPDATE OF
 			last_stmt
 		ON contact
 		FOR EACH ROW
 		WHEN new.last_stmt = 2
 	BEGIN
-		UPDATE contacts_history_seq SET last_history_id = (last_history_id + 1);
+		UPDATE contact_history_seq SET last_history_id = (last_history_id + 1);
 		UPDATE contact
-		SET history_id = (SELECT last_history_id FROM contacts_history_seq),
-			last_stmt  = new.last_stmt
+		SET history_id  = (SELECT last_history_id FROM contact_history_seq),
+			last_stmt   = new.last_stmt,
+			modified_at = CURRENT_TIMESTAMP
 		WHERE id = old.id;
 	END;
 	

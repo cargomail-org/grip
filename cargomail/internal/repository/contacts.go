@@ -13,38 +13,34 @@ type ContactsRepository struct {
 	db *sql.DB
 }
 
-type Contact struct {
-	ID           int64     `json:"-"`
-	UserId       int64     `json:"-"`
-	Uuid         string    `json:"uuid"`
-	EmailAddress string    `json:"email_address"`
-	FirstName    string    `json:"firstname"`
-	LastName     string    `json:"lastname"`
-	TimelineId   int64     `json:"-"`
-	HistoryId    int64     `json:"-"`
-	LastStmt     int       `json:"-"`
-	CreatedAt    time.Time `json:"created_at"`
+type Timestamp int64
+
+func (p *Timestamp) Scan(value interface{}) error {
+	t := value.(time.Time).UnixMilli()
+	*p = Timestamp(t)
+	return nil
 }
 
-type ContactsHistory struct {
+type Contact struct {
+	Id           int64      `json:"-"`
+	UserId       int64      `json:"-"`
+	Uuid         string     `json:"uuid"`
+	EmailAddress *string    `json:"email_address"`
+	FirstName    *string    `json:"firstname"`
+	LastName     *string    `json:"lastname"`
+	CreatedAt    Timestamp  `json:"created_at"`
+	ModifiedAt   *Timestamp `json:"modified_at"`
+	TimelineId   int64      `json:"-"`
+	HistoryId    int64      `json:"-"`
+	LastStmt     int        `json:"-"`
+}
+
+type contactHistory struct {
 	History          int64 `json:"last_history_id"`
 	ContactsInserted []*Contact
 	ContactsUpdated  []*Contact
 	ContactsTrashed  []*Contact
 }
-
-// type Contact struct {
-// 	ID           int64     `json:"-"`
-// 	UserId       int64     `json:"-"`
-// 	Uuid         string    `json:"uuid"`
-// 	EmailAddress string    `json:"email_address"`
-// 	FirstName    string    `json:"firstname"`
-// 	LastName     string    `json:"lastname"`
-// 	TimelineId   int64     `json:"-"`
-// 	HistoryId    int64     `json:"history_id"`
-// 	LastStmt     int       `json:"last_stmt"`
-// 	CreatedAt    time.Time `json:"created_at"`
-// }
 
 func (c *Contact) Scan() []interface{} {
 	s := reflect.ValueOf(c).Elem()
@@ -74,6 +70,9 @@ func (r *ContactsRepository) Create(user *User, contact *Contact) (*Contact, err
 	if err != nil {
 		return nil, err
 	}
+
+	// contact.CreatedAtUnix = contact.CreatedAt.UnixMilli()
+	// contact.ModifiedAtUnix = contact.ModifiedAt.UnixMilli()
 
 	return contact, nil
 }
@@ -119,7 +118,7 @@ func (r *ContactsRepository) GetAll(user *User) ([]*Contact, error) {
 	return contacts, nil
 }
 
-func (r *ContactsRepository) GetHistory(user *User, history *History) (*ContactsHistory, error) {
+func (r *ContactsRepository) GetHistory(user *User, history *History) (*contactHistory, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -147,7 +146,7 @@ func (r *ContactsRepository) GetHistory(user *User, history *History) (*Contacts
 
 	defer rows.Close()
 
-	contactsHistory := &ContactsHistory{
+	contactHistory := &contactHistory{
 		ContactsInserted: []*Contact{},
 		ContactsUpdated:  []*Contact{},
 		ContactsTrashed:  []*Contact{},
@@ -162,7 +161,7 @@ func (r *ContactsRepository) GetHistory(user *User, history *History) (*Contacts
 			return nil, err
 		}
 
-		contactsHistory.ContactsInserted = append(contactsHistory.ContactsInserted, &contact)
+		contactHistory.ContactsInserted = append(contactHistory.ContactsInserted, &contact)
 	}
 
 	if err = rows.Err(); err != nil {
@@ -196,7 +195,7 @@ func (r *ContactsRepository) GetHistory(user *User, history *History) (*Contacts
 			return nil, err
 		}
 
-		contactsHistory.ContactsUpdated = append(contactsHistory.ContactsUpdated, &contact)
+		contactHistory.ContactsUpdated = append(contactHistory.ContactsUpdated, &contact)
 	}
 
 	if err = rows.Err(); err != nil {
@@ -230,7 +229,7 @@ func (r *ContactsRepository) GetHistory(user *User, history *History) (*Contacts
 			return nil, err
 		}
 
-		contactsHistory.ContactsTrashed = append(contactsHistory.ContactsTrashed, &contact)
+		contactHistory.ContactsTrashed = append(contactHistory.ContactsTrashed, &contact)
 	}
 
 	if err = rows.Err(); err != nil {
@@ -239,9 +238,9 @@ func (r *ContactsRepository) GetHistory(user *User, history *History) (*Contacts
 
 	// history
 	query = `
-	SELECT last_history_id FROM contacts_history_seq;`
+	SELECT last_history_id FROM contact_history_seq;`
 
-	err = tx.QueryRowContext(ctx, query).Scan(&contactsHistory.History)
+	err = tx.QueryRowContext(ctx, query).Scan(&contactHistory.History)
 	if err != nil {
 		return nil, err
 	}
@@ -250,5 +249,5 @@ func (r *ContactsRepository) GetHistory(user *User, history *History) (*Contacts
 		return nil, err
 	}
 
-	return contactsHistory, nil
+	return contactHistory, nil
 }
