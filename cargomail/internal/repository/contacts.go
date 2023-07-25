@@ -3,7 +3,9 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"reflect"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -71,9 +73,6 @@ func (r *ContactsRepository) Create(user *User, contact *Contact) (*Contact, err
 	if err != nil {
 		return nil, err
 	}
-
-	// contact.CreatedAtUnix = contact.CreatedAt.UnixMilli()
-	// contact.ModifiedAtUnix = contact.ModifiedAt.UnixMilli()
 
 	return contact, nil
 }
@@ -255,4 +254,53 @@ func (r *ContactsRepository) GetHistory(user *User, history *History) (*contactH
 	}
 
 	return contactHistory, nil
+}
+
+func (r *ContactsRepository) Update(user *User, contact *Contact) (*Contact, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	query := `
+		UPDATE contact
+			SET email_address = $1,
+			    firstname = $2,
+				lastname = $3 
+			WHERE user_id = $4 AND
+			      uuid = $5
+			RETURNING * ;`
+
+	args := []interface{}{contact.EmailAddress, contact.FirstName, contact.LastName, user.ID, contact.Uuid}
+
+	err := r.db.QueryRowContext(ctx, query, args...).Scan(contact.Scan()...)
+	if err != nil {
+		return nil, err
+	}
+
+	return contact, nil
+}
+
+func (r *ContactsRepository) TrashByUuidList(user *User, uuidList []string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if len(uuidList) > 0 {
+		uuids := fmt.Sprintf("%v", uuidList)
+		uuids = uuids[1 : len(uuids)-1]
+		uuids = strings.ReplaceAll(uuids, " ", `","`)
+
+		query := `
+		UPDATE contact
+			SET last_stmt = 2
+			WHERE user_id = $1 AND
+			uuid IN ("` + uuids + `");`
+
+		args := []interface{}{user.ID}
+
+		_, err := r.db.ExecContext(ctx, query, args...)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

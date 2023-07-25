@@ -143,15 +143,16 @@ func Init(db *sql.DB) {
 	BEGIN
 		SELECT RAISE(ABORT, 'Update "last_stmt" not allowed')
 		WHERE (new.last_stmt < 0 OR new.last_stmt > 2)
-		   OR (old.last_stmt = 2 AND new.last_stmt <> 0); -- Untrash = trashed (2) -> inserted (0)
+		   OR (old.last_stmt = 2 AND new.last_stmt = 1); -- Untrash = trashed (2) -> inserted (0)
 	END;
 
-	CREATE TRIGGER IF NOT EXISTS contact_after_trashed
+	CREATE TRIGGER IF NOT EXISTS contact_after_trashed_untrashed
 		AFTER UPDATE OF
 			last_stmt
 		ON contact
 		FOR EACH ROW
-		WHEN new.last_stmt = 2
+		WHEN (new.last_stmt <> old.last_stmt AND old.last_stmt = 2) OR
+		     (new.last_stmt <> old.last_stmt AND new.last_stmt = 2)
 	BEGIN
 		UPDATE contact_history_seq SET last_history_id = (last_history_id + 1) WHERE user_id = old.user_id;
 		UPDATE contact

@@ -185,15 +185,15 @@ func (api *FilesApi) DeleteByUuidList() http.Handler {
 			return
 		}
 
-		var l []string
+		var list []string
 
-		err := json.NewDecoder(r.Body).Decode(&l)
+		err := json.NewDecoder(r.Body).Decode(&list)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
-		err = api.files.DeleteByUuidList(user, l)
+		err = api.files.DeleteByUuidList(user, list)
 		if err != nil {
 			helper.ReturnErr(w, err, http.StatusInternalServerError)
 			return
@@ -201,7 +201,7 @@ func (api *FilesApi) DeleteByUuidList() http.Handler {
 
 		filepath := api.filesPath
 
-		for _, uuid := range l {
+		for _, uuid := range list {
 			_ = os.Remove(filepath + uuid)
 		}
 
