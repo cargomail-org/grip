@@ -58,9 +58,10 @@ func (r *ContactsRepository) Create(user *User, contact *Contact) (*Contact, err
 	defer cancel()
 
 	query := `
-		INSERT INTO contact (user_id, uuid, email_address, firstname, lastname)
-		VALUES ($1, $2, $3, $4, $5)
-		RETURNING * ;`
+		INSERT
+			INTO contact (user_id, uuid, email_address, firstname, lastname)
+			VALUES ($1, $2, $3, $4, $5)
+			RETURNING * ;`
 
 	contact.Uuid = uuid.NewString()
 
@@ -83,10 +84,10 @@ func (r *ContactsRepository) GetAll(user *User) ([]*Contact, error) {
 
 	query := `
 		SELECT *
-		FROM contact
-		WHERE user_id = $1 AND
-		last_stmt < 2
-		ORDER BY created_at DESC;`
+			FROM contact
+			WHERE user_id = $1 AND
+			last_stmt < 2
+			ORDER BY created_at DESC;`
 
 	args := []interface{}{user.ID}
 
@@ -131,11 +132,11 @@ func (r *ContactsRepository) GetHistory(user *User, history *History) (*contactH
 	// inserted rows
 	query := `
 		SELECT *
-		FROM contact
-		WHERE user_id = $1 AND
-		      last_stmt = 0 AND
-			  history_id > $2
-		ORDER BY created_at DESC;`
+			FROM contact
+			WHERE user_id = $1 AND
+				last_stmt = 0 AND
+				history_id > $2
+			ORDER BY created_at DESC;`
 
 	args := []interface{}{user.ID, history.LastHistoryId}
 
@@ -171,11 +172,11 @@ func (r *ContactsRepository) GetHistory(user *User, history *History) (*contactH
 	// updated rows
 	query = `
 		SELECT *
-		FROM contact
-		WHERE user_id = $1 AND
-		      last_stmt = 1 AND
-			  history_id > $2
-		ORDER BY created_at DESC;`
+			FROM contact
+			WHERE user_id = $1 AND
+				last_stmt = 1 AND
+				history_id > $2
+			ORDER BY created_at DESC;`
 
 	args = []interface{}{user.ID, history.LastHistoryId}
 
@@ -205,11 +206,11 @@ func (r *ContactsRepository) GetHistory(user *User, history *History) (*contactH
 	// trashed rows
 	query = `
 		SELECT *
-		FROM contact
-		WHERE user_id = $1 AND
-		      last_stmt = 2 AND
-			  history_id > $2
-		ORDER BY created_at DESC;`
+			FROM contact
+			WHERE user_id = $1 AND
+				last_stmt = 2 AND
+				history_id > $2
+			ORDER BY created_at DESC;`
 
 	args = []interface{}{user.ID, history.LastHistoryId}
 
@@ -238,9 +239,13 @@ func (r *ContactsRepository) GetHistory(user *User, history *History) (*contactH
 
 	// history
 	query = `
-	SELECT last_history_id FROM contact_history_seq;`
+	SELECT last_history_id
+	   FROM contact_history_seq
+	   WHERE user_id = $1 ;`
 
-	err = tx.QueryRowContext(ctx, query).Scan(&contactHistory.History)
+	args = []interface{}{user.ID}
+
+	err = tx.QueryRowContext(ctx, query, args...).Scan(&contactHistory.History)
 	if err != nil {
 		return nil, err
 	}
