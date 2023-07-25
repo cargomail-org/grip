@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"strings"
 	"time"
 )
 
@@ -111,19 +110,19 @@ func (r FilesRepository) GetAll(user *User, filters Filters) ([]*File, Metadata,
 	return files, metadata, nil
 }
 
-func (r FilesRepository) DeleteByUuidList(user *User, uuidList []string) error {
+func (r FilesRepository) DeleteByUuidList(user *User, uuidList string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	if len(uuidList) > 0 {
-		uuids := fmt.Sprintf("%v", uuidList)
-		uuids = uuids[1 : len(uuids)-1]
-		uuids = strings.ReplaceAll(uuids, " ", `","`)
+		query := `DELETE FROM
+		file
+		WHERE user_id = $1 AND
+		uuid IN (SELECT value FROM json_each($2));`
 
-		_, err := r.db.ExecContext(ctx, `DELETE FROM
-			file
-			WHERE user_id = $1 AND
-				  uuid IN ("`+uuids+`");`, user.ID)
+		args := []interface{}{user.ID, uuidList}
+
+		_, err := r.db.ExecContext(ctx, query, args...)
 		if err != nil {
 			log.Println(err)
 			return err

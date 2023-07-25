@@ -4,6 +4,7 @@ import (
 	"cargomail/cmd/provider/api/helper"
 	"cargomail/internal/repository"
 	"encoding/json"
+	"io"
 	"log"
 	"net/http"
 )
@@ -116,15 +117,15 @@ func (api *ContactsApi) TrashByUuidList() http.Handler {
 			return
 		}
 
-		var list []string
-
-		err := json.NewDecoder(r.Body).Decode(&list)
+		body, err := io.ReadAll(r.Body)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			log.Println(err)
 			return
 		}
 
-		err = api.contacts.TrashByUuidList(user, list)
+		bodyString := string(body)
+
+		err = api.contacts.TrashByUuidList(user, bodyString)
 		if err != nil {
 			log.Println(err)
 			return

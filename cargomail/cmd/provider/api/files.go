@@ -36,7 +36,7 @@ func (api *FilesApi) Upload() http.Handler {
 			return
 		}
 
-		helper.SetJsonResponse(w, http.StatusCreated, nil)
+		uploadedFiles := []*repository.File{}
 
 		files := r.MultipartForm.File["files"]
 		for i := range files {
@@ -92,8 +92,10 @@ func (api *FilesApi) Upload() http.Handler {
 				Timestamp:   createdAt.UnixMilli(),
 			}
 
-			helper.SetJsonResponse(w, http.StatusOK, uploadedFile)
+			uploadedFiles = append(uploadedFiles, &uploadedFile)
 		}
+
+		helper.SetJsonResponse(w, http.StatusCreated, uploadedFiles)
 	})
 }
 
@@ -185,15 +187,15 @@ func (api *FilesApi) DeleteByUuidList() http.Handler {
 			return
 		}
 
-		var list []string
-
-		err := json.NewDecoder(r.Body).Decode(&list)
+		body, err := io.ReadAll(r.Body)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			log.Println(err)
 			return
 		}
 
-		err = api.files.DeleteByUuidList(user, list)
+		bodyString := string(body)
+
+		err = api.files.DeleteByUuidList(user, bodyString)
 		if err != nil {
 			helper.ReturnErr(w, err, http.StatusInternalServerError)
 			return
@@ -201,7 +203,15 @@ func (api *FilesApi) DeleteByUuidList() http.Handler {
 
 		filepath := api.filesPath
 
-		for _, uuid := range list {
+		var bodyList []string
+
+		err = json.Unmarshal(body, &bodyList)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		for _, uuid := range bodyList {
 			_ = os.Remove(filepath + uuid)
 		}
 

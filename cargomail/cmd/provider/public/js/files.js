@@ -118,7 +118,10 @@ uploadForm.onsubmit = async (e) => {
     }
 
     if (response.status == 201) {
-      filesTable.row.add(response.body);
+      const uploadedMultipartFiles = response.body;
+      for (let j = 0; j < uploadedMultipartFiles.length; j++) {
+        filesTable.row.add(uploadedMultipartFiles[j]);
+      }
       filesTable.draw();
     }
   }
