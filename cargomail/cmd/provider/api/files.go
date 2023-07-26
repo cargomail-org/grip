@@ -196,7 +196,7 @@ func (api *FilesApi) GetHistory() http.Handler {
 			return
 		}
 
-		helper.SetJsonResponse(w, http.StatusCreated, fileHistory)
+		helper.SetJsonResponse(w, http.StatusOK, fileHistory)
 	})
 }
 

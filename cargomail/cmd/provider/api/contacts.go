@@ -79,7 +79,7 @@ func (api *ContactsApi) GetHistory() http.Handler {
 			return
 		}
 
-		helper.SetJsonResponse(w, http.StatusCreated, contactHistory)
+		helper.SetJsonResponse(w, http.StatusOK, contactHistory)
 	})
 }
 

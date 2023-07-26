@@ -127,6 +127,8 @@ uploadForm.onsubmit = async (e) => {
   }
 };
 
+let historyId = 0;
+
 const filesTable = new DataTable("#filesTable", {
   paging: true,
   responsive: {

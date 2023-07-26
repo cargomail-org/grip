@@ -123,7 +123,7 @@ func (r *FilesRepository) GetHistory(user *User, history *History) (*fileHistory
 				history_id > $2
 			ORDER BY created_at DESC;`
 
-	args := []interface{}{user.Id, history.LastHistoryId}
+	args := []interface{}{user.Id, history.Id}
 
 	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -162,7 +162,7 @@ func (r *FilesRepository) GetHistory(user *User, history *History) (*fileHistory
 				history_id > $2
 			ORDER BY created_at DESC;`
 
-	args = []interface{}{user.Id, history.LastHistoryId}
+	args = []interface{}{user.Id, history.Id}
 
 	rows, err = tx.QueryContext(ctx, query, args...)
 	if err != nil {

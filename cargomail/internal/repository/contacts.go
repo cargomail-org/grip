@@ -122,7 +122,7 @@ func (r *ContactsRepository) GetHistory(user *User, history *History) (*contactH
 				history_id > $2
 			ORDER BY created_at DESC;`
 
-	args := []interface{}{user.Id, history.LastHistoryId}
+	args := []interface{}{user.Id, history.Id}
 
 	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -162,7 +162,7 @@ func (r *ContactsRepository) GetHistory(user *User, history *History) (*contactH
 				history_id > $2
 			ORDER BY created_at DESC;`
 
-	args = []interface{}{user.Id, history.LastHistoryId}
+	args = []interface{}{user.Id, history.Id}
 
 	rows, err = tx.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -196,7 +196,7 @@ func (r *ContactsRepository) GetHistory(user *User, history *History) (*contactH
 				history_id > $2
 			ORDER BY created_at DESC;`
 
-	args = []interface{}{user.Id, history.LastHistoryId}
+	args = []interface{}{user.Id, history.Id}
 
 	rows, err = tx.QueryContext(ctx, query, args...)
 	if err != nil {

@@ -17,7 +17,7 @@ var (
 )
 
 type History struct {
-	LastHistoryId int64 `json:"last_history_id"`
+	Id int64 `json:"history_id"`
 }
 
 type Repository struct {
