@@ -12,7 +12,7 @@ import "datatables.net-responsive-bs5";
 
 import { addItems as composeAddItems } from "/public/js/compose.js";
 
-let selectedUuids = [];
+let selectedIds = [];
 
 const filesConfirmDialog = new bootstrap.Modal(
   document.querySelector("#filesConfirmDialog")
@@ -140,7 +140,7 @@ const filesTable = new DataTable("#filesTable", {
           "Content-Type": "application/json",
         },
       });
-    
+
       if (response === false) {
         return;
       }
@@ -149,20 +149,19 @@ const filesTable = new DataTable("#filesTable", {
     })();
   },
   columns: [
-    { data: "uuid", visible: false, searchable: false },
+    { data: "id", visible: false, searchable: false },
     { data: null, visible: true, orderable: false, width: "15px" },
     {
       data: "name",
       render: (data, type, full, meta) => {
         const link = "/api/v1/files/";
-        // return `<a href="${link}${full.uuid}" target="_blank">${data}</a>`;
-        return `<a href="javascript:;" onclick="downloadURI('uploadForm', '${link}${full.uuid}', '${data}');">${data}</a>`;
+        return `<a href="javascript:;" onclick="downloadURI('uploadForm', '${link}${full.id}', '${data}');">${data}</a>`;
       },
     },
     {
       data: "file_size",
       render: function (data, type) {
-        if (type === "display") {
+        if (type === "display" || type === "filter") {
           return formatBytes(data, 0);
         } else {
           return data;
@@ -172,7 +171,7 @@ const filesTable = new DataTable("#filesTable", {
     {
       data: "created_at",
       render: function (data, type) {
-        if (type === "display") {
+        if (type === "display" || type === "filter") {
           var d = new Date(data);
           return d.getDate() + "-" + (d.getMonth() + 1) + "-" + d.getFullYear();
         } else {
@@ -183,9 +182,9 @@ const filesTable = new DataTable("#filesTable", {
   ],
   columnDefs: [
     {
+      targets: 1,
       orderable: false,
       className: "select-checkbox",
-      targets: 1,
       data: null,
       defaultContent: "",
     },
@@ -220,16 +219,16 @@ const filesTable = new DataTable("#filesTable", {
       className: "files-delete",
       enabled: false,
       action: function () {
-        selectedUuids = [];
+        selectedIds = [];
 
         const selectedData = filesTable
           .rows(".selected")
           .data()
-          .map((obj) => obj.uuid);
+          .map((obj) => obj.id);
         if (selectedData.length > 0) {
           filesConfirmDialog.show();
           for (let i = 0; i < selectedData.length; i++) {
-            selectedUuids.push(selectedData[i]);
+            selectedIds.push(selectedData[i]);
           }
         }
       },
@@ -260,9 +259,9 @@ export const deleteItems = (e) => {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(selectedUuids),
+      body: JSON.stringify(selectedIds),
     });
-  
+
     if (response === false) {
       return;
     }

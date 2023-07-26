@@ -33,12 +33,11 @@ toInput.addEventListener("keyup", (event) => bouncer(event));
 subjectInput.addEventListener("keyup", (event) => bouncer(event));
 messageText.addEventListener("keyup", (event) => bouncer(event));
 
-let selectedUuids = [];
+let selectedIds = [];
 
 const composeConfirmDialog = new bootstrap.Modal(
   document.querySelector("#composeConfirmDialog")
 );
-
 
 const composeTable = new DataTable("#composeTable", {
   paging: true,
@@ -47,20 +46,19 @@ const composeTable = new DataTable("#composeTable", {
   },
   ordering: false,
   columns: [
-    { data: "uuid", visible: false, searchable: false },
+    { data: "id", visible: false, searchable: false },
     { data: null, visible: true, orderable: false, width: "15px" },
     {
       data: "name",
       render: (data, type, full, meta) => {
         const link = "/api/v1/files/";
-        // return `<a href="${link}${full.uuid}" target="_blank">${data}</a>`;
-        return `<a href="javascript:;" onclick="downloadURI('composeForm', '${link}${full.uuid}', '${data}');">${data}</a>`;
+        return `<a href="javascript:;" onclick="downloadURI('composeForm', '${link}${full.id}', '${data}');">${data}</a>`;
       },
     },
     {
       data: "file_size",
       render: function (data, type) {
-        if (type === "display") {
+        if (type === "display" || type === "filter") {
           return formatBytes(data, 0);
         } else {
           return data;
@@ -70,7 +68,7 @@ const composeTable = new DataTable("#composeTable", {
     {
       data: "created_at",
       render: function (data, type) {
-        if (type === "display") {
+        if (type === "display" || type === "filter") {
           var d = new Date(data);
           return d.getDate() + "-" + (d.getMonth() + 1) + "-" + d.getFullYear();
         } else {
@@ -81,9 +79,9 @@ const composeTable = new DataTable("#composeTable", {
   ],
   columnDefs: [
     {
+      targets: 1,
       orderable: false,
       className: "select-checkbox",
-      targets: 1,
       data: null,
       defaultContent: "",
     },
@@ -111,16 +109,16 @@ const composeTable = new DataTable("#composeTable", {
       className: "files-delete",
       enabled: false,
       action: function () {
-        selectedUuids = [];
+        selectedIds = [];
 
         const selectedData = composeTable
           .rows(".selected")
           .data()
-          .map((obj) => obj.uuid);
+          .map((obj) => obj.id);
         if (selectedData.length > 0) {
           composeConfirmDialog.show();
           for (let i = 0; i < selectedData.length; i++) {
-            selectedUuids.push(selectedData[i]);
+            selectedIds.push(selectedData[i]);
           }
         }
       },
@@ -154,8 +152,8 @@ export const addItems = (items) => {
     let found = false;
 
     for (let j = 0; j < composeTable.rows().count(); j++) {
-      const uuid = composeTable.row(j).data().uuid;
-      if (uuid == items[i].uuid) {
+      const id = composeTable.row(j).data().id;
+      if (id == items[i].id) {
         found = true;
         break;
       }
