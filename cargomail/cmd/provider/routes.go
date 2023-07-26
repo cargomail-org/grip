@@ -63,27 +63,34 @@ func (svc *service) routes(r *Router) {
 	r.Route("GET", "/login", svc.app.LoginPage())
 	r.Route("GET", "/logout", svc.app.Logout())
 	r.Route("GET", "/register", svc.app.RegisterPage())
-
 	// r.Route("GET", "/auth/authenticate", svc.app.Session.Authenticate())
+
 	// Health API
 	r.Route("GET", "/api/v1/health", svc.api.Health.Healthcheck())
+
 	// Auth API
 	r.Route("POST", "/api/v1/auth/register", svc.api.User.Register())
 	r.Route("POST", "/api/v1/auth/authenticate", svc.api.Session.Login())
 	r.Route("POST", "/api/v1/auth/logout", svc.api.Session.Logout())
+
 	// User API
 	r.Route("PATCH", "/api/v1/user/profile", svc.api.Authenticate(svc.api.User.Profile()))
 	r.Route("GET", "/api/v1/user/profile", svc.api.Authenticate(svc.api.User.Profile()))
+
 	// Contacts API
 	r.Route("POST", "/api/v1/contacts", svc.api.Authenticate(svc.api.Contacts.Create()))
 	r.Route("GET", "/api/v1/contacts", svc.api.Authenticate(svc.api.Contacts.GetAll()))
 	r.Route("GET", "/api/v1/contacts/sync", svc.api.Authenticate(svc.api.Contacts.GetHistory()))
 	r.Route("PUT", "/api/v1/contacts", svc.api.Authenticate(svc.api.Contacts.Update()))
-	r.Route("DELETE", "/api/v1/contacts", svc.api.Authenticate(svc.api.Contacts.TrashByUuidList()))
+	r.Route("DELETE", "/api/v1/contacts", svc.api.Authenticate(svc.api.Contacts.TrashByIdList()))
+	r.Route("DELETE", "/api/v1/contacts/delete", svc.api.Authenticate(svc.api.Contacts.DeleteByIdList()))
+
 	// Files API
 	r.Route("POST", "/api/v1/files/upload", svc.api.Authenticate(svc.api.Files.Upload()))
 	r.Route("GET", "/api/v1/files", svc.api.Authenticate(svc.api.Files.GetAll()))
+	r.Route("GET", "/api/v1/files/sync", svc.api.Authenticate(svc.api.Files.GetHistory()))
 	r.Route("HEAD", "/api/v1/files/", svc.api.Authenticate(svc.api.Files.Download()))
 	r.Route("GET", "/api/v1/files/", svc.api.Authenticate(svc.api.Files.Download()))
-	r.Route("DELETE", "/api/v1/files/delete", svc.api.Authenticate(svc.api.Files.DeleteByUuidList()))
+	r.Route("DELETE", "/api/v1/files", svc.api.Authenticate(svc.api.Files.TrashByIdList()))
+	r.Route("DELETE", "/api/v1/files/delete", svc.api.Authenticate(svc.api.Files.DeleteByIdList()))
 }

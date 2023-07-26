@@ -64,7 +64,7 @@ func (r SessionRepository) Insert(session *Session) error {
 
 	query := `
 		INSERT INTO session (hash, user_id, expiry, scope)
-		VALUES ($1, $2, $3, $4);`
+			VALUES ($1, $2, $3, $4);`
 
 	args := []interface{}{session.Hash, session.UserID, session.Expiry, session.Scope}
 
@@ -80,7 +80,7 @@ func (r SessionRepository) Remove(session string) error {
 
 	query := `
 		DELETE FROM session
-		WHERE hash = $1;`
+			WHERE hash = $1;`
 
 	_, err := r.db.ExecContext(ctx, query, sessionHash[:])
 	return err

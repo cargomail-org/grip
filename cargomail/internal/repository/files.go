@@ -3,8 +3,8 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"log"
+	"reflect"
 	"time"
 )
 
@@ -13,114 +13,234 @@ type FilesRepository struct {
 }
 
 type File struct {
-	ID          int64     `json:"-"`
-	UUID        string    `json:"uuid"`
-	Hash        string    `json:"-"`
-	Name        string    `json:"name"`
-	Path        string    `json:"-"`
-	Size        int64     `json:"file_size"`
-	ContentType string    `json:"content_type"`
-	CreatedAt   time.Time `json:"-"`
-	Timestamp   int64     `json:"created_at"`
+	Id          string     `json:"id"`
+	UserId      int64      `json:"-"`
+	Checksum    string     `json:"-"`
+	Name        string     `json:"name"`
+	Path        string     `json:"-"`
+	Size        int64      `json:"file_size"`
+	ContentType string     `json:"content_type"`
+	CreatedAt   Timestamp  `json:"created_at"`
+	ModifiedAt  *Timestamp `json:"modified_at"`
+	TimelineId  int64      `json:"-"`
+	HistoryId   int64      `json:"-"`
+	LastStmt    int        `json:"-"`
 }
 
-func (r FilesRepository) Create(user *User, uuid string, checksum []byte, name string, path string, contentType string, size int64) (time.Time, error) {
+type fileHistory struct {
+	History       int64 `json:"last_history_id"`
+	FilesInserted []*File
+	FilesTrashed  []*File
+}
+
+func (f *File) Scan() []interface{} {
+	s := reflect.ValueOf(f).Elem()
+	numCols := s.NumField()
+	columns := make([]interface{}, numCols)
+	for i := 0; i < numCols; i++ {
+		field := s.Field(i)
+		columns[i] = field.Addr().Interface()
+	}
+	return columns
+}
+
+func (r FilesRepository) Create(user *User, file *File) (*File, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	row := r.db.QueryRowContext(ctx, `INSERT INTO
-		file (user_id, uuid, hash, name, path, content_type, size)
-		VALUES(?, ?, ?, ?, ?, ?, ?) RETURNING created_at;`, user.ID, uuid, checksum, name, path, contentType, size)
+	query := `
+		INSERT INTO
+			file (user_id, checksum, name, path, content_type, size)
+			VALUES ($1, $2, $3, $4, $5, $6)
+			RETURNING * ;`
 
-	err := row.Scan(&user.CreatedAt)
-	if row.Err() == sql.ErrNoRows {
-		return time.Time{}, nil
-	}
+	args := []interface{}{user.ID, file.Checksum, file.Name, file.Path, file.ContentType, file.Size}
+
+	err := r.db.QueryRowContext(ctx, query, args...).Scan(file.Scan()...)
 	if err != nil {
-		return time.Time{}, err
+		return nil, err
 	}
 
-	return user.CreatedAt, nil
+	return file, nil
 }
 
-func (r FilesRepository) GetAll(user *User, filters Filters) ([]*File, Metadata, error) {
+func (r FilesRepository) GetAll(user *User) ([]*File, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	var query string
-	if filters.Page == 0 || filters.PageSize == 0 {
-		query = fmt.Sprintf(`
-		SELECT count(*) OVER(), id, uuid, hash, name, path, size, content_type, created_at
-		FROM file
-		WHERE user_id = $1
-		ORDER BY %s %s, id ASC`, filters.sortColumn(), filters.sortDirection())
-	} else {
-		query = fmt.Sprintf(`
-		SELECT count(*) OVER(), id, uuid, hash, name, path, size, content_type, created_at
-		FROM file
-		WHERE user_id = $1
-		ORDER BY %s %s, id ASC
-		LIMIT $2 OFFSET $3;`, filters.sortColumn(), filters.sortDirection())
-	}
+	query := `
+		SELECT *
+			FROM file
+			WHERE user_id = $1 AND
+			last_stmt < 2
+			ORDER BY created_at DESC;`
 
-	args := []interface{}{user.ID, filters.limit(), filters.offset()}
+	args := []interface{}{user.ID}
 
 	rows, err := r.db.QueryContext(ctx, query, args...)
 	if err != nil {
-		return nil, Metadata{}, err
+		return nil, err
 	}
 
 	defer rows.Close()
 
-	totalRecords := 0
 	files := []*File{}
 
 	for rows.Next() {
 		var file File
 
-		err := rows.Scan(
-			&totalRecords,
-			&file.ID,
-			&file.UUID,
-			&file.Hash,
-			&file.Name,
-			&file.Path,
-			&file.Size,
-			&file.ContentType,
-			&file.CreatedAt,
-		)
-
+		err := rows.Scan(file.Scan()...)
 		if err != nil {
-			return nil, Metadata{}, err
+			return nil, err
 		}
-
-		file.Hash = fmt.Sprintf("%x", file.Hash)
-
-		file.Timestamp = file.CreatedAt.UnixMilli()
 
 		files = append(files, &file)
 	}
 
 	if err = rows.Err(); err != nil {
-		return nil, Metadata{}, err
+		return nil, err
 	}
 
-	metadata := calculateMetadata(totalRecords, filters.Page, filters.PageSize)
-
-	return files, metadata, nil
+	return files, nil
 }
 
-func (r FilesRepository) DeleteByUuidList(user *User, uuidList string) error {
+func (r *FilesRepository) GetHistory(user *User, history *History) (*fileHistory, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+
+	// inserted rows
+	query := `
+		SELECT *
+			FROM file
+			WHERE user_id = $1 AND
+				last_stmt = 0 AND
+				history_id > $2
+			ORDER BY created_at DESC;`
+
+	args := []interface{}{user.ID, history.LastHistoryId}
+
+	rows, err := tx.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	fileHistory := &fileHistory{
+		FilesInserted: []*File{},
+		FilesTrashed:  []*File{},
+	}
+
+	for rows.Next() {
+		var file File
+
+		err := rows.Scan(file.Scan()...)
+
+		if err != nil {
+			return nil, err
+		}
+
+		fileHistory.FilesInserted = append(fileHistory.FilesInserted, &file)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	// trashed rows
+	query = `
+		SELECT *
+			FROM file
+			WHERE user_id = $1 AND
+				last_stmt = 2 AND
+				history_id > $2
+			ORDER BY created_at DESC;`
+
+	args = []interface{}{user.ID, history.LastHistoryId}
+
+	rows, err = tx.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var file File
+
+		err := rows.Scan(file.Scan()...)
+
+		if err != nil {
+			return nil, err
+		}
+
+		fileHistory.FilesTrashed = append(fileHistory.FilesTrashed, &file)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	// history
+	query = `
+	SELECT last_history_id
+	   FROM file_history_seq
+	   WHERE user_id = $1 ;`
+
+	args = []interface{}{user.ID}
+
+	err = tx.QueryRowContext(ctx, query, args...).Scan(&fileHistory.History)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	return fileHistory, nil
+}
+
+func (r *FilesRepository) TrashByIdList(user *User, idList string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	if len(uuidList) > 0 {
-		query := `DELETE FROM
-		file
-		WHERE user_id = $1 AND
-		uuid IN (SELECT value FROM json_each($2));`
+	if len(idList) > 0 {
+		query := `
+		UPDATE file
+			SET last_stmt = 2
+			WHERE user_id = $1 AND
+			id IN (SELECT value FROM json_each($2));`
 
-		args := []interface{}{user.ID, uuidList}
+		args := []interface{}{user.ID, idList}
+
+		_, err := r.db.ExecContext(ctx, query, args...)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (r FilesRepository) DeleteByIdList(user *User, idList string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if len(idList) > 0 {
+		query := `
+		DELETE
+			FROM file
+			WHERE user_id = $1 AND
+			id IN (SELECT value FROM json_each($2));`
+
+		args := []interface{}{user.ID, idList}
 
 		_, err := r.db.ExecContext(ctx, query, args...)
 		if err != nil {
@@ -132,53 +252,25 @@ func (r FilesRepository) DeleteByUuidList(user *User, uuidList string) error {
 	return nil
 }
 
-func (r FilesRepository) GetOriginalFileName(user *User, uuid string) (string, error) {
+func (r FilesRepository) GetOriginalFileName(user *User, id string) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	query := `
-		SELECT name, size, content_type, created_at
-		FROM file
-		WHERE user_id = $1 AND
-		      uuid = $2;`
+		SELECT *
+			FROM file
+			WHERE user_id = $1 AND
+				id = $2;`
 
-	args := []interface{}{user.ID, uuid}
+	file := &File{}
 
-	rows, err := r.db.QueryContext(ctx, query, args...)
+	args := []interface{}{user.ID, id}
+
+	err := r.db.QueryRowContext(ctx, query, args...).Scan(file.Scan()...)
 	if err != nil {
+		log.Println(err)
 		return "", err
 	}
 
-	defer rows.Close()
-
-	files := []*File{}
-
-	for rows.Next() {
-		var file File
-
-		err := rows.Scan(
-			&file.Name,
-			&file.Size,
-			&file.ContentType,
-			&file.CreatedAt,
-		)
-
-		if err != nil {
-			return "", err
-		}
-
-		file.Hash = fmt.Sprintf("%x", file.Hash)
-
-		files = append(files, &file)
-	}
-
-	if err = rows.Err(); err != nil {
-		return "", err
-	}
-
-	if len(files) == 0 {
-		return "not found", ErrFileNameNotFound
-	}
-
-	return files[0].Name, nil
+	return file.Name, nil
 }

@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"errors"
+	"time"
 )
 
 var (
@@ -33,4 +34,12 @@ func NewRepository(db *sql.DB) Repository {
 		User:     UserRepository{db: db},
 		Contacts: ContactsRepository{db: db},
 	}
+}
+
+type Timestamp int64
+
+func (p *Timestamp) Scan(value interface{}) error {
+	t := value.(time.Time).UnixMilli()
+	*p = Timestamp(t)
+	return nil
 }

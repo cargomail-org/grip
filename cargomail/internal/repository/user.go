@@ -66,8 +66,8 @@ func (r UserRepository) Create(user *User) error {
 
 	query := `
 		INSERT INTO user (username, password_hash, firstname, lastname)
-		VALUES ($1, $2, $3, $4)
-		RETURNING id, created_at;`
+			VALUES ($1, $2, $3, $4)
+			RETURNING id, created_at;`
 
 	args := []interface{}{user.Username, user.Password.hash, user.FirstName, user.LastName}
 
@@ -92,9 +92,9 @@ func (r UserRepository) UpdateProfile(user *User) (*UserProfile, error) {
 
 	query := `
 		UPDATE user
-		SET firstname = $1,
-			lastname = $2
-		WHERE username = $3;`
+			SET firstname = $1,
+				lastname = $2
+			WHERE username = $3;`
 
 	args := []interface{}{user.FirstName, user.LastName, user.Username}
 
@@ -116,8 +116,8 @@ func (r UserRepository) GetProfile(username string) (*UserProfile, error) {
 
 	query := `
 		SELECT username, firstname, lastname
-		FROM user
-		WHERE username = $1;`
+			FROM user
+			WHERE username = $1;`
 
 	var profile UserProfile
 
@@ -145,8 +145,8 @@ func (r UserRepository) GetByUsername(username string) (*User, error) {
 
 	query := `
 		SELECT id, username, password_hash, created_at
-		FROM user
-		WHERE username = $1;`
+			FROM user
+			WHERE username = $1;`
 
 	var user User
 
@@ -177,12 +177,12 @@ func (r UserRepository) GetBySession(sessionScope, sessionPlaintext string) (*Us
 
 	query := `
 		SELECT user.id, user.username, user.password_hash, user.created_at
-		FROM user
-		INNER JOIN session
-		ON user.id = session.user_id
-		WHERE session.hash = $1
-		AND session.scope = $2
-		AND session.expiry > $3;`
+			FROM user
+			INNER JOIN session
+			ON user.id = session.user_id
+			WHERE session.hash = $1
+			AND session.scope = $2
+			AND session.expiry > $3;`
 
 	args := []interface{}{sessionHash[:], sessionScope, time.Now()}
 

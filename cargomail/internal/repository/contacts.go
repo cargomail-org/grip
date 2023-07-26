@@ -5,26 +5,15 @@ import (
 	"database/sql"
 	"reflect"
 	"time"
-
-	"github.com/google/uuid"
 )
 
 type ContactsRepository struct {
 	db *sql.DB
 }
 
-type Timestamp int64
-
-func (p *Timestamp) Scan(value interface{}) error {
-	t := value.(time.Time).UnixMilli()
-	*p = Timestamp(t)
-	return nil
-}
-
 type Contact struct {
-	Id           int64      `json:"-"`
+	Id           string     `json:"id"`
 	UserId       int64      `json:"-"`
-	Uuid         string     `json:"uuid"`
 	EmailAddress *string    `json:"email_address"`
 	FirstName    *string    `json:"firstname"`
 	LastName     *string    `json:"lastname"`
@@ -59,13 +48,11 @@ func (r *ContactsRepository) Create(user *User, contact *Contact) (*Contact, err
 
 	query := `
 		INSERT
-			INTO contact (user_id, uuid, email_address, firstname, lastname)
-			VALUES ($1, $2, $3, $4, $5)
+			INTO contact (user_id, email_address, firstname, lastname)
+			VALUES ($1, $2, $3, $4)
 			RETURNING * ;`
 
-	contact.Uuid = uuid.NewString()
-
-	args := []interface{}{user.ID, contact.Uuid, contact.EmailAddress, contact.FirstName, contact.LastName}
+	args := []interface{}{user.ID, contact.EmailAddress, contact.FirstName, contact.LastName}
 
 	err := r.db.QueryRowContext(ctx, query, args...).Scan(contact.Scan()...)
 	if err != nil {
@@ -264,10 +251,10 @@ func (r *ContactsRepository) Update(user *User, contact *Contact) (*Contact, err
 			    firstname = $2,
 				lastname = $3 
 			WHERE user_id = $4 AND
-			      uuid = $5
+			      id = $5
 			RETURNING * ;`
 
-	args := []interface{}{contact.EmailAddress, contact.FirstName, contact.LastName, user.ID, contact.Uuid}
+	args := []interface{}{contact.EmailAddress, contact.FirstName, contact.LastName, user.ID, contact.Id}
 
 	err := r.db.QueryRowContext(ctx, query, args...).Scan(contact.Scan()...)
 	if err != nil {
@@ -277,18 +264,18 @@ func (r *ContactsRepository) Update(user *User, contact *Contact) (*Contact, err
 	return contact, nil
 }
 
-func (r *ContactsRepository) TrashByUuidList(user *User, uuidList string) error {
+func (r *ContactsRepository) TrashByIdList(user *User, idList string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	if len(uuidList) > 0 {
+	if len(idList) > 0 {
 		query := `
 		UPDATE contact
 			SET last_stmt = 2
 			WHERE user_id = $1 AND
-			uuid IN (SELECT value FROM json_each($2));`
+			id IN (SELECT value FROM json_each($2));`
 
-		args := []interface{}{user.ID, uuidList}
+		args := []interface{}{user.ID, idList}
 
 		_, err := r.db.ExecContext(ctx, query, args...)
 		if err != nil {

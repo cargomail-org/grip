@@ -10,16 +10,29 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"path"
-	"strconv"
+	"path/filepath"
+	"unicode"
 
 	"github.com/google/uuid"
+	"golang.org/x/text/runes"
+	"golang.org/x/text/transform"
+	"golang.org/x/text/unicode/norm"
 )
 
 type FilesApi struct {
 	files     repository.FilesRepository
 	filesPath string
+}
+
+func ToAscii(str string) (string, error) {
+	result, _, err := transform.String(transform.Chain(norm.NFD, runes.Remove(runes.In(unicode.Mn))), str)
+	if err != nil {
+		return "", err
+	}
+	return result, nil
 }
 
 func (api *FilesApi) Upload() http.Handler {
@@ -47,10 +60,10 @@ func (api *FilesApi) Upload() http.Handler {
 			}
 			defer file.Close()
 
-			filepath := api.filesPath
+			filePath := api.filesPath
 
-			if _, err := os.Stat(filepath); errors.Is(err, os.ErrNotExist) {
-				err := os.MkdirAll(filepath, os.ModePerm)
+			if _, err := os.Stat(filePath); errors.Is(err, os.ErrNotExist) {
+				err := os.MkdirAll(filePath, os.ModePerm)
 				if err != nil {
 					log.Println(err)
 					return
@@ -59,7 +72,7 @@ func (api *FilesApi) Upload() http.Handler {
 
 			uuid := uuid.NewString()
 
-			f, err := os.OpenFile(filepath+uuid, os.O_WRONLY|os.O_CREATE, 0666)
+			f, err := os.OpenFile(filepath.Join(filePath, uuid), os.O_WRONLY|os.O_CREATE, 0666)
 			if err != nil {
 				fmt.Println(err)
 				return
@@ -73,26 +86,31 @@ func (api *FilesApi) Upload() http.Handler {
 				return
 			}
 
-			checksum := hash.Sum(nil)
+			hashSum := hash.Sum(nil)
+			checksum := fmt.Sprintf("%x", hashSum)
+
 			contentType := files[i].Header.Get("content-type")
-			createdAt, err := api.files.Create(user, uuid, checksum, files[i].Filename, filepath, contentType, written)
+
+			uploadedFile := &repository.File{
+				Checksum:    checksum,
+				Name:        files[i].Filename,
+				Size:        written,
+				ContentType: contentType,
+			}
+
+			uploadedFile, err = api.files.Create(user, uploadedFile)
 			if err != nil {
 				log.Println(err)
 				return
 			}
 
-			checksumString := fmt.Sprintf("%x", checksum)
-			uploadedFile := repository.File{
-				UUID:        uuid,
-				Hash:        checksumString,
-				Name:        files[i].Filename,
-				Size:        written,
-				ContentType: contentType,
-				CreatedAt:   createdAt,
-				Timestamp:   createdAt.UnixMilli(),
+			os.Rename(filepath.Join(filePath, uuid), filepath.Join(filePath, uploadedFile.Id))
+			if err != nil {
+				log.Println(err)
+				return
 			}
 
-			uploadedFiles = append(uploadedFiles, &uploadedFile)
+			uploadedFiles = append(uploadedFiles, uploadedFile)
 		}
 
 		helper.SetJsonResponse(w, http.StatusCreated, uploadedFiles)
@@ -107,9 +125,9 @@ func (api *FilesApi) Download() http.Handler {
 			return
 		}
 
-		uuid := path.Base(r.URL.Path)
+		id := path.Base(r.URL.Path)
 
-		fileName, err := api.files.GetOriginalFileName(user, uuid)
+		fileName, err := api.files.GetOriginalFileName(user, id)
 		if err != nil {
 			helper.ReturnErr(w, err, http.StatusNotFound)
 			return
@@ -118,20 +136,24 @@ func (api *FilesApi) Download() http.Handler {
 		if r.Method == "HEAD" {
 			w.WriteHeader(http.StatusOK)
 		} else if r.Method == "GET" {
-			filePath := api.filesPath + uuid
+			asciiFileName, err := ToAscii(fileName)
+			if err != nil {
+				helper.ReturnErr(w, err, http.StatusInternalServerError)
+				return
+			}
+
+			urlEncodedFileName, err := url.Parse(fileName)
+			if err != nil {
+				helper.ReturnErr(w, err, http.StatusInternalServerError)
+				return
+			}
+
+			filePath := filepath.Join(api.filesPath, id)
 			w.Header().Set("Content-Type", "application/octet-stream")
-			w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%q", fileName))
+			w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%q; filename*=UTF-8''%s", asciiFileName, urlEncodedFileName))
 			http.ServeFile(w, r, filePath)
 		}
 	})
-}
-
-// TODO validate sort fields/filters.SortSafelist
-func validFilters(f repository.Filters) bool {
-	return f.Page > 0 ||
-		f.Page <= 10_000_000 ||
-		f.PageSize > 0 ||
-		f.PageSize <= 100
 }
 
 func (api *FilesApi) GetAll() http.Handler {
@@ -142,34 +164,7 @@ func (api *FilesApi) GetAll() http.Handler {
 			return
 		}
 
-		qs := r.URL.Query()
-
-		filters := repository.Filters{}
-
-		var err error
-		filters.Page, err = strconv.Atoi(qs.Get("page"))
-		if err != nil {
-			filters.Page = 0
-		}
-
-		filters.PageSize, err = strconv.Atoi(qs.Get("page_size"))
-		if err != nil {
-			filters.PageSize = 0
-		}
-
-		filters.Sort = qs.Get("sort")
-		if len(filters.Sort) == 0 {
-			filters.Sort = "id"
-		}
-
-		filters.SortSafelist = []string{"id", "name", "size", "content_type", "created_at", "-id", "-name", "-size", "-content_type", "-created_at"}
-
-		if !validFilters(filters) {
-			helper.ReturnErr(w, repository.ErrFailedValidationResponse, http.StatusUnprocessableEntity)
-			return
-		}
-
-		files, _, err := api.files.GetAll(user, filters)
+		files, err := api.files.GetAll(user)
 		if err != nil {
 			helper.ReturnErr(w, err, http.StatusInternalServerError)
 			return
@@ -179,7 +174,33 @@ func (api *FilesApi) GetAll() http.Handler {
 	})
 }
 
-func (api *FilesApi) DeleteByUuidList() http.Handler {
+func (api *FilesApi) GetHistory() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		user, ok := r.Context().Value(repository.UserContextKey).(*repository.User)
+		if !ok {
+			helper.ReturnErr(w, repository.ErrMissingUserContext, http.StatusInternalServerError)
+			return
+		}
+
+		var history *repository.History
+
+		err := json.NewDecoder(r.Body).Decode(&history)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		fileHistory, err := api.files.GetHistory(user, history)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		helper.SetJsonResponse(w, http.StatusCreated, fileHistory)
+	})
+}
+
+func (api *FilesApi) TrashByIdList() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		user, ok := r.Context().Value(repository.UserContextKey).(*repository.User)
 		if !ok {
@@ -195,7 +216,33 @@ func (api *FilesApi) DeleteByUuidList() http.Handler {
 
 		bodyString := string(body)
 
-		err = api.files.DeleteByUuidList(user, bodyString)
+		err = api.files.TrashByIdList(user, bodyString)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		helper.SetJsonResponse(w, http.StatusOK, map[string]string{"status": "OK"})
+	})
+}
+
+func (api *FilesApi) DeleteByIdList() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		user, ok := r.Context().Value(repository.UserContextKey).(*repository.User)
+		if !ok {
+			helper.ReturnErr(w, repository.ErrMissingUserContext, http.StatusInternalServerError)
+			return
+		}
+
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		bodyString := string(body)
+
+		err = api.files.DeleteByIdList(user, bodyString)
 		if err != nil {
 			helper.ReturnErr(w, err, http.StatusInternalServerError)
 			return

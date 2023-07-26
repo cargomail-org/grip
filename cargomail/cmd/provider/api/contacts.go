@@ -101,7 +101,7 @@ func (api *ContactsApi) Update() http.Handler {
 
 		contact, err = api.contacts.Update(user, contact)
 		if err != nil {
-			log.Println(err)
+			helper.ReturnErr(w, err, http.StatusNotFound)
 			return
 		}
 
@@ -109,7 +109,7 @@ func (api *ContactsApi) Update() http.Handler {
 	})
 }
 
-func (api *ContactsApi) TrashByUuidList() http.Handler {
+func (api *ContactsApi) TrashByIdList() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		user, ok := r.Context().Value(repository.UserContextKey).(*repository.User)
 		if !ok {
@@ -125,12 +125,21 @@ func (api *ContactsApi) TrashByUuidList() http.Handler {
 
 		bodyString := string(body)
 
-		err = api.contacts.TrashByUuidList(user, bodyString)
+		err = api.contacts.TrashByIdList(user, bodyString)
 		if err != nil {
 			log.Println(err)
 			return
 		}
 
 		helper.SetJsonResponse(w, http.StatusOK, map[string]string{"status": "OK"})
+	})
+}
+
+func (api *ContactsApi) DeleteByIdList() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		log.Println("not implemented")
+
+		helper.SetJsonResponse(w, http.StatusNotImplemented, nil)
 	})
 }
