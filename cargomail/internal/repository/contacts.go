@@ -52,7 +52,7 @@ func (r *ContactsRepository) Create(user *User, contact *Contact) (*Contact, err
 			VALUES ($1, $2, $3, $4)
 			RETURNING * ;`
 
-	args := []interface{}{user.ID, contact.EmailAddress, contact.FirstName, contact.LastName}
+	args := []interface{}{user.Id, contact.EmailAddress, contact.FirstName, contact.LastName}
 
 	err := r.db.QueryRowContext(ctx, query, args...).Scan(contact.Scan()...)
 	if err != nil {
@@ -73,7 +73,7 @@ func (r *ContactsRepository) GetAll(user *User) ([]*Contact, error) {
 			last_stmt < 2
 			ORDER BY created_at DESC;`
 
-	args := []interface{}{user.ID}
+	args := []interface{}{user.Id}
 
 	rows, err := r.db.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -122,7 +122,7 @@ func (r *ContactsRepository) GetHistory(user *User, history *History) (*contactH
 				history_id > $2
 			ORDER BY created_at DESC;`
 
-	args := []interface{}{user.ID, history.LastHistoryId}
+	args := []interface{}{user.Id, history.LastHistoryId}
 
 	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -162,7 +162,7 @@ func (r *ContactsRepository) GetHistory(user *User, history *History) (*contactH
 				history_id > $2
 			ORDER BY created_at DESC;`
 
-	args = []interface{}{user.ID, history.LastHistoryId}
+	args = []interface{}{user.Id, history.LastHistoryId}
 
 	rows, err = tx.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -196,7 +196,7 @@ func (r *ContactsRepository) GetHistory(user *User, history *History) (*contactH
 				history_id > $2
 			ORDER BY created_at DESC;`
 
-	args = []interface{}{user.ID, history.LastHistoryId}
+	args = []interface{}{user.Id, history.LastHistoryId}
 
 	rows, err = tx.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -227,7 +227,7 @@ func (r *ContactsRepository) GetHistory(user *User, history *History) (*contactH
 	   FROM contact_history_seq
 	   WHERE user_id = $1 ;`
 
-	args = []interface{}{user.ID}
+	args = []interface{}{user.Id}
 
 	err = tx.QueryRowContext(ctx, query, args...).Scan(&contactHistory.History)
 	if err != nil {
@@ -254,7 +254,7 @@ func (r *ContactsRepository) Update(user *User, contact *Contact) (*Contact, err
 			      id = $5
 			RETURNING * ;`
 
-	args := []interface{}{contact.EmailAddress, contact.FirstName, contact.LastName, user.ID, contact.Id}
+	args := []interface{}{contact.EmailAddress, contact.FirstName, contact.LastName, user.Id, contact.Id}
 
 	err := r.db.QueryRowContext(ctx, query, args...).Scan(contact.Scan()...)
 	if err != nil {
@@ -275,7 +275,7 @@ func (r *ContactsRepository) TrashByIdList(user *User, idList string) error {
 			WHERE user_id = $1 AND
 			id IN (SELECT value FROM json_each($2));`
 
-		args := []interface{}{user.ID, idList}
+		args := []interface{}{user.Id, idList}
 
 		_, err := r.db.ExecContext(ctx, query, args...)
 		if err != nil {

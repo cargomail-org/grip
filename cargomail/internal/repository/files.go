@@ -54,7 +54,7 @@ func (r FilesRepository) Create(user *User, file *File) (*File, error) {
 			VALUES ($1, $2, $3, $4, $5, $6)
 			RETURNING * ;`
 
-	args := []interface{}{user.ID, file.Checksum, file.Name, file.Path, file.ContentType, file.Size}
+	args := []interface{}{user.Id, file.Checksum, file.Name, file.Path, file.ContentType, file.Size}
 
 	err := r.db.QueryRowContext(ctx, query, args...).Scan(file.Scan()...)
 	if err != nil {
@@ -75,7 +75,7 @@ func (r FilesRepository) GetAll(user *User) ([]*File, error) {
 			last_stmt < 2
 			ORDER BY created_at DESC;`
 
-	args := []interface{}{user.ID}
+	args := []interface{}{user.Id}
 
 	rows, err := r.db.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -123,7 +123,7 @@ func (r *FilesRepository) GetHistory(user *User, history *History) (*fileHistory
 				history_id > $2
 			ORDER BY created_at DESC;`
 
-	args := []interface{}{user.ID, history.LastHistoryId}
+	args := []interface{}{user.Id, history.LastHistoryId}
 
 	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -162,7 +162,7 @@ func (r *FilesRepository) GetHistory(user *User, history *History) (*fileHistory
 				history_id > $2
 			ORDER BY created_at DESC;`
 
-	args = []interface{}{user.ID, history.LastHistoryId}
+	args = []interface{}{user.Id, history.LastHistoryId}
 
 	rows, err = tx.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -193,7 +193,7 @@ func (r *FilesRepository) GetHistory(user *User, history *History) (*fileHistory
 	   FROM file_history_seq
 	   WHERE user_id = $1 ;`
 
-	args = []interface{}{user.ID}
+	args = []interface{}{user.Id}
 
 	err = tx.QueryRowContext(ctx, query, args...).Scan(&fileHistory.History)
 	if err != nil {
@@ -218,7 +218,7 @@ func (r *FilesRepository) TrashByIdList(user *User, idList string) error {
 			WHERE user_id = $1 AND
 			id IN (SELECT value FROM json_each($2));`
 
-		args := []interface{}{user.ID, idList}
+		args := []interface{}{user.Id, idList}
 
 		_, err := r.db.ExecContext(ctx, query, args...)
 		if err != nil {
@@ -240,7 +240,7 @@ func (r FilesRepository) DeleteByIdList(user *User, idList string) error {
 			WHERE user_id = $1 AND
 			id IN (SELECT value FROM json_each($2));`
 
-		args := []interface{}{user.ID, idList}
+		args := []interface{}{user.Id, idList}
 
 		_, err := r.db.ExecContext(ctx, query, args...)
 		if err != nil {
@@ -264,7 +264,7 @@ func (r FilesRepository) GetOriginalFileName(user *User, id string) (string, err
 
 	file := &File{}
 
-	args := []interface{}{user.ID, id}
+	args := []interface{}{user.Id, id}
 
 	err := r.db.QueryRowContext(ctx, query, args...).Scan(file.Scan()...)
 	if err != nil {

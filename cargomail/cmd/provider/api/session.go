@@ -113,7 +113,7 @@ func (api *SessionApi) Login() http.Handler {
 			return
 		}
 
-		session, err := api.session.New(user.ID, 24*time.Hour, repository.ScopeAuthentication)
+		session, err := api.session.New(user.Id, 24*time.Hour, repository.ScopeAuthentication)
 		if err != nil {
 			helper.ReturnErr(w, err, http.StatusInternalServerError)
 			return

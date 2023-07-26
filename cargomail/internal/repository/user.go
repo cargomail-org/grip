@@ -15,7 +15,7 @@ type UserRepository struct {
 }
 
 type User struct {
-	ID        int64     `json:"id"`
+	Id        int64     `json:"id"`
 	Username  string    `json:"username"`
 	Password  password  `json:"-"`
 	FirstName string    `json:"firstname"`
@@ -71,7 +71,7 @@ func (r UserRepository) Create(user *User) error {
 
 	args := []interface{}{user.Username, user.Password.hash, user.FirstName, user.LastName}
 
-	err := r.db.QueryRowContext(ctx, query, args...).Scan(&user.ID, &user.CreatedAt)
+	err := r.db.QueryRowContext(ctx, query, args...).Scan(&user.Id, &user.CreatedAt)
 	if err != nil {
 		switch {
 		case err.Error() == `UNIQUE constraint failed: user.username`:
@@ -151,7 +151,7 @@ func (r UserRepository) GetByUsername(username string) (*User, error) {
 	var user User
 
 	err := r.db.QueryRowContext(ctx, query, username).Scan(
-		&user.ID,
+		&user.Id,
 		&user.Username,
 		&user.Password.hash,
 		&user.CreatedAt,
@@ -189,7 +189,7 @@ func (r UserRepository) GetBySession(sessionScope, sessionPlaintext string) (*Us
 	var user User
 
 	err := r.db.QueryRowContext(ctx, query, args...).Scan(
-		&user.ID,
+		&user.Id,
 		&user.Username,
 		&user.Password.hash,
 		&user.CreatedAt,
