@@ -232,7 +232,6 @@ const filesTable = new DataTable("#filesTable", {
           for (const file of response.inserted) {
             // https://datatables.net/forums/discussion/59343/duplicate-data-in-the-data-table
             const notFound = filesTable.column(0).data().toArray().indexOf(file.id) === -1; // !!! must be
-            console.log(notFound);
             if (notFound) {
               filesTable.row.add(file).draw();
             }
