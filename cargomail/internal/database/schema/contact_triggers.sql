@@ -62,7 +62,6 @@ CREATE TRIGGER IF NOT EXISTS contact_after_trash
 BEGIN
     UPDATE contact_history_seq SET last_history_id = (last_history_id + 1) WHERE user_id = old.user_id;
     UPDATE contact
-    SET history_id  = (SELECT last_history_id FROM contact_history_seq WHERE user_id = old.user_id),
-        modified_at = CURRENT_TIMESTAMP
+    SET history_id  = (SELECT last_history_id FROM contact_history_seq WHERE user_id = old.user_id)   
     WHERE id = old.id;
 END;

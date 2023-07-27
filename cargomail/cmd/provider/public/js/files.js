@@ -184,6 +184,10 @@ const filesTable = new DataTable("#filesTable", {
       },
     },
   ],
+  rowId: "id",
+  // rowId: function(data) {
+  //   return 'id_' + data.id;
+  // },
   columnDefs: [
     {
       targets: 1,
@@ -212,7 +216,7 @@ const filesTable = new DataTable("#filesTable", {
   buttons: [
     "pageLength",
     {
-      text: "Reload",
+      text: "Refresh",
       action: function () {
         (async () => {
           const response = await api(uploadForm.id, 200, "/api/v1/files/sync", {
@@ -231,14 +235,19 @@ const filesTable = new DataTable("#filesTable", {
 
           for (const file of response.inserted) {
             // https://datatables.net/forums/discussion/59343/duplicate-data-in-the-data-table
-            const notFound = filesTable.column(0).data().toArray().indexOf(file.id) === -1; // !!! must be
+            const notFound =
+              filesTable.column(0).data().toArray().indexOf(file.id) === -1; // !!! must be
             if (notFound) {
-              filesTable.row.add(file).draw();
+              filesTable.row.add(file);
             }
           }
-        })();
 
-        filesTable.buttons([".files-delete"]).enable(false); // ???
+          for (const file of response.trashed) {
+            filesTable.row(`#${file.id}`).remove();
+          }
+
+          filesTable.draw();
+        })();
       },
     },
     {
@@ -280,7 +289,7 @@ export const deleteItems = (e) => {
   filesConfirmDialog.hide();
 
   (async () => {
-    const response = await api(uploadForm.id, 200, "api/v1/files/delete", {
+    const response = await api(uploadForm.id, 200, "api/v1/files", {
       method: "DELETE",
       headers: {
         Accept: "application/json",
