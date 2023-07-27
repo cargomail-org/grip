@@ -24,11 +24,16 @@ type Contact struct {
 	LastStmt     int        `json:"-"`
 }
 
-type contactHistory struct {
-	History          int64 `json:"last_history_id"`
-	ContactsInserted []*Contact
-	ContactsUpdated  []*Contact
-	ContactsTrashed  []*Contact
+type contactAllHistory struct {
+	History  int64      `json:"last_history_id"`
+	Contacts []*Contact `json:"contacts"`
+}
+
+type contactSyncHistory struct {
+	History          int64      `json:"last_history_id"`
+	ContactsInserted []*Contact `json:"inserted"`
+	ContactsUpdated  []*Contact `json:"updated"`
+	ContactsTrashed  []*Contact `json:"trashed"`
 }
 
 func (c *Contact) Scan() []interface{} {
@@ -62,9 +67,15 @@ func (r *ContactsRepository) Create(user *User, contact *Contact) (*Contact, err
 	return contact, nil
 }
 
-func (r *ContactsRepository) GetAll(user *User) ([]*Contact, error) {
+func (r *ContactsRepository) GetAll(user *User) (*contactAllHistory, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
+
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
 
 	query := `
 		SELECT *
@@ -75,14 +86,16 @@ func (r *ContactsRepository) GetAll(user *User) ([]*Contact, error) {
 
 	args := []interface{}{user.Id}
 
-	rows, err := r.db.QueryContext(ctx, query, args...)
+	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}
 
 	defer rows.Close()
 
-	contacts := []*Contact{}
+	contactHistory := &contactAllHistory{
+		Contacts: []*Contact{},
+	}
 
 	for rows.Next() {
 		var contact Contact
@@ -93,17 +106,34 @@ func (r *ContactsRepository) GetAll(user *User) ([]*Contact, error) {
 			return nil, err
 		}
 
-		contacts = append(contacts, &contact)
+		contactHistory.Contacts = append(contactHistory.Contacts, &contact)
 	}
 
 	if err = rows.Err(); err != nil {
 		return nil, err
 	}
 
-	return contacts, nil
+	// history
+	query = `
+	SELECT last_history_id
+	   FROM contact_history_seq
+	   WHERE user_id = $1 ;`
+
+	args = []interface{}{user.Id}
+
+	err = tx.QueryRowContext(ctx, query, args...).Scan(&contactHistory.History)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	return contactHistory, nil
 }
 
-func (r *ContactsRepository) GetHistory(user *User, history *History) (*contactHistory, error) {
+func (r *ContactsRepository) GetHistory(user *User, history *History) (*contactSyncHistory, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -131,7 +161,7 @@ func (r *ContactsRepository) GetHistory(user *User, history *History) (*contactH
 
 	defer rows.Close()
 
-	contactHistory := &contactHistory{
+	contactHistory := &contactSyncHistory{
 		ContactsInserted: []*Contact{},
 		ContactsUpdated:  []*Contact{},
 		ContactsTrashed:  []*Contact{},

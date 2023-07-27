@@ -140,14 +140,16 @@ const filesTable = new DataTable("#filesTable", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-        },
+        }
       });
 
       if (response === false) {
         return;
       }
 
-      callback({ data: response });
+      historyId = response.last_history_id;
+
+      callback({ data: response.files });
     })();
   },
   columns: [
@@ -212,8 +214,33 @@ const filesTable = new DataTable("#filesTable", {
     {
       text: "Reload",
       action: function () {
-        filesTable.ajax.reload();
-        filesTable.buttons([".files-delete"]).enable(false);
+        // filesTable.ajax.reload();
+        (async () => {
+          const response = await api(uploadForm.id, 200, "/api/v1/files/sync", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ history_id: historyId }),
+          });
+
+          if (response === false) {
+            return;
+          }
+
+          historyId = response.last_history_id;
+
+          // let data = Array.from(filesTable.rows().data());
+          // console.log(data);
+          // data = [...data, ...response.inserted];
+          // for (var i = 0; data.length > i; i++) {
+          //   console.log(data[i])
+          // }
+          // console.log(data);
+          filesTable.rows.add(response.inserted).draw();
+        })();
+
+        filesTable.buttons([".files-delete"]).enable(false); // ???
       },
     },
     {

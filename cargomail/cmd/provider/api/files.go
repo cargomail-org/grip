@@ -164,13 +164,13 @@ func (api *FilesApi) GetAll() http.Handler {
 			return
 		}
 
-		files, err := api.files.GetAll(user)
+		fileHistory, err := api.files.GetAll(user)
 		if err != nil {
 			helper.ReturnErr(w, err, http.StatusInternalServerError)
 			return
 		}
 
-		helper.SetJsonResponse(w, http.StatusOK, files)
+		helper.SetJsonResponse(w, http.StatusOK, fileHistory)
 	})
 }
 

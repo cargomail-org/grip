@@ -47,13 +47,13 @@ func (api *ContactsApi) GetAll() http.Handler {
 			return
 		}
 
-		contacts, err := api.contacts.GetAll(user)
+		contactHistory, err := api.contacts.GetAll(user)
 		if err != nil {
 			log.Println(err)
 			return
 		}
 
-		helper.SetJsonResponse(w, http.StatusCreated, contacts)
+		helper.SetJsonResponse(w, http.StatusCreated, contactHistory)
 	})
 }
 

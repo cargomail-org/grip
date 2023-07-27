@@ -27,10 +27,15 @@ type File struct {
 	LastStmt    int        `json:"-"`
 }
 
-type fileHistory struct {
-	History       int64 `json:"last_history_id"`
-	FilesInserted []*File
-	FilesTrashed  []*File
+type fileAllHistory struct {
+	History int64   `json:"last_history_id"`
+	Files   []*File `json:"files"`
+}
+
+type fileSyncHistory struct {
+	History       int64   `json:"last_history_id"`
+	FilesInserted []*File `json:"inserted"`
+	FilesTrashed  []*File `json:"trashed"`
 }
 
 func (f *File) Scan() []interface{} {
@@ -64,10 +69,17 @@ func (r FilesRepository) Create(user *User, file *File) (*File, error) {
 	return file, nil
 }
 
-func (r FilesRepository) GetAll(user *User) ([]*File, error) {
+func (r FilesRepository) GetAll(user *User) (*fileAllHistory, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+
+	// files
 	query := `
 		SELECT *
 			FROM file
@@ -77,14 +89,16 @@ func (r FilesRepository) GetAll(user *User) ([]*File, error) {
 
 	args := []interface{}{user.Id}
 
-	rows, err := r.db.QueryContext(ctx, query, args...)
+	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}
 
 	defer rows.Close()
 
-	files := []*File{}
+	fileHistory := &fileAllHistory{
+		Files: []*File{},
+	}
 
 	for rows.Next() {
 		var file File
@@ -94,17 +108,34 @@ func (r FilesRepository) GetAll(user *User) ([]*File, error) {
 			return nil, err
 		}
 
-		files = append(files, &file)
+		fileHistory.Files = append(fileHistory.Files, &file)
 	}
 
 	if err = rows.Err(); err != nil {
 		return nil, err
 	}
 
-	return files, nil
+	// history
+	query = `
+		SELECT last_history_id
+		   FROM file_history_seq
+		   WHERE user_id = $1 ;`
+
+	args = []interface{}{user.Id}
+
+	err = tx.QueryRowContext(ctx, query, args...).Scan(&fileHistory.History)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	return fileHistory, nil
 }
 
-func (r *FilesRepository) GetHistory(user *User, history *History) (*fileHistory, error) {
+func (r *FilesRepository) GetHistory(user *User, history *History) (*fileSyncHistory, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -132,7 +163,7 @@ func (r *FilesRepository) GetHistory(user *User, history *History) (*fileHistory
 
 	defer rows.Close()
 
-	fileHistory := &fileHistory{
+	fileHistory := &fileSyncHistory{
 		FilesInserted: []*File{},
 		FilesTrashed:  []*File{},
 	}
