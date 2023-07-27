@@ -140,7 +140,7 @@ const filesTable = new DataTable("#filesTable", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-        }
+        },
       });
 
       if (response === false) {
@@ -214,7 +214,6 @@ const filesTable = new DataTable("#filesTable", {
     {
       text: "Reload",
       action: function () {
-        // filesTable.ajax.reload();
         (async () => {
           const response = await api(uploadForm.id, 200, "/api/v1/files/sync", {
             method: "POST",
@@ -230,14 +229,14 @@ const filesTable = new DataTable("#filesTable", {
 
           historyId = response.last_history_id;
 
-          // let data = Array.from(filesTable.rows().data());
-          // console.log(data);
-          // data = [...data, ...response.inserted];
-          // for (var i = 0; data.length > i; i++) {
-          //   console.log(data[i])
-          // }
-          // console.log(data);
-          filesTable.rows.add(response.inserted).draw();
+          for (const file of response.inserted) {
+            // https://datatables.net/forums/discussion/59343/duplicate-data-in-the-data-table
+            const notFound = filesTable.column(0).data().toArray().indexOf(file.id) === -1; // !!! must be
+            console.log(notFound);
+            if (notFound) {
+              filesTable.row.add(file).draw();
+            }
+          }
         })();
 
         filesTable.buttons([".files-delete"]).enable(false); // ???
