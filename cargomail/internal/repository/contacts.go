@@ -58,15 +58,9 @@ func (r *ContactsRepository) Create(user *User, contact *Contact) (*Contact, err
 			VALUES ($1, $2, $3, $4, $5)
 			RETURNING * ;`
 
-	var deviceId string
-	var deviceIdPrt *string
+	dummyDeviceId := getDummyDeviceId(user.DeviceId)
 
-	if user.DeviceId != nil && len(*user.DeviceId) > 0 {
-		deviceId = *user.DeviceId + "dummy"
-		deviceIdPrt = &deviceId
-	}
-
-	args := []interface{}{user.Id, deviceIdPrt, contact.EmailAddress, contact.FirstName, contact.LastName}
+	args := []interface{}{user.Id, dummyDeviceId, contact.EmailAddress, contact.FirstName, contact.LastName}
 
 	err := r.db.QueryRowContext(ctx, query, args...).Scan(contact.Scan()...)
 	if err != nil {
@@ -294,15 +288,9 @@ func (r *ContactsRepository) Update(user *User, contact *Contact) (*Contact, err
 			      id = $6
 			RETURNING * ;`
 
-	var deviceId string
-	var deviceIdPrt *string
+	dummyDeviceId := getDummyDeviceId(user.DeviceId)
 
-	if user.DeviceId != nil && len(*user.DeviceId) > 0 {
-		deviceId = *user.DeviceId + "dummy"
-		deviceIdPrt = &deviceId
-	}
-
-	args := []interface{}{contact.EmailAddress, contact.FirstName, contact.LastName, deviceIdPrt, user.Id, contact.Id}
+	args := []interface{}{contact.EmailAddress, contact.FirstName, contact.LastName, dummyDeviceId, user.Id, contact.Id}
 
 	err := r.db.QueryRowContext(ctx, query, args...).Scan(contact.Scan()...)
 	if err != nil {
@@ -324,15 +312,9 @@ func (r *ContactsRepository) TrashByIdList(user *User, idList string) error {
 			WHERE user_id = $2 AND
 			id IN (SELECT value FROM json_each($3));`
 
-		var deviceId string
-		var deviceIdPrt *string
+		dummyDeviceId := getDummyDeviceId(user.DeviceId)
 
-		if user.DeviceId != nil && len(*user.DeviceId) > 0 {
-			deviceId = *user.DeviceId + "dummy"
-			deviceIdPrt = &deviceId
-		}
-
-		args := []interface{}{deviceIdPrt, user.Id, idList}
+		args := []interface{}{dummyDeviceId, user.Id, idList}
 
 		_, err := r.db.ExecContext(ctx, query, args...)
 		if err != nil {

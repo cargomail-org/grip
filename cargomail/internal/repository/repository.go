@@ -43,3 +43,14 @@ func (p *Timestamp) Scan(value interface{}) error {
 	*p = Timestamp(t)
 	return nil
 }
+
+func getDummyDeviceId(userDeviceId *string) *string {
+	var deviceId string
+
+	if userDeviceId != nil && len(*userDeviceId) > 0 {
+		deviceId = *userDeviceId + "dummy"
+		return &deviceId
+	}
+
+	return nil
+}
