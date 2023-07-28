@@ -61,7 +61,7 @@ AFTER DELETE ON file
 FOR EACH ROW
 BEGIN
     UPDATE file_history_seq SET last_history_id = (last_history_id + 1) WHERE user_id = old.user_id;
-    INSERT INTO file_delete_history (id, user_id, history_id)
+    INSERT INTO file_deleted (id, user_id, history_id)
       VALUES (old.id,
               old.user_id,
               (SELECT last_history_id FROM file_history_seq WHERE user_id = old.user_id));

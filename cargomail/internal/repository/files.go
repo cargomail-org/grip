@@ -245,7 +245,7 @@ func (r *FilesRepository) GetHistory(user *User, history *History) (*fileSyncHis
 	// deleted rows
 	query = `
 		SELECT *
-			FROM file_delete_history
+			FROM file_deleted
 			WHERE user_id = $1 AND
 			    (device_id <> $2 OR device_id IS NULL) AND
 				history_id > $3;`

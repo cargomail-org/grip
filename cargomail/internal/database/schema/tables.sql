@@ -48,14 +48,14 @@ CREATE TABLE IF NOT EXISTS contact (
     device_id       UUID
 );
 
-CREATE TABLE IF NOT EXISTS file_delete_history (
+CREATE TABLE IF NOT EXISTS file_deleted (
     id				UUID NOT NULL PRIMARY KEY,
     user_id 		INTEGER NOT NULL REFERENCES user ON DELETE CASCADE,
     history_id 		INTEGER(8) NOT NULL DEFAULT 0,
     device_id       UUID
 );
 
-CREATE TABLE IF NOT EXISTS contact_delete_history (
+CREATE TABLE IF NOT EXISTS contact_deleted (
     id				UUID NOT NULL PRIMARY KEY,
     user_id 		INTEGER NOT NULL REFERENCES user ON DELETE CASCADE,
     history_id 		INTEGER(8) NOT NULL DEFAULT 0,

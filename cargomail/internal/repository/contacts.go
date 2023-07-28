@@ -280,7 +280,7 @@ func (r *ContactsRepository) GetHistory(user *User, history *History) (*contactS
 	// deleted rows
 	query = `
 		SELECT *
-			FROM contact_delete_history
+			FROM contact_deleted
 			WHERE user_id = $1 AND
 			(device_id <> $2 OR device_id IS NULL) AND
 			history_id > $3;`
