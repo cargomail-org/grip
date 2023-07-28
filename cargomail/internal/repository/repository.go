@@ -44,11 +44,11 @@ func (p *Timestamp) Scan(value interface{}) error {
 	return nil
 }
 
-func getDummyDeviceId(userDeviceId *string) *string {
+func getPrefixedDeviceId(userDeviceId *string) *string {
 	var deviceId string
 
 	if userDeviceId != nil && len(*userDeviceId) > 0 {
-		deviceId = *userDeviceId + "dummy"
+		deviceId = "device:" + *userDeviceId
 		return &deviceId
 	}
 

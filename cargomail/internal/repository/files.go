@@ -60,9 +60,9 @@ func (r FilesRepository) Create(user *User, file *File) (*File, error) {
 			VALUES ($1, $2, $3, $4, $5, $6, $7)
 			RETURNING * ;`
 
-	dummyDeviceId := getDummyDeviceId(user.DeviceId)
+			prefixedDeviceId := getPrefixedDeviceId(user.DeviceId)
 
-	args := []interface{}{user.Id, dummyDeviceId, file.Checksum, file.Name, file.Path, file.ContentType, file.Size}
+	args := []interface{}{user.Id, prefixedDeviceId, file.Checksum, file.Name, file.Path, file.ContentType, file.Size}
 
 	err := r.db.QueryRowContext(ctx, query, args...).Scan(file.Scan()...)
 	if err != nil {
@@ -255,9 +255,9 @@ func (r *FilesRepository) TrashByIdList(user *User, idList string) error {
 			WHERE user_id = $2 AND
 			id IN (SELECT value FROM json_each($3));`
 
-		dummyDeviceId := getDummyDeviceId(user.DeviceId)
+		prefixedDeviceId := getPrefixedDeviceId(user.DeviceId)
 
-		args := []interface{}{dummyDeviceId, user.Id, idList}
+		args := []interface{}{prefixedDeviceId, user.Id, idList}
 
 		_, err := r.db.ExecContext(ctx, query, args...)
 		if err != nil {
