@@ -289,8 +289,8 @@ export const deleteItems = (e) => {
   filesConfirmDialog.hide();
 
   (async () => {
-    const response = await api(uploadForm.id, 200, "api/v1/files", {
-      method: "DELETE",
+    const response = await api(uploadForm.id, 200, "api/v1/files/trash", {
+      method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -304,7 +304,7 @@ export const deleteItems = (e) => {
 
     filesTable.rows(".selected").remove().draw();
     filesTable.buttons([".files-delete"]).enable(false);
-    console.log("Successfully deleted file(s)");
+    console.log("Successfully trashed file(s)");
   })();
 };
 

@@ -226,6 +226,32 @@ func (api *FilesApi) TrashByIdList() http.Handler {
 	})
 }
 
+func (api *FilesApi) UntrashByIdList() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		user, ok := r.Context().Value(repository.UserContextKey).(*repository.User)
+		if !ok {
+			helper.ReturnErr(w, repository.ErrMissingUserContext, http.StatusInternalServerError)
+			return
+		}
+
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		bodyString := string(body)
+
+		err = api.files.UntrashByIdList(user, bodyString)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		helper.SetJsonResponse(w, http.StatusOK, map[string]string{"status": "OK"})
+	})
+}
+
 func (api *FilesApi) DeleteByIdList() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		user, ok := r.Context().Value(repository.UserContextKey).(*repository.User)

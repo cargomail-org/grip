@@ -60,7 +60,7 @@ func (r FilesRepository) Create(user *User, file *File) (*File, error) {
 			VALUES ($1, $2, $3, $4, $5, $6, $7)
 			RETURNING * ;`
 
-			prefixedDeviceId := getPrefixedDeviceId(user.DeviceId)
+	prefixedDeviceId := getPrefixedDeviceId(user.DeviceId)
 
 	args := []interface{}{user.Id, prefixedDeviceId, file.Checksum, file.Name, file.Path, file.ContentType, file.Size}
 
@@ -251,6 +251,31 @@ func (r *FilesRepository) TrashByIdList(user *User, idList string) error {
 		query := `
 		UPDATE file
 			SET last_stmt = 2,
+				device_id = $1
+			WHERE user_id = $2 AND
+			id IN (SELECT value FROM json_each($3));`
+
+		prefixedDeviceId := getPrefixedDeviceId(user.DeviceId)
+
+		args := []interface{}{prefixedDeviceId, user.Id, idList}
+
+		_, err := r.db.ExecContext(ctx, query, args...)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (r *FilesRepository) UntrashByIdList(user *User, idList string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if len(idList) > 0 {
+		query := `
+		UPDATE file
+			SET last_stmt = 0,
 				device_id = $1
 			WHERE user_id = $2 AND
 			id IN (SELECT value FROM json_each($3));`
