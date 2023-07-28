@@ -69,3 +69,14 @@ BEGIN
         device_id = iif(length(new.device_id) = 39 AND substr(new.device_id, 1, 7) = 'device:', substr(new.device_id, 8, 32), NULL) 
     WHERE id = old.id;
 END;
+
+CREATE TRIGGER IF NOT EXISTS contact_after_delete
+AFTER DELETE ON contact
+FOR EACH ROW
+BEGIN
+    UPDATE contact_history_seq SET last_history_id = (last_history_id + 1) WHERE user_id = old.user_id;
+    INSERT INTO contact_delete_history (id, user_id, history_id)
+      VALUES (old.id,
+              old.user_id,
+              (SELECT last_history_id FROM contact_history_seq WHERE user_id = old.user_id));
+END;

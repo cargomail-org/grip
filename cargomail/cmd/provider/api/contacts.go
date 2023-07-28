@@ -163,9 +163,26 @@ func (api *ContactsApi) UntrashByIdList() http.Handler {
 
 func (api *ContactsApi) DeleteByIdList() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		user, ok := r.Context().Value(repository.UserContextKey).(*repository.User)
+		if !ok {
+			helper.ReturnErr(w, repository.ErrMissingUserContext, http.StatusInternalServerError)
+			return
+		}
 
-		log.Println("not implemented")
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			log.Println(err)
+			return
+		}
 
-		helper.SetJsonResponse(w, http.StatusNotImplemented, nil)
+		bodyString := string(body)
+
+		err = api.contacts.DeleteByIdList(user, bodyString)
+		if err != nil {
+			helper.ReturnErr(w, err, http.StatusInternalServerError)
+			return
+		}
+
+		helper.SetJsonResponse(w, http.StatusOK, map[string]string{"status": "OK"})
 	})
 }

@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"log"
 	"reflect"
 	"time"
 )
@@ -28,18 +27,37 @@ type File struct {
 	DeviceId    *string    `json:"-"`
 }
 
+type FileDeleted struct {
+	Id        string  `json:"id"`
+	UserId    int64   `json:"-"`
+	HistoryId int64   `json:"-"`
+	DeviceId  *string `json:"-"`
+}
+
 type fileAllHistory struct {
 	History int64   `json:"last_history_id"`
 	Files   []*File `json:"files"`
 }
 
 type fileSyncHistory struct {
-	History       int64   `json:"last_history_id"`
-	FilesInserted []*File `json:"inserted"`
-	FilesTrashed  []*File `json:"trashed"`
+	History       int64          `json:"last_history_id"`
+	FilesInserted []*File        `json:"inserted"`
+	FilesTrashed  []*File        `json:"trashed"`
+	FilesDeleted  []*FileDeleted `json:"deleted"`
 }
 
 func (f *File) Scan() []interface{} {
+	s := reflect.ValueOf(f).Elem()
+	numCols := s.NumField()
+	columns := make([]interface{}, numCols)
+	for i := 0; i < numCols; i++ {
+		field := s.Field(i)
+		columns[i] = field.Addr().Interface()
+	}
+	return columns
+}
+
+func (f *FileDeleted) Scan() []interface{} {
 	s := reflect.ValueOf(f).Elem()
 	numCols := s.NumField()
 	columns := make([]interface{}, numCols)
@@ -170,6 +188,7 @@ func (r *FilesRepository) GetHistory(user *User, history *History) (*fileSyncHis
 	fileHistory := &fileSyncHistory{
 		FilesInserted: []*File{},
 		FilesTrashed:  []*File{},
+		FilesDeleted:  []*FileDeleted{},
 	}
 
 	for rows.Next() {
@@ -193,8 +212,8 @@ func (r *FilesRepository) GetHistory(user *User, history *History) (*fileSyncHis
 		SELECT *
 			FROM file
 			WHERE user_id = $1 AND
-			    (device_id <> $2 OR device_id IS NULL) AND
-				last_stmt = 2 AND
+			(device_id <> $2 OR device_id IS NULL) AND
+			last_stmt = 2 AND
 				history_id > $3
 			ORDER BY created_at DESC;`
 
@@ -217,6 +236,39 @@ func (r *FilesRepository) GetHistory(user *User, history *History) (*fileSyncHis
 		}
 
 		fileHistory.FilesTrashed = append(fileHistory.FilesTrashed, &file)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	// deleted rows
+	query = `
+		SELECT *
+			FROM file_delete_history
+			WHERE user_id = $1 AND
+			    (device_id <> $2 OR device_id IS NULL) AND
+				history_id > $3;`
+
+	args = []interface{}{user.Id, user.DeviceId, history.Id}
+
+	rows, err = tx.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var fileDeleted FileDeleted
+
+		err := rows.Scan(fileDeleted.Scan()...)
+
+		if err != nil {
+			return nil, err
+		}
+
+		fileHistory.FilesDeleted = append(fileHistory.FilesDeleted, &fileDeleted)
 	}
 
 	if err = rows.Err(); err != nil {
@@ -308,7 +360,6 @@ func (r FilesRepository) DeleteByIdList(user *User, idList string) error {
 
 		_, err := r.db.ExecContext(ctx, query, args...)
 		if err != nil {
-			log.Println(err)
 			return err
 		}
 	}
@@ -332,7 +383,6 @@ func (r FilesRepository) GetOriginalFileName(user *User, id string) (string, err
 
 	err := r.db.QueryRowContext(ctx, query, args...).Scan(file.Scan()...)
 	if err != nil {
-		log.Println(err)
 		return "", err
 	}
 

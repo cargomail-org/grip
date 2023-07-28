@@ -48,6 +48,21 @@ CREATE TABLE IF NOT EXISTS contact (
     device_id       UUID
 );
 
+CREATE TABLE IF NOT EXISTS file_delete_history (
+    id				UUID NOT NULL PRIMARY KEY,
+    user_id 		INTEGER NOT NULL REFERENCES user ON DELETE CASCADE,
+    history_id 		INTEGER(8) NOT NULL DEFAULT 0,
+    device_id       UUID
+);
+
+CREATE TABLE IF NOT EXISTS contact_delete_history (
+    id				UUID NOT NULL PRIMARY KEY,
+    user_id 		INTEGER NOT NULL REFERENCES user ON DELETE CASCADE,
+    history_id 		INTEGER(8) NOT NULL DEFAULT 0,
+    device_id       UUID
+);
+
+
 CREATE TABLE IF NOT EXISTS file_timeline_seq (
     user_id 		INTEGER NOT NULL REFERENCES user ON DELETE CASCADE,
     last_timeline_id INTEGER(8) NOT NULL

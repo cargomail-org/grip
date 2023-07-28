@@ -25,19 +25,38 @@ type Contact struct {
 	DeviceId     *string    `json:"-"`
 }
 
+type ContactDeleted struct {
+	Id        string  `json:"id"`
+	UserId    int64   `json:"-"`
+	HistoryId int64   `json:"-"`
+	DeviceId  *string `json:"-"`
+}
+
 type contactAllHistory struct {
 	History  int64      `json:"last_history_id"`
 	Contacts []*Contact `json:"contacts"`
 }
 
 type contactSyncHistory struct {
-	History          int64      `json:"last_history_id"`
-	ContactsInserted []*Contact `json:"inserted"`
-	ContactsUpdated  []*Contact `json:"updated"`
-	ContactsTrashed  []*Contact `json:"trashed"`
+	History          int64             `json:"last_history_id"`
+	ContactsInserted []*Contact        `json:"inserted"`
+	ContactsUpdated  []*Contact        `json:"updated"`
+	ContactsTrashed  []*Contact        `json:"trashed"`
+	ContactsDeleted  []*ContactDeleted `json:"deleted"`
 }
 
 func (c *Contact) Scan() []interface{} {
+	s := reflect.ValueOf(c).Elem()
+	numCols := s.NumField()
+	columns := make([]interface{}, numCols)
+	for i := 0; i < numCols; i++ {
+		field := s.Field(i)
+		columns[i] = field.Addr().Interface()
+	}
+	return columns
+}
+
+func (c *ContactDeleted) Scan() []interface{} {
 	s := reflect.ValueOf(c).Elem()
 	numCols := s.NumField()
 	columns := make([]interface{}, numCols)
@@ -152,10 +171,11 @@ func (r *ContactsRepository) GetHistory(user *User, history *History) (*contactS
 			FROM contact
 			WHERE user_id = $1 AND
 				last_stmt = 0 AND
-				history_id > $2
+				(device_id <> $2 OR device_id IS NULL) AND
+				history_id > $3
 			ORDER BY created_at DESC;`
 
-	args := []interface{}{user.Id, history.Id}
+	args := []interface{}{user.Id, user.DeviceId, history.Id}
 
 	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -168,6 +188,7 @@ func (r *ContactsRepository) GetHistory(user *User, history *History) (*contactS
 		ContactsInserted: []*Contact{},
 		ContactsUpdated:  []*Contact{},
 		ContactsTrashed:  []*Contact{},
+		ContactsDeleted:  []*ContactDeleted{},
 	}
 
 	for rows.Next() {
@@ -192,10 +213,11 @@ func (r *ContactsRepository) GetHistory(user *User, history *History) (*contactS
 			FROM contact
 			WHERE user_id = $1 AND
 				last_stmt = 1 AND
-				history_id > $2
+				(device_id <> $2 OR device_id IS NULL) AND
+				history_id > $3
 			ORDER BY created_at DESC;`
 
-	args = []interface{}{user.Id, history.Id}
+	args = []interface{}{user.Id, user.DeviceId, history.Id}
 
 	rows, err = tx.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -226,10 +248,11 @@ func (r *ContactsRepository) GetHistory(user *User, history *History) (*contactS
 			FROM contact
 			WHERE user_id = $1 AND
 				last_stmt = 2 AND
-				history_id > $2
+				(device_id <> $2 OR device_id IS NULL) AND
+				history_id > $3
 			ORDER BY created_at DESC;`
 
-	args = []interface{}{user.Id, history.Id}
+	args = []interface{}{user.Id, user.DeviceId, history.Id}
 
 	rows, err = tx.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -248,6 +271,39 @@ func (r *ContactsRepository) GetHistory(user *User, history *History) (*contactS
 		}
 
 		contactHistory.ContactsTrashed = append(contactHistory.ContactsTrashed, &contact)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	// deleted rows
+	query = `
+		SELECT *
+			FROM contact_delete_history
+			WHERE user_id = $1 AND
+			(device_id <> $2 OR device_id IS NULL) AND
+			history_id > $3;`
+
+	args = []interface{}{user.Id, user.DeviceId, history.Id}
+
+	rows, err = tx.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var contactDeleted ContactDeleted
+
+		err := rows.Scan(contactDeleted.Scan()...)
+
+		if err != nil {
+			return nil, err
+		}
+
+		contactHistory.ContactsDeleted = append(contactHistory.ContactsDeleted, &contactDeleted)
 	}
 
 	if err = rows.Err(); err != nil {
@@ -340,6 +396,28 @@ func (r *ContactsRepository) UntrashByIdList(user *User, idList string) error {
 		prefixedDeviceId := getPrefixedDeviceId(user.DeviceId)
 
 		args := []interface{}{prefixedDeviceId, user.Id, idList}
+
+		_, err := r.db.ExecContext(ctx, query, args...)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (r ContactsRepository) DeleteByIdList(user *User, idList string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if len(idList) > 0 {
+		query := `
+		DELETE
+			FROM contact
+			WHERE user_id = $1 AND
+			id IN (SELECT value FROM json_each($2));`
+
+		args := []interface{}{user.Id, idList}
 
 		_, err := r.db.ExecContext(ctx, query, args...)
 		if err != nil {

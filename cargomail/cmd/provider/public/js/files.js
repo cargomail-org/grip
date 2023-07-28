@@ -246,6 +246,10 @@ const filesTable = new DataTable("#filesTable", {
             filesTable.row(`#${file.id}`).remove();
           }
 
+          for (const file of response.deleted) {
+            filesTable.row(`#${file.id}`).remove();
+          }
+
           filesTable.draw();
         })();
       },
