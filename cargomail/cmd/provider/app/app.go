@@ -48,7 +48,7 @@ func redirectToLoginPage(w http.ResponseWriter, r *http.Request) {
 // middleware
 func (app *App) Authenticate(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		cookie, err := r.Cookie("session")
+		sessionCookie, err := r.Cookie("session")
 		if err != nil {
 			switch {
 			case errors.Is(err, http.ErrNoCookie):
@@ -60,7 +60,7 @@ func (app *App) Authenticate(next http.Handler) http.Handler {
 			return
 		}
 
-		session := cookie.Value
+		session := sessionCookie.Value
 
 		// TODO magic number!
 		if len(session) != 52 {
@@ -78,6 +78,24 @@ func (app *App) Authenticate(next http.Handler) http.Handler {
 			}
 			return
 		}
+
+		var device_id string
+
+		deviceIdCookie, err := r.Cookie("device_id")
+		if err != nil {
+			switch {
+			case errors.Is(err, http.ErrNoCookie):
+				// nothing to do
+			default:
+				log.Println(err)
+				http.Error(w, "server error", http.StatusInternalServerError)
+				return
+			}
+		} else {
+			device_id = deviceIdCookie.Value
+		}
+
+		user.DeviceId = &device_id
 
 		r = app.contextSetUser(r, user)
 

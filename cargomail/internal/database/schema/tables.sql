@@ -30,7 +30,8 @@ CREATE TABLE IF NOT EXISTS file (
     modified_at		TIMESTAMP,
     timeline_id		INTEGER(8) NOT NULL DEFAULT 0,
     history_id 		INTEGER(8) NOT NULL DEFAULT 0,
-    last_stmt  		INTEGER(2) NOT NULL DEFAULT 0 -- 0-inserted, 1-updated, 2-trashed
+    last_stmt  		INTEGER(2) NOT NULL DEFAULT 0, -- 0-inserted, 1-updated, 2-trashed
+    device_id       UUID
 );
 
 CREATE TABLE IF NOT EXISTS contact (
@@ -43,27 +44,28 @@ CREATE TABLE IF NOT EXISTS contact (
     modified_at		TIMESTAMP,
     timeline_id		INTEGER(8) NOT NULL DEFAULT 0,
     history_id 		INTEGER(8) NOT NULL DEFAULT 0,
-    last_stmt  		INTEGER(2) NOT NULL DEFAULT 0 -- 0-inserted, 1-updated, 2-trashed
+    last_stmt  		INTEGER(2) NOT NULL DEFAULT 0, -- 0-inserted, 1-updated, 2-trashed
+    device_id       UUID
 );
 
 CREATE TABLE IF NOT EXISTS file_timeline_seq (
     user_id 		INTEGER NOT NULL REFERENCES user ON DELETE CASCADE,
-    last_timeline_id integer(8) NOT NULL
+    last_timeline_id INTEGER(8) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS file_history_seq (
     user_id 		INTEGER NOT NULL REFERENCES user ON DELETE CASCADE,
-    last_history_id integer(8) NOT NULL
+    last_history_id INTEGER(8) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS contact_timeline_seq (
     user_id 		INTEGER NOT NULL REFERENCES user ON DELETE CASCADE,
-    last_timeline_id integer(8) NOT NULL
+    last_timeline_id INTEGER(8) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS contact_history_seq (
     user_id 		INTEGER NOT NULL REFERENCES user ON DELETE CASCADE,
-    last_history_id integer(8) NOT NULL
+    last_history_id INTEGER(8) NOT NULL
 );
 
 ------------------------------indexes----------------------------

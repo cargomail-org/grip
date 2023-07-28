@@ -21,6 +21,7 @@ type User struct {
 	FirstName string    `json:"firstname"`
 	LastName  string    `json:"lastname"`
 	CreatedAt time.Time `json:"created_at"`
+	DeviceId  *string   `json:"-"`
 }
 
 type UserProfile struct {

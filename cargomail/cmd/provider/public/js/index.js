@@ -1,7 +1,7 @@
 let profileForm;
 
 document.addEventListener("DOMContentLoaded", function () {
-  composeContent(); // in prod should be cargoesContent
+  filesContent(); // in prod should be cargoesContent
 
   profileForm = document.getElementById("profileForm");
   loadProfile(profileForm);

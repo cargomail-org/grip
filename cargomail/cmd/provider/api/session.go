@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type SessionApi struct {
@@ -119,7 +121,7 @@ func (api *SessionApi) Login() http.Handler {
 			return
 		}
 
-		cookie := http.Cookie{
+		sessionCookie := http.Cookie{
 			Name:     "session",
 			Value:    session.Plaintext,
 			Path:     "/",
@@ -129,10 +131,38 @@ func (api *SessionApi) Login() http.Handler {
 		}
 
 		if input.RememberMe {
-			cookie.Expires = session.Expiry
+			sessionCookie.Expires = session.Expiry
 		}
 
-		http.SetCookie(w, &cookie)
+		http.SetCookie(w, &sessionCookie)
+
+		var device_id string
+
+		deviceIdCookie, err := r.Cookie("device_id")
+		if err != nil {
+			switch {
+			case errors.Is(err, http.ErrNoCookie):
+				device_id = strings.Replace(uuid.NewString(), "-", "", -1)
+			default:
+				log.Println(err)
+				http.Error(w, "server error", http.StatusInternalServerError)
+				return
+			}
+		} else {
+			device_id = deviceIdCookie.Value
+		}
+
+		deviceIdCookie = &http.Cookie{
+			Name:     "device_id",
+			Value:    device_id,
+			Path:     "/",
+			HttpOnly: true,
+			Secure:   false, // !!!
+			SameSite: http.SameSiteLaxMode,
+			Expires:  time.Now().AddDate(1, 0, 0), // 1 year
+		}
+
+		http.SetCookie(w, deviceIdCookie)
 
 		helper.SetJsonResponse(w, http.StatusOK, session)
 	})

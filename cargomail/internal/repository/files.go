@@ -25,6 +25,7 @@ type File struct {
 	TimelineId  int64      `json:"-"`
 	HistoryId   int64      `json:"-"`
 	LastStmt    int        `json:"-"`
+	DeviceId    *string    `json:"-"`
 }
 
 type fileAllHistory struct {
@@ -55,11 +56,19 @@ func (r FilesRepository) Create(user *User, file *File) (*File, error) {
 
 	query := `
 		INSERT INTO
-			file (user_id, checksum, name, path, content_type, size)
-			VALUES ($1, $2, $3, $4, $5, $6)
+			file (user_id, device_id, checksum, name, path, content_type, size)
+			VALUES ($1, $2, $3, $4, $5, $6, $7)
 			RETURNING * ;`
 
-	args := []interface{}{user.Id, file.Checksum, file.Name, file.Path, file.ContentType, file.Size}
+	var deviceId string
+	var deviceIdPrt *string
+
+	if user.DeviceId != nil && len(*user.DeviceId) > 0 {
+		deviceId = *user.DeviceId + "dummy"
+		deviceIdPrt = &deviceId
+	}
+
+	args := []interface{}{user.Id, deviceIdPrt, file.Checksum, file.Name, file.Path, file.ContentType, file.Size}
 
 	err := r.db.QueryRowContext(ctx, query, args...).Scan(file.Scan()...)
 	if err != nil {
@@ -150,11 +159,12 @@ func (r *FilesRepository) GetHistory(user *User, history *History) (*fileSyncHis
 		SELECT *
 			FROM file
 			WHERE user_id = $1 AND
+				(device_id <> $2 OR device_id IS NULL) AND
 				last_stmt = 0 AND
-				history_id > $2
+				history_id > $3
 			ORDER BY created_at DESC;`
 
-	args := []interface{}{user.Id, history.Id}
+	args := []interface{}{user.Id, user.DeviceId, history.Id}
 
 	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -189,11 +199,12 @@ func (r *FilesRepository) GetHistory(user *User, history *History) (*fileSyncHis
 		SELECT *
 			FROM file
 			WHERE user_id = $1 AND
+			    (device_id <> $2 OR device_id IS NULL) AND
 				last_stmt = 2 AND
-				history_id > $2
+				history_id > $3
 			ORDER BY created_at DESC;`
 
-	args = []interface{}{user.Id, history.Id}
+	args = []interface{}{user.Id, user.DeviceId, history.Id}
 
 	rows, err = tx.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -245,11 +256,20 @@ func (r *FilesRepository) TrashByIdList(user *User, idList string) error {
 	if len(idList) > 0 {
 		query := `
 		UPDATE file
-			SET last_stmt = 2
-			WHERE user_id = $1 AND
-			id IN (SELECT value FROM json_each($2));`
+			SET last_stmt = 2,
+				device_id = $1
+			WHERE user_id = $2 AND
+			id IN (SELECT value FROM json_each($3));`
 
-		args := []interface{}{user.Id, idList}
+		var deviceId string
+		var deviceIdPrt *string
+
+		if user.DeviceId != nil && len(*user.DeviceId) > 0 {
+			deviceId = *user.DeviceId + "dummy"
+			deviceIdPrt = &deviceId
+		}
+
+		args := []interface{}{deviceIdPrt, user.Id, idList}
 
 		_, err := r.db.ExecContext(ctx, query, args...)
 		if err != nil {

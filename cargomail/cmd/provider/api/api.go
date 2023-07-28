@@ -53,7 +53,7 @@ func (api *Api) Authenticate(next http.Handler) http.Handler {
 
 		// token := headerParts[1]
 
-		cookie, err := r.Cookie("session")
+		sessionCookie, err := r.Cookie("session")
 		if err != nil {
 			switch {
 			case errors.Is(err, http.ErrNoCookie):
@@ -65,7 +65,7 @@ func (api *Api) Authenticate(next http.Handler) http.Handler {
 			return
 		}
 
-		session := cookie.Value
+		session := sessionCookie.Value
 
 		// TODO magic number!
 		if len(session) != 52 {
@@ -83,6 +83,24 @@ func (api *Api) Authenticate(next http.Handler) http.Handler {
 			}
 			return
 		}
+
+		var device_id string
+
+		deviceIdCookie, err := r.Cookie("device_id")
+		if err != nil {
+			switch {
+			case errors.Is(err, http.ErrNoCookie):
+				// nothing to do
+			default:
+				log.Println(err)
+				http.Error(w, "server error", http.StatusInternalServerError)
+				return
+			}
+		} else {
+			device_id = deviceIdCookie.Value
+		}
+
+		user.DeviceId = &device_id
 
 		r = api.contextSetUser(r, user)
 

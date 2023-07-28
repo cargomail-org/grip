@@ -36,6 +36,9 @@ CREATE TRIGGER IF NOT EXISTS file_before_trash
 BEGIN
     SELECT RAISE(ABORT, 'Update "last_stmt" not allowed')
     WHERE NOT (new.last_stmt == 0 OR new.last_stmt == 2); -- Untrash = trashed (2) -> inserted (0)
+  	UPDATE file 
+	SET device_id = iif((substr(new.device_id, -5) = 'dummy'), substr(new.device_id, 0, 33), NULL)
+	WHERE id = new.id;
 END;
 
 CREATE TRIGGER IF NOT EXISTS file_after_trash
@@ -48,6 +51,7 @@ CREATE TRIGGER IF NOT EXISTS file_after_trash
 BEGIN
     UPDATE file_history_seq SET last_history_id = (last_history_id + 1) WHERE user_id = old.user_id;
     UPDATE file
-    SET history_id  = (SELECT last_history_id FROM file_history_seq WHERE user_id = old.user_id)
+    SET history_id  = (SELECT last_history_id FROM file_history_seq WHERE user_id = old.user_id),
+        device_id = iif((substr(new.device_id, -5) = 'dummy'), substr(new.device_id, 0, 33), NULL)
     WHERE id = old.id;
 END;

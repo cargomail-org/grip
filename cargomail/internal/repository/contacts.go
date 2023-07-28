@@ -22,6 +22,7 @@ type Contact struct {
 	TimelineId   int64      `json:"-"`
 	HistoryId    int64      `json:"-"`
 	LastStmt     int        `json:"-"`
+	DeviceId     *string    `json:"-"`
 }
 
 type contactAllHistory struct {
@@ -53,11 +54,19 @@ func (r *ContactsRepository) Create(user *User, contact *Contact) (*Contact, err
 
 	query := `
 		INSERT
-			INTO contact (user_id, email_address, firstname, lastname)
-			VALUES ($1, $2, $3, $4)
+			INTO contact (user_id, device_id, email_address, firstname, lastname)
+			VALUES ($1, $2, $3, $4, $5)
 			RETURNING * ;`
 
-	args := []interface{}{user.Id, contact.EmailAddress, contact.FirstName, contact.LastName}
+	var deviceId string
+	var deviceIdPrt *string
+
+	if user.DeviceId != nil && len(*user.DeviceId) > 0 {
+		deviceId = *user.DeviceId + "dummy"
+		deviceIdPrt = &deviceId
+	}
+
+	args := []interface{}{user.Id, deviceIdPrt, contact.EmailAddress, contact.FirstName, contact.LastName}
 
 	err := r.db.QueryRowContext(ctx, query, args...).Scan(contact.Scan()...)
 	if err != nil {
@@ -279,12 +288,21 @@ func (r *ContactsRepository) Update(user *User, contact *Contact) (*Contact, err
 		UPDATE contact
 			SET email_address = $1,
 			    firstname = $2,
-				lastname = $3 
-			WHERE user_id = $4 AND
-			      id = $5
+				lastname = $3,
+				device_id = $4
+			WHERE user_id = $5 AND
+			      id = $6
 			RETURNING * ;`
 
-	args := []interface{}{contact.EmailAddress, contact.FirstName, contact.LastName, user.Id, contact.Id}
+	var deviceId string
+	var deviceIdPrt *string
+
+	if user.DeviceId != nil && len(*user.DeviceId) > 0 {
+		deviceId = *user.DeviceId + "dummy"
+		deviceIdPrt = &deviceId
+	}
+
+	args := []interface{}{contact.EmailAddress, contact.FirstName, contact.LastName, deviceIdPrt, user.Id, contact.Id}
 
 	err := r.db.QueryRowContext(ctx, query, args...).Scan(contact.Scan()...)
 	if err != nil {
@@ -301,11 +319,20 @@ func (r *ContactsRepository) TrashByIdList(user *User, idList string) error {
 	if len(idList) > 0 {
 		query := `
 		UPDATE contact
-			SET last_stmt = 2
-			WHERE user_id = $1 AND
-			id IN (SELECT value FROM json_each($2));`
+			SET last_stmt = 2,
+			device_id = $1
+			WHERE user_id = $2 AND
+			id IN (SELECT value FROM json_each($3));`
 
-		args := []interface{}{user.Id, idList}
+		var deviceId string
+		var deviceIdPrt *string
+
+		if user.DeviceId != nil && len(*user.DeviceId) > 0 {
+			deviceId = *user.DeviceId + "dummy"
+			deviceIdPrt = &deviceId
+		}
+
+		args := []interface{}{deviceIdPrt, user.Id, idList}
 
 		_, err := r.db.ExecContext(ctx, query, args...)
 		if err != nil {
