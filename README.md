@@ -12,7 +12,7 @@ Please do not use the code from this repo, as it is unlikely to function properl
 
 ## Introduction
 
-With the growing popularity of communication systems, there is a need for an interoperable standard that specifies how to issue and convey information about the user from one service to another across security domain boundaries. Sometimes the final destination is not known at the time of identity information issuance (e.g., if the user's identity information is later forwarded from one service to another service), and that is where the relaying and resharing mechanism comes into play.
+With the growing popularity of communication systems, there is a need for an interoperable standard that specifies how to issue and convey information about the user from one service to another across security domain boundaries. Sometimes, the final destination is not known at the time of identity information issuance (e.g., if the user's identity information is later forwarded from one service to another service), and that is where the relaying and resharing mechanism comes into play.
 
 ## GRIP Acronyms
 
@@ -40,7 +40,7 @@ JWK     JSON Web Key
 
 ## Goals and Objectives
 
-Enhance SMTP and FTPS protocols with a cross-domain authentication protocol. The authentication protocol should be application-protocol agnostic to support HTTP-based communication technologies. The resulting concept should support the relaying and resharing mechanism, which employs "request tokens" and "response tokens."
+Enhance email authentication with a token-based protocol. The resulting concept should support the relaying and resharing mechanism, which employs "request tokens" and "response tokens."
 
 ## Identity Propagation
 
@@ -56,11 +56,11 @@ Assertions are statements from a token producer to a token consumer that contain
 
 ## Identities and DNS-Bound Tokens
 
-In some service-to-service communication scenarios, three identities are employed: user, client, and server identities. Fundamentally, mutual TLS (mTLS)/TLS certificates resolve client and server identities, while tokens resolve client and user identities. A DNS-bound token is a self-issued assertion in a JWT format signed by an mTLS private key that the first service uses to authenticate to the second service. The mTLS public key hash is published in the first service domain using the DNS TXT record, where the CN attribute of the mTLS public key certificate is used as a global client identifier in respect of the service it represents.
+In some service-to-service communication scenarios, three identities are employed: user, client, and server identities. Fundamentally, mutual TLS (mTLS) and TLS certificates resolve client and server identities, while tokens resolve client and user identities. A DNS-bound token is a self-issued assertion in a JWT format signed by an mTLS private key that the first service uses to authenticate to the second service. The mTLS public key hash is published in the first service domain using the DNS TXT record, where the CN attribute of the mTLS public key certificate is used as a global client identifier in respect of the service it represents.
 
 ## Nested, Chained Identity Propagation
 
-The upcoming [JWT Embedded Tokens](https://www.ietf.org/archive/id/draft-yusef-oauth-nested-jwt-06.html) specification defines a mechanism for embedding tokens into a JWT token. The JWT token and the embedded tokens are issued by different issuers. Using such a mechanism with DNS-Bound JWT tokens, chained through issuer and audience claims, provides authenticity and integrity protection during identity propagation across multiple security domains.
+The upcoming [JWT Embedded Tokens](https://www.ietf.org/archive/id/draft-yusef-oauth-nested-jwt-07.html) specification defines a mechanism for embedding tokens into a JWT token. The JWT token and the embedded tokens are issued by different issuers. Using such a mechanism with DNS-Bound JWT tokens, chained through issuer and audience claims, provides authenticity and integrity protection during identity propagation across multiple security domains.
 
 ## Self-Issued Identity Propagation
 
