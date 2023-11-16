@@ -6,10 +6,6 @@
 
 Global Reference Identity Protocol (GRIP) is a token-based security protocol that authenticates service requests between untrusted hosts across the Internet.
 
-## Notice
-
-Please do not use the code from this repo, as it is unlikely to function properly. The code was created only as part of the research and development effort.
-
 ## Introduction
 
 With the growing popularity of communication systems, there is a need for an interoperable standard that specifies how to issue and convey information about the user from one service to another across security domain boundaries. Sometimes, the final destination is not known at the time of identity information issuance (e.g., if the user's identity information is later forwarded from one service to another service), and that is where the relaying and resharing mechanism comes into play.
