@@ -74,7 +74,7 @@ Fig.&nbsp;1.&emsp;Self-Issued Identity Propagation flow
 
 ## OAuth 2.0
 
-Incorporating DNS-Bound Tokens into the Certificate-Bound Access Tokens extension of the OAuth 2.0 authorization protocol (see [RFC 8705](https://www.rfc-editor.org/rfc/rfc8705)) adds more complexity to the identity propagation mechanism.
+Incorporating DNS-Bound Tokens into the Certificate-Bound Access Tokens extension of the OAuth 2.0 authorization protocol (see [RFC 8705](https://www.rfc-editor.org/rfc/rfc8705)) adds more complexity to the identity propagation mechanism, making it quite impractical. Therefore, the following complementary flow diagrams are for study purposes only.
 
 ## 2-Legged Identity Propagation
 
