@@ -20,6 +20,7 @@ CN      Common Name
 TLS     Transport Layer Security
 mTLS    Mutual Transport Layer Security
 
+MHS     Message Handling Service
 SMTP    Simple Mail Transfer Protocol
 FTP(S)  File Transfer Protocol (Secure)
 HTTP(S) Hypertext Transfer Protocol (Secure)
