@@ -43,6 +43,10 @@ Assertions are statements from a token producer to a token consumer that contain
 
 In some service-to-service communication scenarios, three identities are employed: user, client, and server identities. Fundamentally, mutual TLS (mTLS) and TLS certificates resolve client and server identities, while tokens resolve client and user identities. A DNS-bound token is a self-issued assertion in a JWT format signed by an mTLS private key that the first service uses to authenticate to the second service. The mTLS public key hash is published in the first service domain using the DNS TXT record, where the CN attribute of the mTLS public key certificate is used as a global client identifier with respect to the service it represents.
 
+## Server Discovery
+
+The client typically connects to the server using service-specific protocols like SMTP or HTTP(S). These protocols require a connection to a specific port in addition to connecting to a particular server. A DNS SRV record defines a symbolic name, the transport protocol, port, and hostname to connect to when accessing the service. Therefore, DNS SRV records are the recommended way to discover service-specific servers.
+
 ## Identity Propagation
 
 In most security concepts and mechanisms, the user's security context propagation stops at the user's security domain boundaries. In end-to-end identity propagation, the user's security context is extended outside the user's security perimeter.
@@ -72,9 +76,15 @@ The DNS-Bound JWT tokens issued by different issuers are chained using digital s
     Fig.&nbsp;2.&emsp;Chain of Transactions
 </p>
 
-## Server Discovery
+## Authentication
 
-The client typically connects to the server using service-specific protocols like SMTP or HTTP(S). These protocols require a connection to a specific port in addition to connecting to a particular server. A DNS SRV record defines a symbolic name, the transport protocol, port, and hostname to connect to when accessing the service. Therefore, DNS SRV records are the recommended way to discover service-specific servers.
+<div>
+    <img src=./images/authentication.svg alt="Authentication" width="600">
+</div>
+
+<p class="figure">
+    Fig.&nbsp;3.&emsp;An example of chained authentication
+</p>
 
 ## Implementation
 
