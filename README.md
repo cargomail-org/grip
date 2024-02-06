@@ -76,14 +76,14 @@ The DNS-Bound JWT tokens issued by different issuers are chained using digital s
     Fig.&nbsp;2.&emsp;Chain of Transactions
 </p>
 
-## Authentication
+## Email Authentication
 
 <div>
-    <img src=./images/authentication.svg alt="Authentication" width="600">
+    <img src=./images/email_authentication.svg alt="Email Authentication" width="600">
 </div>
 
 <p class="figure">
-    Fig.&nbsp;3.&emsp;An example of chained authentication
+    Fig.&nbsp;3.&emsp;An example of email authentication
 </p>
 
 ## Implementation
