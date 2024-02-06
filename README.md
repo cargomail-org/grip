@@ -90,7 +90,7 @@ TBD
 
 ## Implementation
 
-[Cargomail](https://github.com/cargomail-org/cargomail) — an implementation of the revised Internet Mail architecture, stands as proof of concept for the GRIP mechanism. Cargomail uses GRIP for email authentication instead of the DKIM authentication method. GRIP employs identity propagation and assertion apparatus to convey identity information about the end user across different administrative authorities of the email services. Furthermore, instead of using MX records to discover the communication services, Cargomail relies on DNS SRV records.
+[Cargomail](https://github.com/cargomail-org/cargomail) — an implementation of the [revised Internet Mail architecture](https://github.com/cargomail-org/cargomail/raw/main/whitepaper/Cargomail.pdf), stands as proof of concept for the GRIP mechanism. Cargomail uses GRIP for email authentication instead of the DKIM authentication method. GRIP employs identity propagation and assertion apparatus to convey identity information about the end user across different administrative authorities of the email services. Furthermore, instead of using MX records to discover the communication services, Cargomail relies on DNS SRV records.
 
 ## Conclusion
 
