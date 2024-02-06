@@ -78,6 +78,8 @@ The DNS-Bound JWT tokens issued by different issuers are chained using digital s
 
 ## Email Authentication
 
+TBD
+
 <div>
     <img src=./images/email_authentication.svg alt="Email Authentication" width="600">
 </div>
