@@ -43,7 +43,7 @@ Assertions are statements from a token producer to a token consumer that contain
 
 In some service-to-service communication scenarios, three identities are employed: user, client, and server identities. Fundamentally, mutual TLS (mTLS) and TLS certificates resolve client and server identities, while tokens resolve client and user identities. A DNS-bound token is a self-issued assertion in a JWT format signed by an mTLS private key that the first service uses to authenticate to the second service. The mTLS public key hash is published in the first service domain using the DNS TXT record, where the CN attribute of the mTLS public key certificate is used as a global client identifier with respect to the service it represents.
 
-## Servervice Discovery
+## Service Discovery
 
 The client typically connects to the server using service-specific protocols like SMTP or HTTP(S). These protocols require a connection to a specific port in addition to connecting to a particular server. A DNS SRV record defines a symbolic name, the transport protocol, port, and hostname to connect to when accessing the service. Therefore, DNS SRV records are the recommended way to discover service-specific servers.
 
@@ -64,16 +64,16 @@ The sequence diagram is self-explanatory.
     Fig.&nbsp;1.&emsp;Identity Propagation Flow
 </p>
 
-## Transactions
+## Identity Propagation Transactions
 
 The DNS-Bound JWT tokens issued by different issuers are chained using digital signatures where issuer and audience claims between tokens must match. This mechanism provides authenticity and integrity protection during identity propagation transactions across multiple security domains.
 
 <div>
-    <img src=./images/data_provenance.svg alt="Chain of Transactions" width="500">
+    <img src=./images/data_provenance.svg alt="Chain of Identity Propagation Transactions" width="500">
 </div>
 
 <p class="figure">
-    Fig.&nbsp;2.&emsp;Chain of Transactions
+    Fig.&nbsp;2.&emsp;Chain of Identity Propagation Transactions
 </p>
 
 ## Applications and Use Patterns
