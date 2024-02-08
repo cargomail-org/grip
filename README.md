@@ -76,7 +76,7 @@ The DNS-Bound JWT tokens issued by different issuers are chained using digital s
     Fig.&nbsp;2.&emsp;Chain of Identity Propagation Transactions
 </p>
 
-## Applications and Use Patterns
+## Applications and Usage Patterns
 
 GRIP may be used not only to reimplement existing authentication mechanisms but also to track the origin and history of data.
 
