@@ -96,7 +96,7 @@ TBD
 
 TBD
 
-### Double-Send Prevention
+### Double-Spend Prevention
 
 TBD
 
