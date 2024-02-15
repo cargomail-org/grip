@@ -94,11 +94,11 @@ TBD
 
 ### Data Provenance
 
-TBD. Security tokens paired with *digital resources* stored in a *correspondence ledger* detailing the origin and changes guarantee the confidence and validity of data.
+TBD (Digital Assets, Deepfake Detection). Security tokens paired with *digital resources* stored in a *correspondence ledger* detailing the origin and changes guarantee the confidence and validity of data.
 
 ### Double-Spend Prevention
 
-TBD. If someone tries to send the same *digital resources* once again to other recipients, you can prevent this by using a trusted third-party *correspondence ledger* provider.
+TBD (Virtual/Digital Assets, Deepfake Detection). If someone tries to send the same *digital resources* once again to other recipients, you can prevent this by using a trusted third-party *correspondence ledger* provider.
 
 ## Implementation
 
