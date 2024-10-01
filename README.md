@@ -2,6 +2,8 @@
 
 # Global Reference Identity Protocol
 
+Development have been moved to the [Federizer](https://github.com/federizer) organization.
+
 ## Abstract
 
 Global Reference Identity Protocol (GRIP) is a token-based security protocol that authenticates service requests between untrusted hosts across the Internet.
